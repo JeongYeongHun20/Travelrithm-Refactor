@@ -16,8 +16,8 @@ public class BusScheduleController {
     private final BusScheduleService scheduleService;
 
     @PostMapping
-    public BusScheduleResponseDto create(@RequestBody BusScheduleRequestDto request) {
-        return scheduleService.createSchedule(request);
+    public BusScheduleResponseDto create(@RequestBody BusScheduleRequestDto dto) {
+        return scheduleService.createSchedule(dto);
     }
 
     @GetMapping
@@ -25,9 +25,14 @@ public class BusScheduleController {
         return scheduleService.getAllSchedules();
     }
 
+    @GetMapping("/{id}")
+    public BusScheduleResponseDto getById(@PathVariable Integer id) {
+        return scheduleService.getScheduleById(id);
+    }
+
     @PutMapping("/{id}")
-    public BusScheduleResponseDto update(@PathVariable Integer id, @RequestBody BusScheduleRequestDto request) {
-        return scheduleService.updateSchedule(id, request);
+    public BusScheduleResponseDto update(@PathVariable Integer id, @RequestBody BusScheduleRequestDto dto) {
+        return scheduleService.updateSchedule(id, dto);
     }
 
     @DeleteMapping("/{id}")
@@ -35,3 +40,4 @@ public class BusScheduleController {
         scheduleService.deleteSchedule(id);
     }
 }
+

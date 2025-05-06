@@ -1,43 +1,57 @@
 package com.Travelrithm.domain;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 @Table(name = "bus_reservation")
 public class BusReservEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer reservationId;
-    private Integer userId;
-    private Integer planId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private UserEntity user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "plan_id")
+    private PlanEntity plan;
 
     @Enumerated(EnumType.STRING)
     private Direction direction;
-    private Integer arrivalTerminalId;
-    private Integer departureTerminalId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "departure_terminal_id")
+    private BusTerminalEntity departureTerminal;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "arrival_terminal_id")
+    private BusTerminalEntity arrivalTerminal;
+
     private LocalDateTime departureTime;
     private String seatNumber;
 
     @Enumerated(EnumType.STRING)
     private SeatStatus seatStatus;
 
-    @CreationTimestamp
     private LocalDateTime createdAt;
 
-    public enum Direction{
+    public enum Direction {
         departure, return_trip
     }
 
-    public enum SeatStatus{
+    public enum SeatStatus {
         reserved, cancelled
     }
-
-
 }
+
+

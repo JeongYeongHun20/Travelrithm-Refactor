@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -24,11 +25,11 @@ public class BusTerminalEntity {
     private String city;
     private String address;
 
-    @Column(precision = 10, scale = 8)
-    private Double lat;
+    @Column(precision = 10)
+    private BigDecimal lat;
 
-    @Column(precision = 11, scale = 8)
-    private Double lng;
+    @Column(precision = 11)
+    private BigDecimal lng;
 
     @CreationTimestamp
     private LocalDateTime createdAt;

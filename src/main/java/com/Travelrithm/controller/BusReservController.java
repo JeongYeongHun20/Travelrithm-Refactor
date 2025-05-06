@@ -4,42 +4,41 @@ import com.Travelrithm.dto.BusReservRequestDto;
 import com.Travelrithm.dto.BusReservResponseDto;
 import com.Travelrithm.service.BusReservService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RequiredArgsConstructor
 @RestController
-@RequestMapping("/bus-reservations")
+@RequestMapping("/bus-reserv")
+@RequiredArgsConstructor
 public class BusReservController {
 
     private final BusReservService busReservService;
 
     @PostMapping
-    public ResponseEntity<BusReservResponseDto> createReservation(@RequestBody BusReservRequestDto dto) {
-        return ResponseEntity.ok(busReservService.createReservation(dto));
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<BusReservResponseDto> getReservationById(@PathVariable Integer id) {
-        return ResponseEntity.ok(busReservService.findReservation(id));
+    public BusReservResponseDto create(@RequestBody BusReservRequestDto dto) {
+        return busReservService.createReservation(dto);
     }
 
     @GetMapping
-    public ResponseEntity<List<BusReservResponseDto>> getAllReservations() {
-        return ResponseEntity.ok(busReservService.findAllReservations());
+    public List<BusReservResponseDto> getAll() {
+        return busReservService.getAllReservations();
+    }
+
+    @GetMapping("/{id}")
+    public BusReservResponseDto getById(@PathVariable Integer id) {
+        return busReservService.getReservationById(id);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<BusReservResponseDto> updateReservation(@PathVariable Integer id,
-                                                                  @RequestBody BusReservRequestDto dto) {
-        return ResponseEntity.ok(busReservService.updateReservation(id, dto));
+    public BusReservResponseDto update(@PathVariable Integer id, @RequestBody BusReservRequestDto dto) {
+        return busReservService.updateReservation(id, dto);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReservation(@PathVariable Integer id) {
+    public void delete(@PathVariable Integer id) {
         busReservService.deleteReservation(id);
-        return ResponseEntity.noContent().build();
     }
 }
+
+

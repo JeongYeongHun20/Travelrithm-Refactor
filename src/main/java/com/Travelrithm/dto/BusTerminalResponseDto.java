@@ -3,6 +3,7 @@ package com.Travelrithm.dto;
 import com.Travelrithm.domain.BusTerminalEntity;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Getter
@@ -15,8 +16,8 @@ public class BusTerminalResponseDto {
     private String name;
     private String city;
     private String address;
-    private Double lat;
-    private Double lng;
+    private BigDecimal lat;
+    private BigDecimal lng;
     private LocalDateTime createdAt;
 
     public BusTerminalResponseDto(BusTerminalEntity entity) {

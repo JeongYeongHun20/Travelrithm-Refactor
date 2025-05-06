@@ -1,73 +1,91 @@
 package com.Travelrithm.service;
 
-import com.Travelrithm.domain.BusReservEntity;
+import com.Travelrithm.domain.*;
 import com.Travelrithm.dto.BusReservRequestDto;
 import com.Travelrithm.dto.BusReservResponseDto;
-import com.Travelrithm.repository.BusReservRepository;
+import com.Travelrithm.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class BusReservService {
 
     private final BusReservRepository busReservRepository;
+    private final UserRepository userRepository;
+    private final PlanRepository planRepository;
+    private final BusTerminalRepository terminalRepository;
 
-    // CREATE
+    //CRUD
+    @Transactional
     public BusReservResponseDto createReservation(BusReservRequestDto dto) {
-        BusReservEntity entity = new BusReservEntity();
-        entity.setUserId(dto.getUserId());
-        entity.setPlanId(dto.getPlanId());
-        entity.setDirection(dto.getDirection());
-        entity.setDepartureTerminalId(dto.getDepartureTerminalId());
-        entity.setArrivalTerminalId(dto.getArrivalTerminalId());
-        entity.setDepartureTime(dto.getDepartureTime());
-        entity.setSeatNumber(dto.getSeatNumber());
-        entity.setSeatStatus(BusReservEntity.SeatStatus.reserved);
+        UserEntity user = userRepository.findById(dto.getUserId()).orElseThrow();
+        PlanEntity plan = planRepository.findById(dto.getPlanId()).orElseThrow();
+        BusTerminalEntity departure = terminalRepository.findById(dto.getDepartureTerminalId()).orElseThrow();
+        BusTerminalEntity arrival = terminalRepository.findById(dto.getArrivalTerminalId()).orElseThrow();
+
+        BusReservEntity entity = BusReservEntity.builder()
+                .user(user)
+                .plan(plan)
+                .direction(dto.getDirection())
+                .departureTerminal(departure)
+                .arrivalTerminal(arrival)
+                .departureTime(dto.getDepartureTime())
+                .seatNumber(dto.getSeatNumber())
+                .seatStatus(dto.getSeatStatus())
+                .build();
 
         BusReservEntity saved = busReservRepository.save(entity);
 
-        return new BusReservResponseDto(saved);
+        return toDto(saved);
     }
 
-    // 단건 조회 (READ)
     @Transactional(readOnly = true)
-    public BusReservResponseDto findReservation(Integer id) {
-        BusReservEntity entity = busReservRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 예매 정보가 존재하지 않습니다."));
-        return new BusReservResponseDto(entity);
-    }
-
-    // 전체 조회 (READ)
-    @Transactional(readOnly = true)
-    public List<BusReservResponseDto> findAllReservations() {
+    public List<BusReservResponseDto> getAllReservations() {
         return busReservRepository.findAll().stream()
-                .map(BusReservResponseDto::new)
-                .toList();
+                .map(this::toDto)
+                .collect(Collectors.toList());
     }
 
-    // UPDATE
+    @Transactional(readOnly = true)
+    public BusReservResponseDto getReservationById(Integer id) {
+        BusReservEntity entity = busReservRepository.findById(id).orElseThrow();
+        return toDto(entity);
+    }
+
+    @Transactional
     public BusReservResponseDto updateReservation(Integer id, BusReservRequestDto dto) {
-        BusReservEntity entity = busReservRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 예매 정보가 존재하지 않습니다."));
-        entity.setUserId(dto.getUserId());
-        entity.setPlanId(dto.getPlanId());
+        BusReservEntity entity = busReservRepository.findById(id).orElseThrow();
         entity.setDirection(dto.getDirection());
-        entity.setDepartureTerminalId(dto.getDepartureTerminalId());
-        entity.setArrivalTerminalId(dto.getArrivalTerminalId());
+        entity.setDepartureTerminal(terminalRepository.findById(dto.getDepartureTerminalId()).orElseThrow());
+        entity.setArrivalTerminal(terminalRepository.findById(dto.getArrivalTerminalId()).orElseThrow());
         entity.setDepartureTime(dto.getDepartureTime());
         entity.setSeatNumber(dto.getSeatNumber());
-        // 필요한 경우 seatStatus 수정 (dto에 포함되어 있다면)
-        // entity.setSeatStatus(dto.getSeatStatus());
-        return new BusReservResponseDto(entity);
+        entity.setSeatStatus(dto.getSeatStatus());
+        return toDto(entity);
     }
 
-    // DELETE
+    @Transactional
     public void deleteReservation(Integer id) {
         busReservRepository.deleteById(id);
+    }
+
+    private BusReservResponseDto toDto(BusReservEntity r) {
+        return BusReservResponseDto.builder()
+                .reservationId(r.getReservationId())
+                .userId(r.getUser().getUserId())
+                .planId(r.getPlan().getPlanId())
+                .direction(r.getDirection())
+                .departureTerminalId(r.getDepartureTerminal().getTerminalId())
+                .arrivalTerminalId(r.getArrivalTerminal().getTerminalId())
+                .departureTime(r.getDepartureTime())
+                .seatNumber(r.getSeatNumber())
+                .seatStatus(r.getSeatStatus())
+                .createdAt(r.getCreatedAt())
+                .build();
     }
 }

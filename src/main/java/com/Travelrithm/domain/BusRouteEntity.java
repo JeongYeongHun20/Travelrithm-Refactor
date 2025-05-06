@@ -3,38 +3,49 @@ package com.Travelrithm.domain;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
 @Entity
+@Table(name = "bus_route")
 @Getter
 @Setter
-@Builder
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Table(name = "bus_route")
+@Builder
 public class BusRouteEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer routeId;
 
-    private String routeName;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "departure_terminal_id")
+    private BusTerminalEntity departureTerminal;
 
-    private String departureTime;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "arrival_terminal_id")
+    private BusTerminalEntity arrivalTerminal;
 
-    private String arrivalTime;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "company_id")
+    private BusCompanyEntity company;
 
-    private Integer companyId;
+    private Integer duration;
 
-    private Integer departureTerminalId;
+    @Column(precision = 10, scale = 2)
+    private BigDecimal price;
 
-    private Integer arrivalTerminalId;
+    private LocalDateTime createdAt;
 
-    public void update(String routeName, String departureTime, String arrivalTime,
-                       Integer companyId, Integer departureTerminalId, Integer arrivalTerminalId) {
-        this.routeName = routeName;
-        this.departureTime = departureTime;
-        this.arrivalTime = arrivalTime;
-        this.companyId = companyId;
-        this.departureTerminalId = departureTerminalId;
-        this.arrivalTerminalId = arrivalTerminalId;
+    public void update(BusTerminalEntity departureTerminal, BusTerminalEntity arrivalTerminal,
+                       BusCompanyEntity company, Integer duration, BigDecimal price) {
+        this.departureTerminal = departureTerminal;
+        this.arrivalTerminal = arrivalTerminal;
+        this.company = company;
+        this.duration = duration;
+        this.price = price;
     }
 }
+
+

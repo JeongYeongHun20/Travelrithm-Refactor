@@ -6,27 +6,24 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Getter
-@Setter
-@Builder
+@Table(name = "bus_schedule")
+@Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "bus_schedule")
+@Builder
 public class BusScheduleEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer scheduleId;
-
-    private Integer routeId;
-
     private LocalDateTime departureTime;
+    private LocalDateTime arrivalTime;
+    private Integer remainingSeats;
+    private LocalDateTime createdAt;
 
-    private Integer availableSeats;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "route_id", nullable = false)
+    private BusRouteEntity route;
 
-    public void update(Integer routeId, LocalDateTime departureTime, Integer availableSeats) {
-        this.routeId = routeId;
-        this.departureTime = departureTime;
-        this.availableSeats = availableSeats;
-    }
 }
+

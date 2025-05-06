@@ -16,8 +16,8 @@ public class BusRouteController {
     private final BusRouteService routeService;
 
     @PostMapping
-    public BusRouteResponseDto create(@RequestBody BusRouteRequestDto request) {
-        return routeService.createRoute(request);
+    public BusRouteResponseDto create(@RequestBody BusRouteRequestDto dto) {
+        return routeService.createRoute(dto);
     }
 
     @GetMapping
@@ -25,9 +25,14 @@ public class BusRouteController {
         return routeService.getAllRoutes();
     }
 
+    @GetMapping("/{id}")
+    public BusRouteResponseDto getById(@PathVariable Integer id) {
+        return routeService.getRouteById(id);
+    }
+
     @PutMapping("/{id}")
-    public BusRouteResponseDto update(@PathVariable Integer id, @RequestBody BusRouteRequestDto request) {
-        return routeService.updateRoute(id, request);
+    public BusRouteResponseDto update(@PathVariable Integer id, @RequestBody BusRouteRequestDto dto) {
+        return routeService.updateRoute(id, dto);
     }
 
     @DeleteMapping("/{id}")
@@ -35,3 +40,6 @@ public class BusRouteController {
         routeService.deleteRoute(id);
     }
 }
+
+
+

@@ -3,6 +3,8 @@ package com.Travelrithm.dto;
 import com.Travelrithm.domain.BusTerminalEntity;
 import lombok.*;
 
+import java.math.BigDecimal;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -12,8 +14,8 @@ public class BusTerminalRequestDto {
     private String name;
     private String city;
     private String address;
-    private Double lat;
-    private Double lng;
+    private BigDecimal lat;
+    private BigDecimal lng;
 
     public BusTerminalEntity toEntity() {
         return BusTerminalEntity.builder()
