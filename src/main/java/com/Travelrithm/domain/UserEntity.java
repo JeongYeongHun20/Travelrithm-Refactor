@@ -4,6 +4,8 @@ package com.Travelrithm.domain;
 import com.Travelrithm.dto.UserRequestDto;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -31,7 +33,12 @@ public class UserEntity {
     private SocialType socialType;
     private Long socialId;
     private String thumbnailImageUrl;
+
+    @CreationTimestamp
+    @Column(updatable = false)
     private LocalDateTime createdAt;
+
+    @UpdateTimestamp
     private LocalDateTime updatedAt;
     private LocalDateTime nicknameUpdatedAt;
 
@@ -44,7 +51,6 @@ public class UserEntity {
         this.password=dto.password();
         this.email = dto.email();
         this.nickname = dto.nickname();
-        this.updatedAt = LocalDateTime.now();
     }
 
 

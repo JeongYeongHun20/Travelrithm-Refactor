@@ -1,34 +1,38 @@
 package com.Travelrithm.service;
 
 
+import com.Travelrithm.domain.SocialType;
 import com.Travelrithm.domain.UserEntity;
 import com.Travelrithm.dto.KakaoUserResponseDto;
 import com.Travelrithm.dto.UserRequestDto;
 import com.Travelrithm.dto.UserResponseDto;
 import com.Travelrithm.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class UserService {
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     public UserResponseDto createUser(KakaoUserResponseDto kakaoUserInfo) {
-        UserEntity userEntity= UserEntity.builder()
+        UserEntity userEntity = UserEntity.builder()
                 .socialId(kakaoUserInfo.id())
-                .name(kakaoUserInfo.kakao_account().name())
+                .socialType(SocialType.kakao)
+                .name(kakaoUserInfo.kakao_account().profile().nickname())
                 .email(kakaoUserInfo.kakao_account().email())
-                .nickname(kakaoUserInfo.kakao_account().profile().nickname())
+                .password(bCryptPasswordEncoder.encode(UUID.randomUUID().toString()))
                 .thumbnailImageUrl(kakaoUserInfo.kakao_account().profile().thumbnail_image_url())
-                .createdAt(LocalDateTime.now())
+                .nickname(kakaoUserInfo.kakao_account().profile().nickname())
                 .build();
         validateDuplicateEmail(userEntity);
         userRepository.save(userEntity);
@@ -44,7 +48,6 @@ public class UserService {
                 .nickname(localUserInfo.nickname())
                 .socialType(localUserInfo.socialType())
                 .thumbnailImageUrl(localUserInfo.thumbnail_image_url())
-                .createdAt(LocalDateTime.now())
                 .build();
         validateDuplicateEmail(userEntity);
         userRepository.save(userEntity);

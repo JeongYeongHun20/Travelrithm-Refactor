@@ -32,12 +32,15 @@ public class CommunityPostEntity {
 
     private String postContent;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "plan_id")
     private PlanEntity planEntity;
 
     @CreationTimestamp
+    @Column(updatable = false)
     private LocalDateTime createdAt;
+
+    @UpdateTimestamp
     private LocalDateTime updatedAt;
 
     private Boolean isTravelPlan;

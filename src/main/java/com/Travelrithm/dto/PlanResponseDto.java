@@ -10,14 +10,14 @@ import java.time.LocalDate;
 
 public record PlanResponseDto(
         Integer planId,
-        String region,
+        Integer regionId,
         LocalDate startDate,
         LocalDate endDate
 ) {
     public PlanResponseDto(PlanEntity planEntity){
         this(
                 planEntity.getPlanId(),
-                planEntity.getRegion(),
+                planEntity.getRegionEntity().getRegionId(),
                 planEntity.getStartDate(),
                 planEntity.getEndDate()
         );

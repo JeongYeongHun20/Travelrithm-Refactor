@@ -33,7 +33,9 @@ public class PlanEntity {
     @JoinColumn(name = "user_id")
     private UserEntity userEntity;
 
-    private String region;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "region_id")
+    private RegionEntity regionEntity;
 
     private LocalDate startDate;
     private LocalDate endDate;
@@ -49,13 +51,11 @@ public class PlanEntity {
     @Builder.Default
     private List<PlaceEntity> placeEntities = new ArrayList<>();
 
-    @OneToMany(mappedBy = "planEntity", cascade = CascadeType.ALL)
-    @Builder.Default
-    private List<CommunityPostEntity> postEntities = new ArrayList<>();
+    @OneToOne(mappedBy = "planEntity", cascade = CascadeType.ALL)
+    private CommunityPostEntity postEntity;
 
     public void update(PlanRequestDto planDto) {
 
-        this.region = planDto.region();
         this.startDate = planDto.startDate();
         this.endDate = planDto.endDate();
         this.transportMode = planDto.transportMode();

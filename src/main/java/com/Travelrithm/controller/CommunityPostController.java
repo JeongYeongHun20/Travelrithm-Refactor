@@ -17,21 +17,28 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("/posts")
+@RequestMapping("/post")
 @RequiredArgsConstructor
 public class CommunityPostController {
 
     private final CommunityPostService postService;
     private final ScrapService scrapService;
 
-    @PostMapping
-    public CommunityPostResponseDto createPost(@RequestBody CommunityPostRequestDto request) {
-        return postService.createPost(request);
+    @PostMapping("/createPost")
+    public CommunityPostResponseDto createPost(@AuthenticationPrincipal CustomUserDetails userDetails,@RequestBody CommunityPostRequestDto request) {
+        Integer userId = userDetails.getUserId();
+        return postService.createPost(userId, request);
     }
 
-    @GetMapping
-    public List<CommunityPostResponseDto> getPosts() {
-        return postService.getAllPosts();
+    @GetMapping("/getPosts")
+    public List<CommunityPostResponseDto> getPosts(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        Integer userId = userDetails.getUserId();
+        return postService.getAllPosts(userId);
+    }
+
+    @GetMapping("/{postId}")
+    public CommunityPostResponseDto getPost(@PathVariable(name = "postId") Integer postId) {
+        return postService.getPost(postId);
     }
 
     @PutMapping("/{postId}")
@@ -51,7 +58,7 @@ public class CommunityPostController {
 
     }
     @DeleteMapping("/{postId}/scrap")
-    public ResponseEntity<Void> untoggleScrap(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable(name = "postId") Integer postId) {
+    public ResponseEntity<Void> unToggleScrap(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable(name = "postId") Integer postId) {
         Integer userId=userDetails.getUserId();
         scrapService.removeScrap(userId,postId);
 

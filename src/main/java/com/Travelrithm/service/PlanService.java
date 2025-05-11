@@ -3,19 +3,24 @@ package com.Travelrithm.service;
 
 import com.Travelrithm.domain.PlaceEntity;
 import com.Travelrithm.domain.PlanEntity;
+import com.Travelrithm.domain.RegionEntity;
 import com.Travelrithm.domain.UserEntity;
 import com.Travelrithm.dto.PlaceDto;
 import com.Travelrithm.dto.PlanRequestDto;
 import com.Travelrithm.dto.PlanResponseDto;
 import com.Travelrithm.repository.PlanRepository;
+import com.Travelrithm.repository.RegionRepository;
 import com.Travelrithm.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -23,21 +28,26 @@ public class PlanService {
 
     private final PlanRepository planRepository;
     private final UserRepository userRepository;
-
+    private final RegionRepository regionRepository;
     public PlanResponseDto createPlan(Integer userId, PlanRequestDto planRequestDto){
         UserEntity userEntity = userRepository.findById(userId)
                 .orElseThrow(()-> new IllegalArgumentException("해당유저가 존재하지 않음"));
 
+        RegionEntity regionEntity = regionRepository.findById(planRequestDto.regionId())
+                .orElseThrow(()->new IllegalArgumentException("해당지역 존재하지 않음"));
+
+        log.info(regionEntity.getName());
+
         PlanEntity planEntity=PlanEntity.builder()
                 .userEntity(userEntity)
-                .region(planRequestDto.region())
+                .regionEntity(regionEntity)
                 .startDate(planRequestDto.startDate())
                 .endDate(planRequestDto.endDate())
                 .createdAt(LocalDateTime.now())
                 .transportMode(planRequestDto.transportMode())
                 .startTime(planRequestDto.startTime())
                 .build();
-
+        log.info(regionEntity.getName());
         List<PlaceEntity> createPlaces = getPlaceEntities(planRequestDto, planEntity);
         planEntity.getPlaceEntities().addAll(createPlaces);
 

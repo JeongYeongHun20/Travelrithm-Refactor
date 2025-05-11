@@ -1,13 +1,11 @@
 package com.Travelrithm.controller;
 
 
-import com.Travelrithm.domain.PlanEntity;
-import com.Travelrithm.domain.UserEntity;
+
 import com.Travelrithm.dto.PlanRequestDto;
 import com.Travelrithm.dto.PlanResponseDto;
 import com.Travelrithm.security.jwt.CustomUserDetails;
 import com.Travelrithm.service.PlanService;
-import com.Travelrithm.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -17,17 +15,16 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/plans")
+@RequestMapping("/plan")
 public class PlanController {
     private final PlanService planService;
-    private final UserService userService;
-    @GetMapping
-    public ResponseEntity<List<PlanResponseDto>> findPlans(@AuthenticationPrincipal CustomUserDetails userDetails) {
+    @GetMapping("myPlans")
+    public ResponseEntity<List<PlanResponseDto>> myPlans(@AuthenticationPrincipal CustomUserDetails userDetails) {
         Integer userId=userDetails.getUserId();
         return ResponseEntity.ok(planService.findPlans(userId));
     }
 
-    @PostMapping
+    @PostMapping("/createPlan")
     public ResponseEntity<PlanResponseDto> createPlan(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody PlanRequestDto planDto){
         Integer userId = userDetails.getUserId();
         return ResponseEntity.ok(planService.createPlan(userId, planDto));

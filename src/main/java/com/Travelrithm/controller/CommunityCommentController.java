@@ -11,14 +11,14 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/community-comments")
+@RequestMapping("/comment")
 @RequiredArgsConstructor
 public class CommunityCommentController {
 
     private final CommunityCommentService commentService;
 
-    @PostMapping
-    public CommunityCommentResponseDto create(
+    @PostMapping("/createComment")
+    public CommunityCommentResponseDto createComment(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestBody CommunityCommentRequestDto request) {
         Integer userId = userDetails.getUserId();

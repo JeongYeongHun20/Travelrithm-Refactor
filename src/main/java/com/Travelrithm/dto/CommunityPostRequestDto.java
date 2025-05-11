@@ -5,7 +5,6 @@ import lombok.*;
 
 
 public record CommunityPostRequestDto(
-        Integer userId,
         String title,
         String postContent,
         Boolean isTravelPlan,
