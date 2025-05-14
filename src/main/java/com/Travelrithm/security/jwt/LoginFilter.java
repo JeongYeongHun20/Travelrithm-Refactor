@@ -48,7 +48,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
             FilterChain chain,
             Authentication authentication
 
-    ){
+    ) throws IOException {
         CustomUserDetails customUserDetails=(CustomUserDetails)authentication.getPrincipal();
         String username = customUserDetails.getUsername();
         Integer userId = customUserDetails.getUserId();
@@ -62,6 +62,11 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String token = jwtUtil.createJwt(userId, username, role, 60*60*1000L);
 
         response.addHeader("Authorization", "Bearer "+token);
+
+        // 바디에도 JSON 형태로 토큰 내려주기
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write("{\"token\": \"" + token + "\"}");
     }
 
     @Override
