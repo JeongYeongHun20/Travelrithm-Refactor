@@ -2,6 +2,7 @@ package com.Travelrithm.security.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -58,12 +59,13 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         String role = auth.getAuthority();
 
-        //1시간짜리 토큰
-        String token = jwtUtil.createJwt(userId, username, role, 60*60*1000L);
+        //1일짜리 토큰
+        String token = jwtUtil.createJwt(userId, username, role, 24*60*60*1000L);
 
         response.addHeader("Authorization", "Bearer "+token);
-    }
 
+
+    }
     @Override
     protected void unsuccessfulAuthentication(
             HttpServletRequest request,
