@@ -2,6 +2,7 @@ package com.Travelrithm.controller;
 
 
 import com.Travelrithm.dto.RegionDto;
+import com.Travelrithm.dto.RegionResponseDto;
 import com.Travelrithm.service.RegionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +31,11 @@ public class RegionController {
     @GetMapping("/regions")
     public ResponseEntity<List<RegionDto>> getRegions() {
         return ResponseEntity.ok(regionService.getRegions());
+    }
+
+    @GetMapping("/simple") // name/context/image 만 넘김
+    public ResponseEntity<List<RegionResponseDto>> getSimpleRegions() {
+        return ResponseEntity.ok(regionService.getSimpleRegions());
     }
 
 

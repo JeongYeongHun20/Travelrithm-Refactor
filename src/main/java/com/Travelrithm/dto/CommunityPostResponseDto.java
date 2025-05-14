@@ -14,18 +14,24 @@ public record CommunityPostResponseDto (
         Boolean isTravelPlan,
         Integer planId,
         LocalDateTime createdAt,
-        LocalDateTime updatedAt){
+        LocalDateTime updatedAt,
+        String regionThumbnailUrl
+        ){
 
     public CommunityPostResponseDto(CommunityPostEntity postEntity) {
-       this(
-               postEntity.getPostId(),
-               postEntity.getUserEntity().getUserId(),
-               postEntity.getTitle(),
-               postEntity.getPostContent(),
-               postEntity.getIsTravelPlan(),
-               postEntity.getPlanEntity()!= null ? postEntity.getPlanEntity().getPlanId() : null,
-               postEntity.getCreatedAt(),
-               postEntity.getUpdatedAt()
-       );
+        this(
+                postEntity.getPostId(),
+                postEntity.getUserEntity().getUserId(),
+                postEntity.getTitle(),
+                postEntity.getPostContent(),
+                postEntity.getIsTravelPlan(),
+                postEntity.getPlanEntity()!= null ? postEntity.getPlanEntity().getPlanId() : null,
+
+                postEntity.getCreatedAt(),
+                postEntity.getUpdatedAt(),
+                postEntity.getPlanEntity() != null && postEntity.getPlanEntity().getRegionEntity() != null
+                        ? postEntity.getPlanEntity().getRegionEntity().getThumbnailImageUrl()
+                        : null
+        );
     }
 }
