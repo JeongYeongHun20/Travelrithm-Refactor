@@ -23,7 +23,7 @@ public record CommunityPostResponseDto (
                postEntity.getTitle(),
                postEntity.getPostContent(),
                postEntity.getIsTravelPlan(),
-               postEntity.getPlanEntity().getPlanId(),
+               postEntity.getPlanEntity()!= null ? postEntity.getPlanEntity().getPlanId() : null,
                postEntity.getCreatedAt(),
                postEntity.getUpdatedAt()
        );

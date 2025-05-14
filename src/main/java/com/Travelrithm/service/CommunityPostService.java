@@ -30,7 +30,7 @@ public class CommunityPostService {
         UserEntity userEntity = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 유자가 존재하지 않습니다"));
         PlanEntity planEntity = null;
-        if(postRequestDto.isTravelPlan()) {
+        if(postRequestDto.isTravelPlan()&&!(postRequestDto.planId()==null)) {
             planEntity = planRepository.findById(postRequestDto.planId())
                     .orElseThrow(() -> new IllegalArgumentException("해당 플랜이 존재하지 않습니다"));
         }
