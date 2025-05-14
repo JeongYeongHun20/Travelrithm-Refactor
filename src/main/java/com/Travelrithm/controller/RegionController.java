@@ -1,14 +1,11 @@
 package com.Travelrithm.controller;
 
 
-import com.Travelrithm.dto.RegionCountDto;
+import com.Travelrithm.dto.RegionDto;
 import com.Travelrithm.service.RegionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -20,9 +17,21 @@ public class RegionController {
 
     private final RegionService regionService;
 
-    @GetMapping
-    public ResponseEntity<List<RegionCountDto>> getRegionRank() {
+    @GetMapping("/rank")
+    public ResponseEntity<List<RegionDto>> getRegionRank() {
         return ResponseEntity.ok(regionService.getCountRegion());
 
     }
+
+    @GetMapping("/{regionId}")
+    public ResponseEntity<RegionDto> getRegion(@PathVariable(name = "regionId") Integer regionId) {
+        return ResponseEntity.ok(regionService.getRegion(regionId));
+    }
+    @GetMapping("/regions")
+    public ResponseEntity<List<RegionDto>> getRegions() {
+        return ResponseEntity.ok(regionService.getRegions());
+    }
+
+
+
 }
