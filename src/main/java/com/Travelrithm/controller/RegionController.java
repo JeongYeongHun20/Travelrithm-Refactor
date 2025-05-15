@@ -28,12 +28,18 @@ public class RegionController {
     public ResponseEntity<RegionDto> getRegion(@PathVariable(name = "regionId") Integer regionId) {
         return ResponseEntity.ok(regionService.getRegion(regionId));
     }
+
+    @GetMapping("/name/{regionName}")
+    public ResponseEntity<RegionDto> getRegionByName(@PathVariable String regionName) {
+        return ResponseEntity.ok(regionService.getRegionByName(regionName));
+    }
+
     @GetMapping("/regions")
     public ResponseEntity<List<RegionDto>> getRegions() {
         return ResponseEntity.ok(regionService.getRegions());
     }
 
-    @GetMapping("/simple") // name/context/image 만 넘김
+    @GetMapping("/simple") // name/context/image/code 넘김
     public ResponseEntity<List<RegionResponseDto>> getSimpleRegions() {
         return ResponseEntity.ok(regionService.getSimpleRegions());
     }

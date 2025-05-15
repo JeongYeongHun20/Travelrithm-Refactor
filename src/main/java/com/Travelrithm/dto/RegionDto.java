@@ -7,7 +7,8 @@ public record RegionDto(
         String regionName,
         String context,
         Long planCount,
-        String thumbnailImageUrl
+        String thumbnailImageUrl,
+        String code
 ) {
     public RegionDto(RegionEntity regionEntity) {
         this(
@@ -15,7 +16,8 @@ public record RegionDto(
                 regionEntity.getName(),
                 regionEntity.getContext(),
                 0L,
-                regionEntity.getThumbnailImageUrl()
+                regionEntity.getThumbnailImageUrl(),
+                regionEntity.getCode()
         );
     }
 
