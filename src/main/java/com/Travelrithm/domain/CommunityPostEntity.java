@@ -32,7 +32,7 @@ public class CommunityPostEntity {
 
     private String postContent;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "plan_id")
     private PlanEntity planEntity;
 
