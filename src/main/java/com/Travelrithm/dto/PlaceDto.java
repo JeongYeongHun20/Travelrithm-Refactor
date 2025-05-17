@@ -2,6 +2,8 @@ package com.Travelrithm.dto;
 
 
 
+import com.Travelrithm.domain.PlaceEntity;
+
 import java.math.BigDecimal;
 
 
@@ -15,4 +17,18 @@ public record PlaceDto(
         Integer day,
         Integer sequence,
         String category
-) {}
+) {
+    public PlaceDto(PlaceEntity entity) {
+        this(
+                entity.getPlaceId(),
+                entity.getPlaceName(),
+                entity.getPlaceAddress(),
+                entity.getLat(),
+                entity.getLng(),
+                entity.getMemo(),
+                entity.getDay(),
+                entity.getSequence(),
+                entity.getCategory()
+        );
+    }
+}
