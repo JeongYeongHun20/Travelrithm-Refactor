@@ -4,6 +4,7 @@ package com.Travelrithm.service;
 import com.Travelrithm.domain.SocialType;
 import com.Travelrithm.domain.UserEntity;
 import com.Travelrithm.dto.KakaoUserResponseDto;
+import com.Travelrithm.dto.NaverUserResponseDto;
 import com.Travelrithm.dto.UserRequestDto;
 import com.Travelrithm.dto.UserResponseDto;
 import com.Travelrithm.repository.UserRepository;
@@ -34,6 +35,24 @@ public class UserService {
                 .thumbnailImageUrl(kakaoUserInfo.kakao_account().profile().thumbnail_image_url())
                 .nickname(kakaoUserInfo.kakao_account().profile().nickname())
                 .build();
+        validateDuplicateEmail(userEntity);
+        userRepository.save(userEntity);
+
+        return new UserResponseDto(userEntity);
+    }
+
+    public UserResponseDto createUser(NaverUserResponseDto naverUserInfo) {
+        Long socialId = Long.valueOf(naverUserInfo.response().id());
+
+        UserEntity userEntity = UserEntity.builder()
+                .socialId(socialId)
+                .socialType(SocialType.naver)
+                .name(naverUserInfo.response().name())
+                .email(naverUserInfo.response().email())
+                .password(bCryptPasswordEncoder.encode(UUID.randomUUID().toString()))
+                .nickname(naverUserInfo.response().nickname())
+                .build();
+
         validateDuplicateEmail(userEntity);
         userRepository.save(userEntity);
 
