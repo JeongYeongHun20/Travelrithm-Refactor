@@ -27,8 +27,8 @@ public class RegionService {
         return new RegionDto(regionEntity);
     }
 
-    public RegionDto getRegionByName(String regionName) {
-        RegionEntity region = regionRepository.findByName(regionName)
+    public RegionDto getRegionByName(String name) {
+        RegionEntity region = regionRepository.findByName(name)
                 .orElseThrow(() -> new IllegalArgumentException("해당 지역이 존재하지 않습니다."));
         return new RegionDto(region);
     }
@@ -45,5 +45,6 @@ public class RegionService {
                 .map(RegionResponseDto::new)
                 .toList();
     }
+
 }
 

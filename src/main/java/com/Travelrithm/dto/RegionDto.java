@@ -4,7 +4,7 @@ import com.Travelrithm.domain.RegionEntity;
 
 public record RegionDto(
         Integer regionId,
-        String regionName,
+        String name,
         String context,
         Long planCount,
         String thumbnailImageUrl,
