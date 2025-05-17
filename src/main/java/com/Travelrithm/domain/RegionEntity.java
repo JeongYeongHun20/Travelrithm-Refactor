@@ -23,5 +23,6 @@ public class RegionEntity {
     @Column(columnDefinition = "TEXT")
     private String context;
     private String thumbnailImageUrl;
+    private String code;
 
 }

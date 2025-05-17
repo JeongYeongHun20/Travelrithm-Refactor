@@ -2,23 +2,18 @@ package com.Travelrithm.dto;
 
 import com.Travelrithm.domain.RegionEntity;
 
-public record RegionDto(
-        Integer regionId,
+public record RegionResponseDto(
         String regionName,
         String context,
-        Long planCount,
         String thumbnailImageUrl,
         String code
 ) {
-    public RegionDto(RegionEntity regionEntity) {
+    public RegionResponseDto(RegionEntity regionEntity) {
         this(
-                regionEntity.getRegionId(),
                 regionEntity.getName(),
                 regionEntity.getContext(),
-                0L,
                 regionEntity.getThumbnailImageUrl(),
                 regionEntity.getCode()
         );
     }
-
 }

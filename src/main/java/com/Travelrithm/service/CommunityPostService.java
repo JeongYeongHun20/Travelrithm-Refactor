@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,13 +24,16 @@ import java.util.stream.Collectors;
 @Slf4j
 public class CommunityPostService {
 
+
     private final CommunityPostRepository postRepository;
     private final UserRepository userRepository;
     private final PlanRepository planRepository;
+    private final CommunityPostRepository communityPostRepository;
+
 
     public CommunityPostResponseDto createPost(Integer userId, CommunityPostRequestDto postRequestDto) {
         UserEntity userEntity = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 유자가 존재하지 않습니다"));
+                .orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다"));
         PlanEntity planEntity = null;
         if(postRequestDto.isTravelPlan()&&!(postRequestDto.planId()==null)) {
             planEntity = planRepository.findById(postRequestDto.planId())
@@ -71,5 +76,19 @@ public class CommunityPostService {
 
     public void deletePost(Integer postId) {
         postRepository.deleteById(postId);
+    }
+
+    public List<CommunityPostResponseDto> getPlanPosts(int page) {
+        Page<CommunityPostEntity> postPage = communityPostRepository.findAllByIsTravelPlanTrue(PageRequest.of(page, 10));
+        return postPage.stream()
+                .map(CommunityPostResponseDto::new)
+                .toList();
+    }
+
+    public List<CommunityPostResponseDto> getFreePosts(int page) {
+        Page<CommunityPostEntity> postPage = communityPostRepository.findAllByIsTravelPlanFalse(PageRequest.of(page, 10));
+        return postPage.stream()
+                .map(CommunityPostResponseDto::new)
+                .toList();
     }
 }

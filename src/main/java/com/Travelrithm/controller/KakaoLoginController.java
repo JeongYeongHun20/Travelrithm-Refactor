@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -32,11 +33,14 @@ public class KakaoLoginController {
     }
 
     @GetMapping("/callback")
-    public ResponseEntity<UserResponseDto> callback(@RequestParam("code") String code){
+    public RedirectView callback(@RequestParam("code") String code){
         String accessToken = kakaoLoginService.getAccessToken(code);
         KakaoUserResponseDto userInfo = kakaoLoginService.getUserInfo(accessToken);
         UserResponseDto userDto = userService.createUser(userInfo);
-        return ResponseEntity.ok(userDto);
+        String redirectUrl = "http://localhost:3000/Main?token=" + "jwtToken";
+
+        return new RedirectView(redirectUrl);
+//        return ResponseEntity.ok(userDto);
     }
 
 

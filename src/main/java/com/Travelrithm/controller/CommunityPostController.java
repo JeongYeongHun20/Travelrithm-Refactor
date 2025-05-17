@@ -23,6 +23,7 @@ public class CommunityPostController {
 
     private final CommunityPostService postService;
     private final ScrapService scrapService;
+    private final CommunityPostService communityPostService;
 
     @PostMapping("/createPost")
     public CommunityPostResponseDto createPost(@AuthenticationPrincipal CustomUserDetails userDetails,@RequestBody CommunityPostRequestDto request) {
@@ -64,5 +65,15 @@ public class CommunityPostController {
 
         return ResponseEntity.noContent().build();
 
+    }
+
+    @GetMapping("/plan")
+    public ResponseEntity<List<CommunityPostResponseDto>> getPlanPosts(@RequestParam(defaultValue = "0") int page) {
+        return ResponseEntity.ok(communityPostService.getPlanPosts(page));
+    }
+
+    @GetMapping("/free")
+    public ResponseEntity<List<CommunityPostResponseDto>> getFreePosts(@RequestParam(defaultValue = "0") int page) {
+        return ResponseEntity.ok(communityPostService.getFreePosts(page));
     }
 }
