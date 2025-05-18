@@ -30,8 +30,9 @@ public class RegionController {
     }
 
     @GetMapping("/name/{regionName}")
-    public ResponseEntity<RegionDto> getRegionByName(@PathVariable String regionName) {
-        return ResponseEntity.ok(regionService.getRegionByName(regionName));
+    public ResponseEntity<List<RegionDto>> getRegionByName(@PathVariable String regionName) {
+        List<RegionDto> regionsDtos = regionService.getRegionByName(regionName);
+        return ResponseEntity.ok(regionsDtos);
     }
 
     @GetMapping("/regions")

@@ -7,8 +7,9 @@ import com.Travelrithm.repository.PlanRepository;
 import com.Travelrithm.repository.RegionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
+import java.util.stream.Stream;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,10 +28,14 @@ public class RegionService {
         return new RegionDto(regionEntity);
     }
 
-    public RegionDto getRegionByName(String name) {
-        RegionEntity region = regionRepository.findByName(name)
-                .orElseThrow(() -> new IllegalArgumentException("해당 지역이 존재하지 않습니다."));
-        return new RegionDto(region);
+    public List<RegionDto> getRegionByName(String name) {
+        List<RegionEntity> regions = regionRepository.findByNameContaining(name);
+        if (regions.isEmpty()) {
+            throw new IllegalArgumentException("해당 지역이 존재하지 않습니다.");
+        }
+        return regions.stream()
+                .map(RegionDto ::new)
+                .collect(Collectors.toList());
     }
 
     public List<RegionDto> getRegions() {
