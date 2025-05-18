@@ -19,7 +19,11 @@ public record CommunityPostResponseDto(
         String nickname,
         PlanResponseDto plan,
         List<PlaceDto> places,
-        PlanResponseDto popularPlan
+        PlanResponseDto popularPlan,
+        Integer viewCount,
+        Integer scrapCount,
+        Integer commentCount,
+        String regionName
 ) {
     /**
      * 정적 팩토리 메서드: CommunityPostEntity → CommunityPostResponseDto 변환
@@ -53,7 +57,12 @@ public record CommunityPostResponseDto(
                 post.getUserEntity().getNickname(),
                 planDto,
                 places,
-                popularPlanDto
+                popularPlanDto,
+                post.getViewCount(),
+                post.getScrapEntities().size(),
+                post.getCommentEntities().size(),
+                (plan != null && plan.getRegionEntity() != null) ? plan.getRegionEntity().getName() : null
+
         );
     }
 }

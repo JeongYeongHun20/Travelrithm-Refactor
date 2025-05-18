@@ -20,7 +20,7 @@ public class CommunityCommentResponseDto {
 
     public CommunityCommentResponseDto(CommunityCommentEntity entity) {
         this.commentId = entity.getCommentId();
-        this.postId = entity.getPostId();
+        this.postId = entity.getPostEntity().getPostId();
         this.userId = entity.getUserId();
         this.commentContent = entity.getCommentContent();
         this.createdAt = entity.getCreatedAt();

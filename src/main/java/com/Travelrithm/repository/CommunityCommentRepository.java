@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface CommunityCommentRepository extends JpaRepository<CommunityCommentEntity, Integer> {
-    List<CommunityCommentEntity> findByPostId(Integer postId);
+    List<CommunityCommentEntity> findByPostEntity_PostId(Integer postId);
+
 }
 

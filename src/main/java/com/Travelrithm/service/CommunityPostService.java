@@ -60,6 +60,11 @@ public class CommunityPostService {
     public CommunityPostResponseDto getPost(Integer postId) {
         CommunityPostEntity post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다"));
+
+        if (!post.getIsTravelPlan()) {
+            post.setViewCount(post.getViewCount() + 1);
+        }
+
         return CommunityPostResponseDto.fromEntity(post);
     }
 
@@ -115,7 +120,11 @@ public class CommunityPostService {
                     post.getUserEntity().getNickname(),
                     planDto,
                     places,
-                    popularDto
+                    popularDto,
+                    post.getViewCount(),
+                    post.getScrapEntities().size(),
+                    post.getCommentEntities().size(),
+                    (plan.getRegionEntity() != null) ? plan.getRegionEntity().getName() : null
             );
         }).filter(dto -> dto != null).toList();
     }
