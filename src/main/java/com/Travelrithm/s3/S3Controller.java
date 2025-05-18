@@ -16,8 +16,8 @@ public class S3Controller {
     private final S3Service s3Service;
 
     @GetMapping("/upload-url")
-        public Map<String, String> getUploadUrl(@RequestParam String filename) {
-        return s3Service.generatePreSignedPutUrl(filename);
+        public Map<String, String> getUploadUrl(@RequestParam String filename, @RequestParam String contentType) {
+        return s3Service.generatePreSignedPutUrl(filename, contentType);
     }
 
     @GetMapping("/download-url")
