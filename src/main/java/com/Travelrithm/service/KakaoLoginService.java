@@ -57,7 +57,7 @@ public class KakaoLoginService {
                 .bodyToMono(KakaoTokenResponseDto.class)
                 .block();
             if(kakaoTokenResponseDto.access_token()==null)
-                log.info("-----------token null-----------");
+                log.info("-----------kakao token null-----------");
             return kakaoTokenResponseDto.access_token();
 
     }
