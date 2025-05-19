@@ -137,5 +137,13 @@ public class CommunityPostService {
                 .map(CommunityPostResponseDto::fromEntity)
                 .toList();
     }
+
+    @Transactional
+    public void increaseViewCount(Integer postId) {
+        CommunityPostEntity post = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("게시물을 찾을 수 없습니다."));
+
+        post.increaseViewCount();
+    }
 }
 

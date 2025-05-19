@@ -53,6 +53,10 @@ public class CommunityPostEntity {
     @Column(nullable = false)
     private Integer viewCount = 0;
 
+    public void increaseViewCount(){
+        this.viewCount++;
+    }
+
     public void update(CommunityPostRequestDto requestDto, PlanEntity planEntity) {
         this.title = requestDto.title();
         this.postContent = requestDto.postContent();

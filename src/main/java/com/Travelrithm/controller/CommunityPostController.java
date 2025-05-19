@@ -76,4 +76,10 @@ public class CommunityPostController {
     public ResponseEntity<List<CommunityPostResponseDto>> getFreePosts(@RequestParam(defaultValue = "0") int page) {
         return ResponseEntity.ok(communityPostService.getFreePosts(page));
     }
+
+    @PatchMapping("/view/{postId}")
+    public ResponseEntity<Void> viewPost(@PathVariable(name = "postId") Integer postId) {
+        postService.increaseViewCount(postId);
+        return ResponseEntity.noContent().build();
+    }
 }
