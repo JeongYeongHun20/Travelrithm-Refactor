@@ -1,26 +1,27 @@
 package com.Travelrithm.controller;
 
 import com.Travelrithm.dto.NaverUserResponseDto;
+import com.Travelrithm.dto.UserResponseDto;
 import com.Travelrithm.service.NaverLoginService;
+import com.Travelrithm.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
+
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @RequiredArgsConstructor
-@Controller
+@RestController
 @RequestMapping("/api/naver")
 @CrossOrigin(origins = "http://localhost:3000")
 public class NaverLoginController {
     private final NaverLoginService naverLoginService;
+    private final UserService userService;
 
     @GetMapping("/login")
-    @ResponseBody
     public ResponseEntity<Map<String, String>> loginPage() {
         String naverLocation = naverLoginService.buildAuthorizeUrl();
         Map<String, String> response = new HashMap<>();
@@ -28,13 +29,15 @@ public class NaverLoginController {
         return ResponseEntity.ok(response);
     }
 
-    @ResponseBody
     @GetMapping("/callback")
-    public ResponseEntity<?> callback(@RequestParam("code") String code,
+    public RedirectView callback(@RequestParam("code") String code,
                                       @RequestParam("state") String state) {
         String accessToken = naverLoginService.getAccessToken(code);
         NaverUserResponseDto userInfo = naverLoginService.getUserInfo(accessToken);
-        return new ResponseEntity<>(userInfo, HttpStatus.OK);
+        UserResponseDto userDto = userService.createUser(userInfo);
+        String redirectUrl = "http://localhost:3000/Main?token=" + "jwtToken";
+
+        return new RedirectView(redirectUrl);
     }
 }
 

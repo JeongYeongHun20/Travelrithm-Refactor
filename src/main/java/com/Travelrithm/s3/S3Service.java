@@ -20,14 +20,14 @@ public class S3Service {
     private final String bucketName = "travelrithm-bucket";
     private final S3Presigner preSigner;
 
-    public Map<String,String> generatePreSignedPutUrl(String originalFilename) {
+    public Map<String,String> generatePreSignedPutUrl(String originalFilename, String contentType) {
         String key = "upload/" + UUID.randomUUID() + "_" + originalFilename;
 
         try{
             PutObjectRequest objectRequest = PutObjectRequest.builder()
                     .bucket(bucketName)
                     .key(key)
-                    .contentType("image/jpeg")
+                    .contentType(contentType)
                     .build();
 
 

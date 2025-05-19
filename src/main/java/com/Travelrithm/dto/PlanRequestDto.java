@@ -2,7 +2,10 @@ package com.Travelrithm.dto;
 
 
 
+import com.Travelrithm.domain.CompanionType;
 import com.Travelrithm.domain.TransportMode;
+import com.Travelrithm.domain.TravelPurpose;
+import com.Travelrithm.domain.TravelTaste;
 
 
 import java.time.LocalDate;
@@ -16,5 +19,9 @@ public record PlanRequestDto(
         LocalDate endDate,
         LocalTime startTime,
         TransportMode transportMode,
-        List<PlaceDto> placesDto
+        List<PlaceDto> placesDto,
+        Integer companionCount,
+        CompanionType companionType,
+        TravelTaste travelTaste,
+        TravelPurpose travelPurpose
 ) {}

@@ -40,9 +40,19 @@ public class PlanEntity {
     private LocalDate startDate;
     private LocalDate endDate;
     private LocalTime startTime;
+    private Integer companionCount;
+
     @Enumerated(EnumType.STRING)
     private TransportMode transportMode;
 
+    @Enumerated(EnumType.STRING)
+    private CompanionType companionType;
+
+    @Enumerated(EnumType.STRING)
+    private TravelPurpose travelPurpose;
+
+    @Enumerated(EnumType.STRING)
+    private TravelTaste travelTaste;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -61,6 +71,10 @@ public class PlanEntity {
         this.transportMode = planDto.transportMode();
         this.startTime = planDto.startTime();
         this.updatedAt = LocalDateTime.now();
+        this.companionCount = planDto.companionCount();
+        this.companionType = planDto.companionType();
+        this.travelPurpose = planDto.travelPurpose();
+        this.travelTaste = planDto.travelTaste();
 
     }
 

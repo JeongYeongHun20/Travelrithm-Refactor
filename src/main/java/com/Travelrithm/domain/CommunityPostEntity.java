@@ -11,6 +11,7 @@ import java.util.List;
 
 @Entity
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -32,7 +33,10 @@ public class CommunityPostEntity {
 
     private String postContent;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "postEntity", cascade = CascadeType.ALL)
+    private List<CommunityCommentEntity> commentEntities;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "plan_id")
     private PlanEntity planEntity;
 
@@ -44,6 +48,14 @@ public class CommunityPostEntity {
     private LocalDateTime updatedAt;
 
     private Boolean isTravelPlan;
+
+    @Builder.Default
+    @Column(nullable = false)
+    private Integer viewCount = 0;
+
+    public void increaseViewCount(){
+        this.viewCount++;
+    }
 
     public void update(CommunityPostRequestDto requestDto, PlanEntity planEntity) {
         this.title = requestDto.title();

@@ -20,9 +20,12 @@ public class CommunityCommentEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer commentId;
 
-    private Integer postId;
-
     private Integer userId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "post_id")
+    private CommunityPostEntity postEntity;
+
 
     @Column(name = "comment_content", columnDefinition = "TEXT")
     private String commentContent;
