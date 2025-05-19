@@ -12,14 +12,24 @@ public record PlanResponseDto(
         Integer planId,
         Integer regionId,
         LocalDate startDate,
-        LocalDate endDate
+        LocalDate endDate,
+        Integer companionCount,
+        String companionType,
+        String travelTaste,
+        String travelPurpose,
+        String transportMode
 ) {
     public PlanResponseDto(PlanEntity planEntity){
         this(
                 planEntity.getPlanId(),
                 planEntity.getRegionEntity().getRegionId(),
                 planEntity.getStartDate(),
-                planEntity.getEndDate()
+                planEntity.getEndDate(),
+                planEntity.getCompanionCount(),
+                planEntity.getCompanionType().name(),
+                planEntity.getTravelTaste().name(),
+                planEntity.getTravelPurpose().name(),
+                planEntity.getTransportMode().name()
         );
     }
 }
