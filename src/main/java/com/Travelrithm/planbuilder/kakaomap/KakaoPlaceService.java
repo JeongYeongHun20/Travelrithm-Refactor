@@ -1,16 +1,17 @@
 package com.Travelrithm.planbuilder.kakaomap;
 
 
-import com.Travelrithm.dto.KakaoUserResponseDto;
-import com.Travelrithm.planbuilder.dto.KakaoPlaceRequestDto;
-import com.Travelrithm.planbuilder.dto.KakaoPlaceResopnseDto;
+import com.Travelrithm.planbuilder.dto.kakao.KakaoPlaceRequestDto;
+import com.Travelrithm.planbuilder.dto.kakao.KakaoPlaceResopnseDto;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 
 @Service
@@ -38,6 +39,8 @@ public class KakaoPlaceService {
                         .build()
                 )
                 .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, clientResponse -> Mono.error(new RuntimeException("Client Error")))
+                .onStatus(HttpStatusCode::is5xxServerError, clientResponse -> Mono.error(new RuntimeException("Server Error")))
                 .bodyToMono(KakaoPlaceResopnseDto.class)
                 .block();
     }

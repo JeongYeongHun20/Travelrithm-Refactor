@@ -1,4 +1,4 @@
-package com.Travelrithm.planbuilder.dto;
+package com.Travelrithm.planbuilder.dto.kakao;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
