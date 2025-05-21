@@ -2,8 +2,10 @@ package com.Travelrithm.service;
 
 import com.Travelrithm.domain.CommunityPostEntity;
 
+import com.Travelrithm.domain.RegionEntity;
 import com.Travelrithm.domain.ScrapEntity;
 import com.Travelrithm.domain.UserEntity;
+import com.Travelrithm.dto.RegionDto;
 import com.Travelrithm.dto.ScrapDto;
 import com.Travelrithm.repository.CommunityPostRepository;
 
@@ -14,6 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -45,6 +49,14 @@ public class ScrapService {
         scrapRepository.delete(scrap);
     }
 
+    public List<ScrapDto> getMyScrap(Integer userId) {
+        UserEntity userEntity = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("유저 존재하지 않음"));
+        List<ScrapEntity> scrapEntity = scrapRepository.findByUserEntity(userEntity);
+        return scrapEntity.stream()
+                .map(ScrapDto ::new)
+                .collect(Collectors.toList());
+    }
 
 
 }

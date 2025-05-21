@@ -60,6 +60,11 @@ public class CommunityPostController {
         return scrapService.createScrap(userId, postId);
 
     }
+
+    @GetMapping("/myScrap")
+    public ResponseEntity<List<ScrapDto>> getMyScrap(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ResponseEntity.ok(scrapService.getMyScrap(userDetails.getUserId()));
+    }
     @DeleteMapping("/{postId}/scrap")
     public ResponseEntity<Void> unToggleScrap(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable(name = "postId") Integer postId) {
         Integer userId=userDetails.getUserId();
