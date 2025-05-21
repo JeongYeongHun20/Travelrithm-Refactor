@@ -5,6 +5,7 @@ import com.Travelrithm.dto.CommunityPostResponseDto;
 import com.Travelrithm.dto.ScrapDto;
 import com.Travelrithm.security.jwt.CustomUserDetails;
 import com.Travelrithm.service.CommunityPostService;
+import com.Travelrithm.service.PlanService;
 import com.Travelrithm.service.ScrapService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +25,7 @@ public class CommunityPostController {
     private final CommunityPostService postService;
     private final ScrapService scrapService;
     private final CommunityPostService communityPostService;
+
 
     @PostMapping("/createPost")
     public CommunityPostResponseDto createPost(@AuthenticationPrincipal CustomUserDetails userDetails,@RequestBody CommunityPostRequestDto request) {
@@ -58,6 +60,11 @@ public class CommunityPostController {
         return scrapService.createScrap(userId, postId);
 
     }
+
+    @GetMapping("/myScrap")
+    public ResponseEntity<List<ScrapDto>> getMyScrap(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ResponseEntity.ok(scrapService.getMyScrap(userDetails.getUserId()));
+    }
     @DeleteMapping("/{postId}/scrap")
     public ResponseEntity<Void> unToggleScrap(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable(name = "postId") Integer postId) {
         Integer userId=userDetails.getUserId();
@@ -81,5 +88,11 @@ public class CommunityPostController {
     public ResponseEntity<Void> viewPost(@PathVariable(name = "postId") Integer postId) {
         postService.increaseViewCount(postId);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/myPlans")
+    public ResponseEntity<List<CommunityPostResponseDto>> getMyPlanPosts(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        Integer userId = userDetails.getUserId();
+        return ResponseEntity.ok(communityPostService.getMyPlanPosts(userId));
     }
 }

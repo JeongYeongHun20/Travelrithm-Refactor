@@ -145,5 +145,13 @@ public class CommunityPostService {
 
         post.increaseViewCount();
     }
+
+    @Transactional(readOnly = true)
+    public List<CommunityPostResponseDto> getMyPlanPosts(Integer userId) {
+        return postRepository.findAllByUserEntity_UserIdAndIsTravelPlanTrue(userId).stream()
+                .map(CommunityPostResponseDto::fromEntity)
+                .toList();
+    }
+
 }
 
