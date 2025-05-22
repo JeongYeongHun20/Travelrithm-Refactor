@@ -27,19 +27,27 @@ public class ScrapService {
     private final CommunityPostRepository communityPostRepository;
     private final ScrapRepository scrapRepository;
 
+    @Transactional
     public ScrapDto createScrap(Integer userId, Integer postId) {
         UserEntity userEntity = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("유저 존재하지 않음"));
         CommunityPostEntity postEntity = communityPostRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("게시물 존재하지 않음"));
-        ScrapEntity scrapEntity = ScrapEntity.builder()
-                .userEntity(userEntity)
-                .postEntity(postEntity)
-                .createdAt(LocalDateTime.now())
-                .build();
+        ScrapEntity existing = scrapRepository.findByUserEntityAndPostEntity(userEntity, postEntity);
 
-        return new ScrapDto(scrapRepository.save(scrapEntity));
+        if (existing != null) {
+            scrapRepository.delete(existing);
+            return null; // scrap 있으면 기존 거 삭제
+        } else {
+            ScrapEntity newScrap = ScrapEntity.builder()
+                    .userEntity(userEntity)
+                    .postEntity(postEntity)
+                    .createdAt(LocalDateTime.now())
+                    .build();
+            return new ScrapDto(scrapRepository.save(newScrap)); // 없으면 생성
+        }
     }
+
     public void removeScrap(Integer userId, Integer postId) {
         UserEntity userEntity = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("유저 존재하지 않음"));
@@ -57,6 +65,7 @@ public class ScrapService {
                 .map(ScrapDto ::new)
                 .collect(Collectors.toList());
     }
+
 
 
 }
