@@ -2,8 +2,8 @@ package com.Travelrithm.planbuilder.kakaomap;
 
 
 
-import com.Travelrithm.planbuilder.dto.kakao.KakaoPlaceRequestDto;
-import com.Travelrithm.planbuilder.dto.kakao.KakaoPlaceResopnseDto;
+import com.Travelrithm.planbuilder.dto.kakao.place.KakaoPlaceRequestDto;
+import com.Travelrithm.planbuilder.dto.kakao.place.KakaoPlaceResopnseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

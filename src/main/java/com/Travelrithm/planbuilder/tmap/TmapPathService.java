@@ -32,7 +32,7 @@ public class TmapPathService {
                 .defaultHeader("appKey", appKey)
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, HttpHeaderValues.APPLICATION_JSON.toString())
                 .build();
-        System.out.println(tmapPathRequestDto.toString());
+
         return webClient.post()
                 .bodyValue(tmapPathRequestDto)
                 .retrieve()
