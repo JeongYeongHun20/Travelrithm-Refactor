@@ -37,7 +37,8 @@ public class CommunityPostEntity {
     private String postContent;
 
     @OneToMany(mappedBy = "postEntity", cascade = CascadeType.ALL)
-    private List<CommunityCommentEntity> commentEntities;
+    @Builder.Default
+    private List<CommunityCommentEntity> commentEntities = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "plan_id")

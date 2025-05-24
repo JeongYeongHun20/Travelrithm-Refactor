@@ -11,7 +11,8 @@ public record FestivalResponseDto(
         String location,
         String description,
         BigDecimal latitude,
-        BigDecimal longitude
+        BigDecimal longitude,
+        String address
 ) {
     public static FestivalResponseDto fromEntity(FestivalEntity e) {
         return new FestivalResponseDto(
@@ -21,7 +22,8 @@ public record FestivalResponseDto(
                 e.getLocation(),
                 e.getDescription(),
                 e.getLatitude(),
-                e.getLongitude()
+                e.getLongitude(),
+                e.getAddress()
         );
     }
 }
