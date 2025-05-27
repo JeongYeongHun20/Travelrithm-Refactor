@@ -57,7 +57,8 @@ public record DestinationResponseDto(
                     int distance,
                     int duration,
                     int traffic_speed,
-                    int traffic_state
+                    int traffic_state,
+                    Double[] vertexes
             ) {}
         }
 
