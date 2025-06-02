@@ -1,4 +1,138 @@
 package com.Travelrithm.planbuilder;
 
+import com.Travelrithm.planbuilder.dto.front.DayMap;
+import com.Travelrithm.planbuilder.dto.front.EditPlanner;
+import com.Travelrithm.planbuilder.dto.front.Location;
+import com.Travelrithm.planbuilder.dto.kakao.mobility.DestinationResponseDto;
+import com.Travelrithm.planbuilder.dto.kakao.mobility.DestinationRequestDto;
+import com.Travelrithm.planbuilder.kakaomobility.KakaoMobilityService;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
+import java.util.*;
+import java.util.stream.IntStream;
+
+@Service
+@RequiredArgsConstructor
+@Slf4j
 public class PlanGenerator {
+
+    private Double avgLat;
+    private Double avgLon;
+    private Integer avgRadius=5000;
+    private EditPlanner editPlanner;
+
+    private final KakaoMobilityService kakaoMobilityService;
+
+    public Map<String, List<DayMap.Content>> generatePlan(EditPlanner editPlanner) {
+        this.editPlanner = editPlanner;
+        List<DayMap> dayMapList = editPlanner.dayMapList();
+        List<Location> allLocations = new ArrayList<>();
+        for (DayMap dayMap : dayMapList) {
+            for (DayMap.Content content : dayMap.content()) {
+                allLocations.add(content.locations());
+            }
+        }
+        Map<String, Double> avgResult = calLocation(allLocations);
+        Double avgLat = avgResult.get("avgLat");
+        Double avgLon = avgResult.get("avgLon");
+        Double avgRadius = avgResult.get("avgRadius");
+        avgRadius=avgRadius>5000?avgRadius:5000; //사용자가 선택한 장소가 없거나 몰려있을 경우 default값 설정
+
+        Map<String, List<DayMap.Content>> algorithmPath = greedyAlgorithm(dayMapList);
+        return algorithmPath;
+    }
+
+
+
+    public Map<String, Double> calLocation(List<Location> locations) {
+        if (locations == null || locations.isEmpty()) {
+            System.out.println("위치 정보가 없습니다.");
+            return null;
+        }
+
+        double sumLat = 0, sumLon = 0;
+        for (Location loc : locations) {
+            sumLat += loc.y();  // 위도
+            sumLon += loc.x();  // 경도
+        }
+        double avgLat = sumLat / locations.size();
+        double avgLon = sumLon / locations.size();
+
+        double totalDistance = 0;
+        for (Location loc : locations) {
+            totalDistance += plainDistance(avgLat, avgLon, loc.y(), loc.x());
+        }
+
+        double avgRadius = totalDistance / locations.size();
+
+        System.out.printf("중심점 위도: %.6f, 경도: %.6f\n", avgLat, avgLon);
+        System.out.printf("평균 반지름 (좌표 기준): %.6f\n", avgRadius);
+        Map<String, Double> calResult = new HashMap<>();
+        calResult.put("avgLat", avgLat);
+        calResult.put("avgLon", avgLon);
+        calResult.put("avgRadius", avgRadius);
+
+        return calResult;
+    }
+
+    public Map<String, List<DayMap.Content>> greedyAlgorithm(List<DayMap> dayMapList) {
+        Map<String, List<DayMap.Content>> result = new HashMap<>();
+
+        for (int dayIndex = 0; dayIndex < dayMapList.size(); dayIndex++) {
+            List<DayMap.Content> contents = dayMapList.get(dayIndex).content();
+            int size = contents.size();
+            double[][] path = new double[size][size];
+
+            for (int i = 0; i < size; i++) {
+                for (int j = 0; j < size; j++) {
+                    if (i == j) continue;
+
+                    Location origin = contents.get(i).locations();
+                    Location destination = contents.get(j).locations();
+
+                    String originStr = origin.x() + "," + origin.y();
+                    String destinationStr = destination.x() + "," + destination.y();
+
+                    DestinationResponseDto response = kakaoMobilityService.getPath(
+                            new DestinationRequestDto(originStr, destinationStr)
+                    );
+
+                    int distance = response.routes().getFirst().summary().distance();
+                    path[i][j] = distance;
+                }
+            }
+            Arrays.stream(path)
+                    .forEach(arr -> System.out.println(Arrays.toString(arr)));
+
+            int originIdx = 0;
+            List<Integer> sortedIndices = IntStream.range(0, size)
+                    .boxed()
+                    .sorted(Comparator.comparingDouble(i -> path[originIdx][i]))
+                    .toList();
+
+            List<DayMap.Content> sortedContent = sortedIndices.stream()
+                    .map(contents::get)
+                    .toList();
+
+            result.put("day" + dayIndex, sortedContent);
+        }
+
+        return result;
+    }
+
+
+
+    private double plainDistance(double lat1, double lon1, double lat2, double lon2) {
+        final int R = 6371000; // 지구 반지름 (단위: m)
+        double dLat = Math.toRadians(lat2 - lat1);
+        double dLon = Math.toRadians(lon2 - lon1);
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+                * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c;
+    }
 }

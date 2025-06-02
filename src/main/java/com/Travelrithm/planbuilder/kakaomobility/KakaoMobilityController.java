@@ -3,8 +3,6 @@ package com.Travelrithm.planbuilder.kakaomobility;
 
 import com.Travelrithm.planbuilder.dto.kakao.mobility.DestinationRequestDto;
 import com.Travelrithm.planbuilder.dto.kakao.mobility.DestinationResponseDto;
-import com.Travelrithm.planbuilder.dto.kakao.mobility.DestinationsRequestDto;
-import com.Travelrithm.planbuilder.dto.kakao.mobility.DestinationsResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,9 +22,6 @@ public class KakaoMobilityController {
         return ResponseEntity.ok(kakaoMobilityService.getPath(destinationRequestDto));
     }
 
-    @PostMapping("/paths")
-    public ResponseEntity<DestinationsResponseDto> findPaths(@RequestBody DestinationsRequestDto destinationsRequestDto) {
-        return ResponseEntity.ok(kakaoMobilityService.getMultiplePath(destinationsRequestDto));
-    }
+
 
 }
