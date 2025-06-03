@@ -1,12 +1,16 @@
 package com.Travelrithm.planbuilder;
 
+import com.Travelrithm.domain.TransportMode;
 import com.Travelrithm.planbuilder.dto.front.DayMap;
 import com.Travelrithm.planbuilder.dto.front.EditPlanner;
 import com.Travelrithm.planbuilder.dto.front.Location;
 import com.Travelrithm.planbuilder.dto.kakao.mobility.DestinationResponseDto;
 import com.Travelrithm.planbuilder.dto.kakao.mobility.DestinationRequestDto;
+import com.Travelrithm.planbuilder.dto.publicdata.DataRequestDto;
+import com.Travelrithm.planbuilder.dto.publicdata.DataResponseDto;
 import com.Travelrithm.planbuilder.kakaomobility.KakaoMobilityService;
 
+import com.Travelrithm.planbuilder.publicdata.PublicService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -19,15 +23,22 @@ import java.util.stream.IntStream;
 @Slf4j
 public class PlanGenerator {
 
-    private Double avgLat;
-    private Double avgLon;
-    private Integer avgRadius=5000;
-    private EditPlanner editPlanner;
+    private String avgLat;
+    private String avgLon;
+    private Double avgRadius=5000.0;
+    private String travelDestination;
+    private String preference;
+    private TransportMode transportMode;
+    private Integer fatigue;
+    private Integer weight;
 
     private final KakaoMobilityService kakaoMobilityService;
+    private final PublicService publicService;
 
     public Map<String, List<DayMap.Content>> generatePlan(EditPlanner editPlanner) {
-        this.editPlanner = editPlanner;
+        this.travelDestination = editPlanner.travelDestination();
+        this.transportMode = editPlanner.transportMode();
+        this.preference = editPlanner.preference();
         List<DayMap> dayMapList = editPlanner.dayMapList();
         List<Location> allLocations = new ArrayList<>();
         for (DayMap dayMap : dayMapList) {
@@ -36,9 +47,9 @@ public class PlanGenerator {
             }
         }
         Map<String, Double> avgResult = calLocation(allLocations);
-        Double avgLat = avgResult.get("avgLat");
-        Double avgLon = avgResult.get("avgLon");
-        Double avgRadius = avgResult.get("avgRadius");
+        avgLat = String.valueOf(avgResult.get("avgLat"));
+        avgLon = String.valueOf(avgResult.get("avgLon"));
+        avgRadius = avgResult.get("avgRadius");
         avgRadius=avgRadius>5000?avgRadius:5000; //사용자가 선택한 장소가 없거나 몰려있을 경우 default값 설정
 
         Map<String, List<DayMap.Content>> algorithmPath = greedyAlgorithm(dayMapList);
@@ -84,6 +95,8 @@ public class PlanGenerator {
         for (int dayIndex = 0; dayIndex < dayMapList.size(); dayIndex++) {
             List<DayMap.Content> contents = dayMapList.get(dayIndex).content();
             int size = contents.size();
+            fatigue=-11;
+            weight=0;
             double[][] path = new double[size][size];
 
             for (int i = 0; i < size; i++) {
@@ -116,15 +129,40 @@ public class PlanGenerator {
             List<DayMap.Content> sortedContent = sortedIndices.stream()
                     .map(contents::get)
                     .toList();
-
+            sortedContent
+                    .forEach(this::calFatitgue);
             result.put("day" + dayIndex, sortedContent);
+
+
         }
 
         return result;
     }
 
+    private Map<String, String> translatePrefer(String preference) {
+        Map<String, String> map=new HashMap<>();
+        if (fatigue > -3 && fatigue < 3) {
+            if(preference.equals("자연"))
+                publicService.getCategory(new DataRequestDto(avgLon, avgLat, String.valueOf(avgRadius), "A0101"));
+        } else if (fatigue <= -3) {
+
+        } else {
+
+        }
 
 
+    }
+    private void calFatitgue(DayMap.Content content) {
+        weight+=1; //하나의 장소를 방문할 때마다 가중치가 1이 올라감, 피로도에 맞춰 장소를 무한으로 늘려도 일정량 이상이면 피로도가 양수값이 될 수밖에 없음
+        switch (content.category()) {
+            case "CT1", "AT4" -> fatigue += 3+weight;
+            case "FD6" -> fatigue += -1+weight;
+            case "CE7" -> fatigue += -2+weight;
+            default -> {
+                fatigue+=1+weight;
+            }
+        }
+    }
     private double plainDistance(double lat1, double lon1, double lat2, double lon2) {
         final int R = 6371000; // 지구 반지름 (단위: m)
         double dLat = Math.toRadians(lat2 - lat1);
