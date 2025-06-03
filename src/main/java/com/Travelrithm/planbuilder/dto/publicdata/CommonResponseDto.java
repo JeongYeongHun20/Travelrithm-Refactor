@@ -5,8 +5,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public record DataResponseDto(
-        Response response
+public record CommonResponseDto(
+       Response response
 ) {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(
@@ -14,24 +14,29 @@ public record DataResponseDto(
     ) {
         @JsonIgnoreProperties(ignoreUnknown = true)
         public record Body(
-                Items items,
-                int totalCount
-        ) {
+                Items items
+        ){
             @JsonIgnoreProperties(ignoreUnknown = true)
             public record Items(
                     List<Item> item
-            ) {
+
+            ){
                 @JsonIgnoreProperties(ignoreUnknown = true)
                 public record Item(
                         String contentid,
-                        String contenttypeid,
                         String title,
-                        String addr1,
-                        String addr2,
-                        String mapX,
-                        String mapY
-                ) {}
+                        String firstimage,
+                        String firstimage2,
+                        String mapx,
+                        String mapy,
+                        String overview
+                ){
+
+                }
             }
+
         }
     }
+
+
 }

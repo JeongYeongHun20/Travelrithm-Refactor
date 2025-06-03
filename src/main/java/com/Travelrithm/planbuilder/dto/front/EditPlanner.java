@@ -8,6 +8,7 @@ public record EditPlanner(
         List<DayMap> dayMapList,
         String travelDestination,
         String preference,
+        String fatigue,
         TransportMode transportMode
 ) {
 }

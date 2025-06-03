@@ -6,8 +6,12 @@ import com.Travelrithm.planbuilder.dto.front.EditPlanner;
 import com.Travelrithm.planbuilder.dto.front.Location;
 import com.Travelrithm.planbuilder.dto.kakao.mobility.DestinationResponseDto;
 import com.Travelrithm.planbuilder.dto.kakao.mobility.DestinationRequestDto;
+import com.Travelrithm.planbuilder.dto.kakao.mobility.WayPointResponseDto;
+import com.Travelrithm.planbuilder.dto.kakao.mobility.WaypointRequestDto;
+import com.Travelrithm.planbuilder.dto.publicdata.CommonResponseDto;
 import com.Travelrithm.planbuilder.dto.publicdata.DataRequestDto;
 import com.Travelrithm.planbuilder.dto.publicdata.DataResponseDto;
+import com.Travelrithm.planbuilder.dto.publicdata.TotalResponseDto;
 import com.Travelrithm.planbuilder.kakaomobility.KakaoMobilityService;
 
 import com.Travelrithm.planbuilder.publicdata.PublicService;
@@ -35,7 +39,7 @@ public class PlanGenerator {
     private final KakaoMobilityService kakaoMobilityService;
     private final PublicService publicService;
 
-    public Map<String, List<DayMap.Content>> generatePlan(EditPlanner editPlanner) {
+    public TotalResponseDto generatePlan(EditPlanner editPlanner) {
         this.travelDestination = editPlanner.travelDestination();
         this.transportMode = editPlanner.transportMode();
         this.preference = editPlanner.preference();
@@ -52,8 +56,7 @@ public class PlanGenerator {
         avgRadius = avgResult.get("avgRadius");
         avgRadius=avgRadius>5000?avgRadius:5000; //사용자가 선택한 장소가 없거나 몰려있을 경우 default값 설정
 
-        Map<String, List<DayMap.Content>> algorithmPath = greedyAlgorithm(dayMapList);
-        return algorithmPath;
+        return greedyAlgorithm(dayMapList);
     }
 
 
@@ -89,9 +92,10 @@ public class PlanGenerator {
         return calResult;
     }
 
-    public Map<String, List<DayMap.Content>> greedyAlgorithm(List<DayMap> dayMapList) {
+    public TotalResponseDto greedyAlgorithm(List<DayMap> dayMapList) {
         Map<String, List<DayMap.Content>> result = new HashMap<>();
-
+        List<CommonResponseDto> commonResponseDtos = new ArrayList<>();
+        List<WayPointResponseDto> wayPointResponseDtos = new ArrayList<>();
         for (int dayIndex = 0; dayIndex < dayMapList.size(); dayIndex++) {
             List<DayMap.Content> contents = dayMapList.get(dayIndex).content();
             int size = contents.size();
@@ -129,26 +133,33 @@ public class PlanGenerator {
             List<DayMap.Content> sortedContent = sortedIndices.stream()
                     .map(contents::get)
                     .toList();
+
+            Location originLocaiton = sortedContent.getFirst().locations();
+            List<Location> list = sortedContent.subList(1, sortedContent.size() - 1).stream().map(DayMap.Content::locations).toList();
+            Location destinationLocaiton = sortedContent.getLast().locations();
+
+            WaypointRequestDto waypointRequestDto = new WaypointRequestDto(originLocaiton, destinationLocaiton, list);
+            WayPointResponseDto paths = kakaoMobilityService.getPaths(waypointRequestDto);
+            wayPointResponseDtos.add(paths);
             sortedContent
                     .forEach(this::calFatitgue);
+
             result.put("day" + dayIndex, sortedContent);
-
-
+            commonResponseDtos = translatePrefer("");
         }
+        return new TotalResponseDto(commonResponseDtos, result, wayPointResponseDtos);
 
-        return result;
     }
 
-    private Map<String, String> translatePrefer(String preference) {
-        Map<String, String> map=new HashMap<>();
-        if (fatigue > -3 && fatigue < 3) {
-            if(preference.equals("자연"))
-                publicService.getCategory(new DataRequestDto(avgLon, avgLat, String.valueOf(avgRadius), "A0101"));
-        } else if (fatigue <= -3) {
-
-        } else {
-
-        }
+    private List<CommonResponseDto> translatePrefer(String preference) {
+        Map<String, List<String>> CATEGORY_MAP = Map.of(
+                "자연", List.of("A0101", "A0202"),
+                "문화", List.of("A0201", "A0206", "A0205"),
+                "액티비티", List.of("A0301","A0208","A0203"),
+                "휴식", List.of("A05020900")
+        );
+        log.info("getCategory start");
+        return publicService.getCategory(new DataRequestDto(avgLon, avgLat, String.valueOf(avgRadius), "A0202"));
 
 
     }

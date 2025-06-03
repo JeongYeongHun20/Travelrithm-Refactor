@@ -1,54 +1,90 @@
 package com.Travelrithm.planbuilder.publicdata;
 
 
+import com.Travelrithm.planbuilder.dto.publicdata.CommonResponseDto;
 import com.Travelrithm.planbuilder.dto.publicdata.DataRequestDto;
 import com.Travelrithm.planbuilder.dto.publicdata.DataResponseDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.HashMap;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PublicService {
 
-    @Value("${key.service_key}")
+    @Value("${data.service_key}")
     private String serviceKey;
     private final WebClient.Builder webClientBuilder;
+    private final RestTemplate restTemplate = new RestTemplate();
     private final String DATA_URL = "https://apis.data.go.kr/B551011/KorService2";
 
-    public void getCategory(DataRequestDto dataRequestDto) {
+    public List<CommonResponseDto> getCategory(DataRequestDto dataRequestDto) {
         String lclsSystm1 = dataRequestDto.category().substring(0, 3);
-        String lclsSystm2 = dataRequestDto.category().substring(3);
-        WebClient webClient = webClientBuilder
-                .baseUrl(DATA_URL)
-                .build();
-        DataResponseDto dataResponseDto = webClient.get()
-                .uri(uriBuilder -> uriBuilder
-                        .path("/locationBasedList2")
-                        .queryParam("MobileOs", "WEB")
-                        .queryParam("MobileApp", "Travelrithm")
-                        .queryParam("mapX", dataRequestDto.mapX())
-                        .queryParam("mapY", dataRequestDto.mapY())
-                        .queryParam("radius", dataRequestDto.radius())
-                        .queryParam("lclsSystm1", lclsSystm1)
-                        .queryParam("lclsSystm2", lclsSystm2)
-                        .queryParam("serviceKey", serviceKey)
-                        .build())
-                .retrieve()
-                .bodyToMono(DataResponseDto.class)
-                .block();
-        getCategoryComent(dataResponseDto);
-        getCategoryImage(dataResponseDto);
+        String lclsSystm2 = dataRequestDto.category();
+
+        log.info(lclsSystm1+lclsSystm2);
+        log.info("getCategory middle");
+        URI uri = UriComponentsBuilder.fromHttpUrl(DATA_URL)
+                .path("/locationBasedList2")
+                .queryParam("MobileOS", "WEB")
+                .queryParam("MobileApp", "Travelrithm")
+                .queryParam("_type", "json")
+                .queryParam("mapX", dataRequestDto.mapX())
+                .queryParam("mapY", dataRequestDto.mapY())
+                .queryParam("radius", dataRequestDto.radius())
+                .queryParam("cat1", lclsSystm1)
+                .queryParam("cat2", lclsSystm2)
+                .queryParam("serviceKey", serviceKey)
+                .build(true)
+                .toUri();
+        log.info(uri.toString());
+
+        DataResponseDto response = Optional.ofNullable(restTemplate.getForObject(uri, DataResponseDto.class))
+                .orElse(null);
+        if (response == null) return List.of(new CommonResponseDto(null));
+
+        log.info("getCategory end: "+response.toString());
+
+        return getCategoryCommon(response);
     }
 
-    public void getCategoryComent(DataResponseDto dataResponseDto) {
+    public List<CommonResponseDto> getCategoryCommon(DataResponseDto dataResponseDto) {
+        log.info("getCategoryCommon start");
+        List<DataResponseDto.Response.Body.Items.Item> items = dataResponseDto.response().body().items().item();
 
-    }
-    public void getCategoryImage(DataResponseDto dataResponseDto) {
+        List<CommonResponseDto> commonResponseDtos = new ArrayList<>();
+        log.info("getCategoryCommon middle");
 
+        for(int i=0;i<items.size();i++) {
+            log.info(items.get(i).contentid());
+            int finalI = i;
+            URI uri = UriComponentsBuilder.fromHttpUrl(DATA_URL)
+                    .path("/detailCommon2")
+                    .queryParam("MobileOS", "WEB")
+                    .queryParam("MobileApp", "Travelrithm")
+                    .queryParam("_type", "json")
+                    .queryParam("contentId", items.get(finalI).contentid())
+                    .queryParam("serviceKey", serviceKey)
+                    .build(true)
+                    .toUri();
+
+            CommonResponseDto response = restTemplate.getForObject(uri, CommonResponseDto.class);
+            log.info(response.toString());
+
+            commonResponseDtos.add(response);
+        }
+        log.info("getCategoryCommon end");
+        return commonResponseDtos;
     }
 
 }

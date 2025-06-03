@@ -3,6 +3,8 @@ package com.Travelrithm.planbuilder.kakaomobility;
 
 import com.Travelrithm.planbuilder.dto.kakao.mobility.DestinationRequestDto;
 import com.Travelrithm.planbuilder.dto.kakao.mobility.DestinationResponseDto;
+import com.Travelrithm.planbuilder.dto.kakao.mobility.WayPointResponseDto;
+import com.Travelrithm.planbuilder.dto.kakao.mobility.WaypointRequestDto;
 import io.netty.handler.codec.http.HttpHeaderValues;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,6 +35,16 @@ public class KakaoMobilityService {
                 .block();
 
 
+    }
+    public WayPointResponseDto getPaths(WaypointRequestDto waypointRequestDto) {
+        WebClient webClient = getWebClient();
+
+        return webClient.post()
+                .uri("/waypoints/directions")
+                .bodyValue(waypointRequestDto) // JSON body로 요청
+                .retrieve()
+                .bodyToMono(WayPointResponseDto.class)
+                .block();
     }
 
 

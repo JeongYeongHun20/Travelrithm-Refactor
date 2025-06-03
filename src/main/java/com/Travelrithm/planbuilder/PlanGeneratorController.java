@@ -4,6 +4,7 @@ package com.Travelrithm.planbuilder;
 import com.Travelrithm.planbuilder.dto.front.DayMap;
 import com.Travelrithm.planbuilder.dto.front.EditPlanner;
 import com.Travelrithm.planbuilder.dto.front.Location;
+import com.Travelrithm.planbuilder.dto.publicdata.TotalResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,8 +22,8 @@ public class PlanGeneratorController {
     private final PlanGenerator planGenerator;
 
     @PostMapping("/dayMap")
-    public ResponseEntity<Map<String, List<DayMap.Content>>> generatePlan(@RequestBody EditPlanner editPlanner) {
-        Map<String, List<DayMap.Content>> stringListMap = planGenerator.generatePlan(editPlanner);
+    public ResponseEntity<TotalResponseDto> generatePlan(@RequestBody EditPlanner editPlanner) {
+        TotalResponseDto stringListMap = planGenerator.generatePlan(editPlanner);
         return ResponseEntity.ok(stringListMap);
     }
 
