@@ -141,8 +141,8 @@ public class PlanGenerator {
             WaypointRequestDto waypointRequestDto = new WaypointRequestDto(originLocaiton, destinationLocaiton, list);
             WayPointResponseDto paths = kakaoMobilityService.getPaths(waypointRequestDto);
             wayPointResponseDtos.add(paths);
-            sortedContent
-                    .forEach(this::calFatitgue);
+//            sortedContent
+//                    .forEach(this::calFatitgue);
 
             result.put("day" + dayIndex, sortedContent);
             commonResponseDtos = translatePrefer("");
@@ -163,17 +163,17 @@ public class PlanGenerator {
 
 
     }
-    private void calFatitgue(DayMap.Content content) {
-        weight+=1; //하나의 장소를 방문할 때마다 가중치가 1이 올라감, 피로도에 맞춰 장소를 무한으로 늘려도 일정량 이상이면 피로도가 양수값이 될 수밖에 없음
-        switch (content.category()) {
-            case "CT1", "AT4" -> fatigue += 3+weight;
-            case "FD6" -> fatigue += -1+weight;
-            case "CE7" -> fatigue += -2+weight;
-            default -> {
-                fatigue+=1+weight;
-            }
-        }
-    }
+//    private void calFatitgue(DayMap.Content content) {
+//        weight+=1; //하나의 장소를 방문할 때마다 가중치가 1이 올라감, 피로도에 맞춰 장소를 무한으로 늘려도 일정량 이상이면 피로도가 양수값이 될 수밖에 없음
+//        switch (content.category()) {
+//            case "CT1", "AT4" -> fatigue += 3+weight;
+//            case "FD6" -> fatigue += -1+weight;
+//            case "CE7" -> fatigue += -2+weight;
+//            default -> {
+//                fatigue+=1+weight;
+//            }
+//        }
+//    }
     private double plainDistance(double lat1, double lon1, double lat2, double lon2) {
         final int R = 6371000; // 지구 반지름 (단위: m)
         double dLat = Math.toRadians(lat2 - lat1);

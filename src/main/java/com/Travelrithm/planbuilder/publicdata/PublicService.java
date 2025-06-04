@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.UnknownContentTypeException;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -78,10 +79,20 @@ public class PublicService {
                     .build(true)
                     .toUri();
 
-            CommonResponseDto response = restTemplate.getForObject(uri, CommonResponseDto.class);
-            log.info(response.toString());
+//            CommonResponseDto response = restTemplate.getForObject(uri, CommonResponseDto.class);
+//            log.info(response.toString());
+//
+//            commonResponseDtos.add(response);
+            try {
+                CommonResponseDto response = restTemplate.getForObject(uri, CommonResponseDto.class);
+                log.info("Success: " + response);
+                commonResponseDtos.add(response);
+            } catch (UnknownContentTypeException e) {
+                log.warn("Unsupported content type (maybe XML error response) for contentId=" + items.get(finalI).contentid());
+            } catch (Exception e) {
+                log.warn("Error during contentId=" + items.get(finalI).contentid() + " | " + e.getMessage());
+            }
 
-            commonResponseDtos.add(response);
         }
         log.info("getCategoryCommon end");
         return commonResponseDtos;
