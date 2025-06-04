@@ -34,8 +34,6 @@ public class KakaoMobilityService {
                 .retrieve()
                 .bodyToMono(DestinationResponseDto.class)
                 .block();
-
-
     }
 
     public DestinationsResponseDto getMultiplePath(DestinationsRequestDto destinationsRequestDto) {
