@@ -4,13 +4,12 @@ package com.Travelrithm.planbuilder.publicdata;
 import com.Travelrithm.planbuilder.dto.publicdata.CommonResponseDto;
 import com.Travelrithm.planbuilder.dto.publicdata.DataRequestDto;
 import com.Travelrithm.planbuilder.dto.publicdata.DataResponseDto;
+import com.Travelrithm.planbuilder.dto.publicdata.Item;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.client.UnknownContentTypeException;
-import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
@@ -28,7 +27,7 @@ public class PublicService {
     private final RestTemplate restTemplate = new RestTemplate();
     private final String DATA_URL = "https://apis.data.go.kr/B551011/KorService2";
 
-    public List<CommonResponseDto> getCategory(DataRequestDto dataRequestDto) {
+    public List<Item> getCategory(DataRequestDto dataRequestDto) {
         String cat1 = dataRequestDto.category().substring(0, 3);
         String cat2 = dataRequestDto.category();
 
@@ -51,18 +50,17 @@ public class PublicService {
 
         DataResponseDto response = Optional.ofNullable(restTemplate.getForObject(uri, DataResponseDto.class))
                 .orElse(null);
-        if (response == null) return List.of(new CommonResponseDto(null));
+        if (response == null) return List.of(null);
 
         log.info("getCategory end: "+response.toString());
 
         return getCategoryCommon(response);
     }
 
-    public List<CommonResponseDto> getCategoryCommon(DataResponseDto dataResponseDto) {
+    public List<Item> getCategoryCommon(DataResponseDto dataResponseDto) {
         log.info("getCategoryCommon start");
         List<DataResponseDto.Response.Body.Items.Item> items = dataResponseDto.response().body().items().item();
-
-        List<CommonResponseDto> commonResponseDtos = new ArrayList<>();
+        List<Item> resultItem = new ArrayList<>();
         log.info("getCategoryCommon middle");
 
         for(int i=0;i<items.size();i++) {
@@ -78,23 +76,11 @@ public class PublicService {
                     .build(true)
                     .toUri();
 
-//            CommonResponseDto response = restTemplate.getForObject(uri, CommonResponseDto.class);
-//            log.info(response.toString());
-//
-//            commonResponseDtos.add(response);
-            try {
-                CommonResponseDto response = restTemplate.getForObject(uri, CommonResponseDto.class);
-                log.info("Success: " + response);
-                commonResponseDtos.add(response);
-            } catch (UnknownContentTypeException e) {
-                log.warn("Unsupported content type (maybe XML error response) for contentId=" + items.get(finalI).contentid());
-            } catch (Exception e) {
-                log.warn("Error during contentId=" + items.get(finalI).contentid() + " | " + e.getMessage());
-            }
+            CommonResponseDto response = restTemplate.getForObject(uri, CommonResponseDto.class);
+            assert response != null;
+            resultItem.add(response.response().body().items().item().getFirst());
 
         }
-        log.info("getCategoryCommon end");
-        return commonResponseDtos;
+        return resultItem;
     }
-
 }

@@ -10,7 +10,7 @@ import com.Travelrithm.planbuilder.dto.kakao.mobility.WayPointResponseDto;
 import com.Travelrithm.planbuilder.dto.kakao.mobility.WaypointRequestDto;
 import com.Travelrithm.planbuilder.dto.publicdata.CommonResponseDto;
 import com.Travelrithm.planbuilder.dto.publicdata.DataRequestDto;
-import com.Travelrithm.planbuilder.dto.publicdata.DataResponseDto;
+import com.Travelrithm.planbuilder.dto.publicdata.Item;
 import com.Travelrithm.planbuilder.dto.publicdata.TotalResponseDto;
 import com.Travelrithm.planbuilder.kakaomobility.KakaoMobilityService;
 
@@ -29,12 +29,22 @@ public class PlanGenerator {
 
     private String avgLat;
     private String avgLon;
-    private Double avgRadius=5000.0;
+    private Double avgRadius = 5000.0;
     private String travelDestination;
-    private String preference;
+    private String preference="자연";
     private TransportMode transportMode;
     private Integer fatigue;
     private Integer weight;
+    Map<String, String> CATEGORY_MAP = Map.of(
+            "자연", "A0101",
+            "역사", "A0201",
+            "휴양", "A0202",
+            "체험", "A0203",
+            "문화", "A0206",
+            "액티비티", "A0301",
+            "음식점", "A0502",
+            "카페", "A05020900"
+    );
 
     private final KakaoMobilityService kakaoMobilityService;
     private final PublicService publicService;
@@ -43,6 +53,7 @@ public class PlanGenerator {
         this.travelDestination = editPlanner.travelDestination();
         this.transportMode = editPlanner.transportMode();
         this.preference = editPlanner.preference();
+        this.fatigue=editPlanner.fatigue().equals("관광")?-11:-8;
         List<DayMap> dayMapList = editPlanner.dayMapList();
         List<Location> allLocations = new ArrayList<>();
         for (DayMap dayMap : dayMapList) {
@@ -50,15 +61,17 @@ public class PlanGenerator {
                 allLocations.add(content.locations());
             }
         }
+        log.info(String.valueOf(allLocations.size()));
         Map<String, Double> avgResult = calLocation(allLocations);
+
         avgLat = String.valueOf(avgResult.get("avgLat"));
         avgLon = String.valueOf(avgResult.get("avgLon"));
         avgRadius = avgResult.get("avgRadius");
-        avgRadius=avgRadius>5000?avgRadius:5000; //사용자가 선택한 장소가 없거나 몰려있을 경우 default값 설정
+        if (avgRadius > 200000.0) avgRadius = 200000.0;
+        if (avgRadius < 5000.0) avgRadius = 5000.0;
 
-        return greedyAlgorithm(dayMapList);
+        return greedyAlgorithm(dayMapList, fatigue);
     }
-
 
 
     public Map<String, Double> calLocation(List<Location> locations) {
@@ -92,15 +105,15 @@ public class PlanGenerator {
         return calResult;
     }
 
-    public TotalResponseDto greedyAlgorithm(List<DayMap> dayMapList) {
+    public TotalResponseDto greedyAlgorithm(List<DayMap> dayMapList, Integer fati) {
         Map<String, List<DayMap.Content>> result = new HashMap<>();
-        List<CommonResponseDto> commonResponseDtos = new ArrayList<>();
+        Map<String, List<Item>> commonResponseDtos;
         List<WayPointResponseDto> wayPointResponseDtos = new ArrayList<>();
         for (int dayIndex = 0; dayIndex < dayMapList.size(); dayIndex++) {
             List<DayMap.Content> contents = dayMapList.get(dayIndex).content();
             int size = contents.size();
-            fatigue=-11;
-            weight=0;
+            fatigue = fati;
+            weight = 0;
             double[][] path = new double[size][size];
 
             for (int i = 0; i < size; i++) {
@@ -141,39 +154,51 @@ public class PlanGenerator {
             WaypointRequestDto waypointRequestDto = new WaypointRequestDto(originLocaiton, destinationLocaiton, list);
             WayPointResponseDto paths = kakaoMobilityService.getPaths(waypointRequestDto);
             wayPointResponseDtos.add(paths);
-//            sortedContent
-//                    .forEach(this::calFatitgue);
+            sortedContent
+                    .forEach(this::calFatitgue);
 
             result.put("day" + dayIndex, sortedContent);
-            commonResponseDtos = translatePrefer("");
+
         }
+        commonResponseDtos = translatePrefer(preference);
         return new TotalResponseDto(commonResponseDtos, result, wayPointResponseDtos);
 
     }
 
-    private List<CommonResponseDto> translatePrefer(String preference) {
-        Map<String, List<String>> CATEGORY_MAP = Map.of(
-                "자연", List.of("A0101", "A0202"),
-                "문화", List.of("A0201", "A0206", "A0205"),
-                "액티비티", List.of("A0301","A0208","A0203"),
-                "휴식", List.of("A05020900")
-        );
+    private Map<String, List<Item>> translatePrefer(String preference) {
+        Map<String, List<Item>> commonResponseDtos = new HashMap<>();
         log.info("getCategory start");
-        return publicService.getCategory(new DataRequestDto(avgLon, avgLat, String.valueOf(avgRadius), "A0202"));
+        if (preference.equals("자연")) {
+            if (fatigue <= 3 && fatigue >= -3) {
+                commonResponseDtos.put("자연 관광지", publicService.getCategory(new DataRequestDto(avgLon, avgLat, String.valueOf(avgRadius), CATEGORY_MAP.get("자연"))));
+                commonResponseDtos.put("역사 관광지", publicService.getCategory(new DataRequestDto(avgLon, avgLat, String.valueOf(avgRadius), CATEGORY_MAP.get("역사"))));
+                commonResponseDtos.put("휴양 관광지", publicService.getCategory(new DataRequestDto(avgLon, avgLat, String.valueOf(avgRadius), CATEGORY_MAP.get("휴양"))));
+                commonResponseDtos.put("음식점", publicService.getCategory(new DataRequestDto(avgLon, avgLat, String.valueOf(avgRadius), CATEGORY_MAP.get("음식점"))));
+            }
+            if (fatigue > 3) {
+                commonResponseDtos.put("휴양 관광지", publicService.getCategory(new DataRequestDto(avgLon, avgLat, String.valueOf(avgRadius), CATEGORY_MAP.get("휴양"))));
+                commonResponseDtos.put("음식점", publicService.getCategory(new DataRequestDto(avgLon, avgLat, String.valueOf(avgRadius), CATEGORY_MAP.get("음식점"))));
 
-
+            }
+            if (fatigue < -3) {
+                commonResponseDtos.put("자연 관광지", publicService.getCategory(new DataRequestDto(avgLon, avgLat, String.valueOf(avgRadius), CATEGORY_MAP.get("자연"))));
+                commonResponseDtos.put("역사 관광지", publicService.getCategory(new DataRequestDto(avgLon, avgLat, String.valueOf(avgRadius), CATEGORY_MAP.get("역사"))));
+            }
+        }
+        return commonResponseDtos;
     }
-//    private void calFatitgue(DayMap.Content content) {
-//        weight+=1; //하나의 장소를 방문할 때마다 가중치가 1이 올라감, 피로도에 맞춰 장소를 무한으로 늘려도 일정량 이상이면 피로도가 양수값이 될 수밖에 없음
-//        switch (content.category()) {
-//            case "CT1", "AT4" -> fatigue += 3+weight;
-//            case "FD6" -> fatigue += -1+weight;
-//            case "CE7" -> fatigue += -2+weight;
-//            default -> {
-//                fatigue+=1+weight;
-//            }
-//        }
-//    }
+
+    private void calFatitgue(DayMap.Content content) {
+        weight+=1; //하나의 장소를 방문할 때마다 가중치가 1이 올라감, 피로도에 맞춰 장소를 무한으로 늘려도 일정량 이상이면 피로도가 양수값이 될 수밖에 없음
+        switch (content.category()) {
+            case "CT1", "AT4" -> fatigue += 3+weight;
+            case "FD6" -> fatigue += -1+weight;
+            case "CE7" -> fatigue += -2+weight;
+            default -> {
+                fatigue+=1+weight;
+            }
+        }
+    }
     private double plainDistance(double lat1, double lon1, double lat2, double lon2) {
         final int R = 6371000; // 지구 반지름 (단위: m)
         double dLat = Math.toRadians(lat2 - lat1);
