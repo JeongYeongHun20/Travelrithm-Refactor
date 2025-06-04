@@ -24,15 +24,14 @@ public class PublicService {
 
     @Value("${data.service_key}")
     private String serviceKey;
-    private final WebClient.Builder webClientBuilder;
     private final RestTemplate restTemplate = new RestTemplate();
     private final String DATA_URL = "https://apis.data.go.kr/B551011/KorService2";
 
     public List<CommonResponseDto> getCategory(DataRequestDto dataRequestDto) {
-        String lclsSystm1 = dataRequestDto.category().substring(0, 3);
-        String lclsSystm2 = dataRequestDto.category();
+        String cat1 = dataRequestDto.category().substring(0, 3);
+        String cat2 = dataRequestDto.category();
 
-        log.info(lclsSystm1+lclsSystm2);
+        log.info(cat1+cat2);
         log.info("getCategory middle");
         URI uri = UriComponentsBuilder.fromHttpUrl(DATA_URL)
                 .path("/locationBasedList2")
@@ -42,8 +41,8 @@ public class PublicService {
                 .queryParam("mapX", dataRequestDto.mapX())
                 .queryParam("mapY", dataRequestDto.mapY())
                 .queryParam("radius", dataRequestDto.radius())
-                .queryParam("cat1", lclsSystm1)
-                .queryParam("cat2", lclsSystm2)
+                .queryParam("cat1", cat1)
+                .queryParam("cat2", cat2)
                 .queryParam("serviceKey", serviceKey)
                 .build(true)
                 .toUri();

@@ -17,10 +17,18 @@ public record WayPointResponseDto(
                 Point destination,
                 List<Point> waypoints,
                 String priority,
+                Bound bound,
                 int distance,
                 int duration
         ) {}
 
+        public record Bound(
+                double min_x,
+                double min_y,
+                double max_x,
+                double max_y
+
+        ) {}
         public record Point(
                 String name,
                 double x,

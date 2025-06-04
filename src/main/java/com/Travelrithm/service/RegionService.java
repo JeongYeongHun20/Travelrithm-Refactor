@@ -7,12 +7,15 @@ import com.Travelrithm.repository.PlanRepository;
 import com.Travelrithm.repository.RegionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.stream.Stream;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class RegionService {
 
     private final PlanRepository planRepository;
