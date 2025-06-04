@@ -22,4 +22,6 @@ public class KakaoPlaceController {
         return ResponseEntity.ok(kakaoPlaceService.getPlaceInfo(kakaoPlaceRequestDto));
     }
 
+
+
 }
