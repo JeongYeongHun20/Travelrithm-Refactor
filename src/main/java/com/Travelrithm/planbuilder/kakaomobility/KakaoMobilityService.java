@@ -33,8 +33,6 @@ public class KakaoMobilityService {
                 .retrieve()
                 .bodyToMono(DestinationResponseDto.class)
                 .block();
-
-
     }
     public WayPointResponseDto getPaths(WaypointRequestDto waypointRequestDto) {
         WebClient webClient = getWebClient();
