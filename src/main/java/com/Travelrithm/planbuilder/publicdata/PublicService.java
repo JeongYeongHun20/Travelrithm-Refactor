@@ -50,7 +50,7 @@ public class PublicService {
 
         DataResponseDto response = Optional.ofNullable(restTemplate.getForObject(uri, DataResponseDto.class))
                 .orElse(null);
-        if (response == null) return List.of(null);
+        if (response == null) return List.<Item>of((Item) null);
 
         log.info("getCategory end: "+response.toString());
 
