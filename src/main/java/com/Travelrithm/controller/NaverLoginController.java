@@ -16,7 +16,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/naver")
-@CrossOrigin(origins = "http://localhost:3000")
 public class NaverLoginController {
     private final NaverLoginService naverLoginService;
     private final UserService userService;

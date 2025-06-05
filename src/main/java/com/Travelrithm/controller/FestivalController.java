@@ -12,7 +12,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/festivals")
-@CrossOrigin(origins = "http://localhost:3000")
 @RequiredArgsConstructor
 public class FestivalController {
 

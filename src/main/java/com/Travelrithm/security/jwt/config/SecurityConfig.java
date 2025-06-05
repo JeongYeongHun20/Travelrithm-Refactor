@@ -44,6 +44,7 @@ public class SecurityConfig {
                         .configurationSource(request -> {
                             CorsConfiguration config = new CorsConfiguration();
                             config.addAllowedOrigin("http://localhost:3000");
+                            config.addAllowedOrigin("https://travelrithm.kro.kr");
                             config.addAllowedMethod("*");
                             config.addAllowedHeader("*");
                             config.setAllowCredentials(true);
