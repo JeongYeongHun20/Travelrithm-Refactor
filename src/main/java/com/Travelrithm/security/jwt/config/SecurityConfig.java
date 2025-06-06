@@ -61,7 +61,22 @@ public class SecurityConfig {
         //경로별 인가 작업
         http
                 .authorizeHttpRequests((auth) -> auth
-                        .anyRequest().permitAll());
+                        .requestMatchers(
+                                "/",
+                                "/login",
+                                "/join",
+                                "/users",
+                                "/region",
+                                "/post",
+                                "/api/kakao/login",
+                                "/api/kakao/callback",
+                                "/api/naver/login",
+                                "/api/naver/callback",
+                                "/api/social/login"
+                        ).permitAll()
+                        .requestMatchers("/admin").hasRole("ADMIN")
+                        .anyRequest().authenticated()
+                );
         http
                 .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class);
 
