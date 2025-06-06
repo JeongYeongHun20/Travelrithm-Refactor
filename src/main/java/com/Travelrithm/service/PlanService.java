@@ -32,7 +32,6 @@ public class PlanService {
     public PlanResponseDto createPlan(Integer userId, PlanRequestDto planRequestDto){
         UserEntity userEntity = userRepository.findById(userId)
                 .orElseThrow(()-> new IllegalArgumentException("해당유저가 존재하지 않음"));
-
         RegionEntity regionEntity = regionRepository.findById(planRequestDto.regionId())
                 .orElseThrow(()->new IllegalArgumentException("해당지역 존재하지 않음"));
 
@@ -46,7 +45,12 @@ public class PlanService {
                 .createdAt(LocalDateTime.now())
                 .transportMode(planRequestDto.transportMode())
                 .startTime(planRequestDto.startTime())
+                .companionType(planRequestDto.companionType())
+                .companionCount(planRequestDto.companionCount())
+                .travelTaste(planRequestDto.travelTaste())
+                .travelPurpose(planRequestDto.travelPurpose())
                 .build();
+
         log.info(regionEntity.getName());
         List<PlaceEntity> createPlaces = getPlaceEntities(planRequestDto, planEntity);
         planEntity.getPlaceEntities().addAll(createPlaces);
