@@ -1,9 +1,14 @@
 package com.Travelrithm.planbuilder.dto.front;
 
 
+import com.Travelrithm.planbuilder.dto.publicdata.Item;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import static java.lang.Double.parseDouble;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record DayMap(
     List<Content> content,
@@ -26,6 +31,5 @@ public record DayMap(
                 int blurHeight
         ) {}
     }
-
 
 }
