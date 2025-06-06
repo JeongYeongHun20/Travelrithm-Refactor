@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface CommunityPostRepository extends JpaRepository<CommunityPostEntity, Integer> {
@@ -20,6 +21,8 @@ public interface CommunityPostRepository extends JpaRepository<CommunityPostEnti
     Page<CommunityPostEntity> findAllByIsTravelPlanFalse(Pageable pageable);  // 자유게시판
 
     List<CommunityPostEntity> findAllByUserEntity_UserIdAndIsTravelPlanTrue(Integer userId);
+
+    Optional<CommunityPostEntity> findByPlanEntity(PlanEntity planEntity);
 
 
     // 인기 plan 조회 (region 기준)
