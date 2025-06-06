@@ -18,8 +18,8 @@ public record PlanResponseDto(
         String travelPurpose,
         String transportMode,
         List<PlaceDto> places,
-        List<String> placeNames,
-        String postContent
+        String postContent,
+        String nickname
 ) {
     public PlanResponseDto(PlanEntity planEntity, String postContent) {
         this(
@@ -35,10 +35,8 @@ public record PlanResponseDto(
                 planEntity.getTravelPurpose().name(),
                 planEntity.getTransportMode().name(),
                 planEntity.getPlaceEntities().stream().map(PlaceDto::new).toList(),
-                planEntity.getPlaceEntities().stream()
-                        .map(place -> place.getPlaceName())
-                        .toList(),
-                postContent
+                postContent,
+                planEntity.getUserEntity().getNickname()
         );
     }
 }
