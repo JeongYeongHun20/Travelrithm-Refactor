@@ -35,14 +35,14 @@ public record CommunityPostResponseDto(
                 ? plan.getRegionEntity().getThumbnailImageUrl()
                 : null;
 
-        PlanResponseDto planDto = (plan != null) ? new PlanResponseDto(plan) : null;
+        PlanResponseDto planDto = (plan != null) ? new PlanResponseDto(plan, null) : null;
 
         List<PlaceDto> places = (plan != null)
                 ? plan.getPlaceEntities().stream().map(PlaceDto::new).toList()
                 : null;
 
         // 인기 플랜
-        PlanResponseDto popularPlanDto = (plan != null) ? new PlanResponseDto(plan) : null;
+        PlanResponseDto popularPlanDto = (plan != null) ? new PlanResponseDto(plan, null) : null;
 
         return new CommunityPostResponseDto(
                 post.getPostId(),

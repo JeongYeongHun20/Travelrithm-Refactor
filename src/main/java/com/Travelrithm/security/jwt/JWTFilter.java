@@ -22,22 +22,6 @@ public class JWTFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String path = request.getRequestURI();
-
-        // 인증이 필요 없는 URI는 필터 타지 않도록 예외 처리
-        if (
-                path.startsWith("/login") ||
-                        path.startsWith("/api/login") ||
-                        path.startsWith("/api/register") ||
-                        path.startsWith("/api/kakao/login") ||
-                        path.startsWith("/api/kakao/callback") ||
-                        path.startsWith("/api/naver/login") ||
-                        path.startsWith("/api/naver/callback") ||
-                        path.startsWith("/api/social/login")
-        ) {
-            filterChain.doFilter(request, response);
-            return;
-        }
 
         //request에서 Authorization 헤더를 찾음
         String authorization = request.getHeader("Authorization");

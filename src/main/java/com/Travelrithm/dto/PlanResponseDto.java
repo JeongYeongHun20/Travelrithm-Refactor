@@ -8,6 +8,7 @@ import java.util.List;
 public record PlanResponseDto(
         Integer planId,
         Integer regionId,
+        String RegionName,
         String regionThumbnailUrl,
         LocalDate startDate,
         LocalDate endDate,
@@ -16,12 +17,15 @@ public record PlanResponseDto(
         String travelTaste,
         String travelPurpose,
         String transportMode,
-        List<PlaceDto> places
+        List<PlaceDto> places,
+        String postContent,
+        String nickname
 ) {
-    public PlanResponseDto(PlanEntity planEntity) {
+    public PlanResponseDto(PlanEntity planEntity, String postContent) {
         this(
                 planEntity.getPlanId(),
                 planEntity.getRegionEntity().getRegionId(),
+                planEntity.getRegionEntity().getName(),
                 planEntity.getRegionEntity().getThumbnailImageUrl(),
                 planEntity.getStartDate(),
                 planEntity.getEndDate(),
@@ -30,7 +34,9 @@ public record PlanResponseDto(
                 planEntity.getTravelTaste().name(),
                 planEntity.getTravelPurpose().name(),
                 planEntity.getTransportMode().name(),
-                planEntity.getPlaceEntities().stream().map(PlaceDto::new).toList()
+                planEntity.getPlaceEntities().stream().map(PlaceDto::new).toList(),
+                postContent,
+                planEntity.getUserEntity().getNickname()
         );
     }
 }

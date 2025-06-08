@@ -97,7 +97,7 @@ public class CommunityPostService {
                     ? plan.getRegionEntity().getThumbnailImageUrl()
                     : null;
 
-            PlanResponseDto planDto = new PlanResponseDto(plan);
+            PlanResponseDto planDto = new PlanResponseDto(plan, null);
 
             List<PlaceDto> places = plan.getPlaceEntities().stream()
                     .map(PlaceDto::new)
@@ -105,7 +105,7 @@ public class CommunityPostService {
 
             // 지역 기반 인기 플랜 조회
             PlanEntity popular = getPopularPlanByRegion(plan.getRegionEntity().getRegionId());
-            PlanResponseDto popularDto = new PlanResponseDto(popular);
+            PlanResponseDto popularDto = new PlanResponseDto(popular, null);
 
             return new CommunityPostResponseDto(
                     post.getPostId(),
