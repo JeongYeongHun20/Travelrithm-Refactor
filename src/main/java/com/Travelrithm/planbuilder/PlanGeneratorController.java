@@ -15,7 +15,6 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/generator")
-@CrossOrigin(origins = "http://localhost:3000")
 public class PlanGeneratorController {
 
     private final PlanGenerator planGenerator;
