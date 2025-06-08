@@ -3,13 +3,15 @@ package com.Travelrithm.planbuilder;
 import com.Travelrithm.domain.TransportMode;
 import com.Travelrithm.planbuilder.dto.front.*;
 import com.Travelrithm.planbuilder.dto.kakao.mobility.*;
-import com.Travelrithm.planbuilder.dto.publicdata.CommonResponseDto;
 import com.Travelrithm.planbuilder.dto.publicdata.DataRequestDto;
 import com.Travelrithm.planbuilder.dto.publicdata.Item;
 import com.Travelrithm.planbuilder.dto.publicdata.TotalResponseDto;
+import com.Travelrithm.planbuilder.dto.tmap.TmapPathRequestDto;
+import com.Travelrithm.planbuilder.dto.tmap.TmapPathResponseDto;
 import com.Travelrithm.planbuilder.kakaomobility.KakaoMobilityService;
 
 import com.Travelrithm.planbuilder.publicdata.PublicService;
+import com.Travelrithm.planbuilder.tmap.TmapPathService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -43,6 +45,7 @@ public class PlanGenerator {
 
     private final KakaoMobilityService kakaoMobilityService;
     private final PublicService publicService;
+    private final TmapPathService tmapPathService;
 
     public TotalResponseDto generatePlan(EditPlanner editPlanner) {
         this.travelDestination = editPlanner.travelDestination();
@@ -65,7 +68,7 @@ public class PlanGenerator {
         if (avgRadius > 200000.0) avgRadius = 200000.0;
         if (avgRadius < 5000.0) avgRadius = 5000.0;
 
-        return greedyAlgorithm(dayMapList, fatigue);
+        return greedyAlgorithm(dayMapList, fatigue, transportMode);
     }
 
 
@@ -100,9 +103,10 @@ public class PlanGenerator {
         return calResult;
     }
 
-    public TotalResponseDto greedyAlgorithm(List<DayMap> dayMapList, Integer fati) {
+    public TotalResponseDto greedyAlgorithm(List<DayMap> dayMapList, Integer fati, TransportMode transportMode) {
         Map<Integer, List<DayMap.Content>> result = new HashMap<>();
         Map<Integer, Map<String, List<Item>>> commonResponseDtos = new HashMap<>();
+        Map<Integer, List<TmapPathResponseDto>> busPathResponseDtos = new HashMap<>();
         List<WayPointResponseDto> wayPointResponseDtos = new ArrayList<>();
         for (int dayIndex = 0; dayIndex < dayMapList.size(); dayIndex++) {
             List<DayMap.Content> contents = dayMapList.get(dayIndex).content();
@@ -142,22 +146,44 @@ public class PlanGenerator {
                     .map(contents::get)
                     .toList();
 
+            if(transportMode==TransportMode.transit){
+                Location BusoriginLocaiton = sortedContent.getFirst().locations();
+                List<Location> Buslists = sortedContent.subList(1, sortedContent.size()).stream().map(DayMap.Content::locations).toList();
+                List<TmapPathResponseDto> tmapPathResponseDtos = new ArrayList<>();
+                for (Location content : Buslists) {
+                    TmapPathResponseDto tmapPathResponseDto = tmapPathService.getPath(new TmapPathRequestDto(
+                            String.valueOf(BusoriginLocaiton.x()),
+                            String.valueOf(BusoriginLocaiton.y()),
+                            String.valueOf(content.x()),
+                            String.valueOf(content.y()),
+                            "json",
+                            1,
+                            ""));
+                    BusoriginLocaiton = content;
+                    tmapPathResponseDtos.add(tmapPathResponseDto);
+                }
+                busPathResponseDtos.put(dayIndex, tmapPathResponseDtos);
+            }
+
             Location originLocaiton = sortedContent.getFirst().locations();
             List<Location> list = sortedContent.subList(1, sortedContent.size() - 1).stream().map(DayMap.Content::locations).toList();
             Location destinationLocaiton = sortedContent.getLast().locations();
 
-            WaypointRequestDto waypointRequestDto = new WaypointRequestDto(originLocaiton, destinationLocaiton, list);
-            WayPointResponseDto paths = kakaoMobilityService.getPaths(waypointRequestDto);
-            wayPointResponseDtos.add(paths);
+            if(transportMode==TransportMode.car){
+                WaypointRequestDto waypointRequestDto = new WaypointRequestDto(originLocaiton, destinationLocaiton, list);
+                WayPointResponseDto paths = kakaoMobilityService.getPaths(waypointRequestDto);
+                wayPointResponseDtos.add(paths);
+            }
             sortedContent
                     .forEach(this::calFatitgue);
 
             result.put(dayIndex, sortedContent);
             commonResponseDtos.put(dayIndex, translatePrefer(preference));
         }
-
-        return new TotalResponseDto(commonResponseDtos, result, wayPointResponseDtos);
-
+        if(transportMode==TransportMode.car)
+            return new TotalResponseDto(commonResponseDtos, result, wayPointResponseDtos, null);
+        else
+            return new TotalResponseDto(commonResponseDtos, result, null, busPathResponseDtos);
     }
 
     private Map<String, List<Item>> translatePrefer(String preference) {
@@ -219,10 +245,11 @@ public class PlanGenerator {
         List<PlaceInfo> placeInfo = new ArrayList<>();
         List<DayMap> stringListMap = completePlanner.dayMapList();
         Map<Integer, List<Item>> stringListMap1 = completePlanner.itemList();
+        TransportMode transportMode = completePlanner.transportMode();
 
         for (int dayIndex = 0; dayIndex < stringListMap.size(); dayIndex++) {
             List<DayMap.Content> contents = stringListMap.get(dayIndex).content();
-            List<Item> items = stringListMap1.getOrDefault(dayIndex, List.of());
+            List<Item> items = stringListMap1.get(dayIndex);
 
             List<PlaceInfo.Place> places = new ArrayList<>();
             for (DayMap.Content content : contents) {
@@ -233,17 +260,24 @@ public class PlanGenerator {
             }
             placeInfo.add(new PlaceInfo(dayIndex, places));
         }
-        return calculateOptimizedPaths(placeInfo);
+        for (PlaceInfo p : placeInfo) {
+            for(int i=0;i<p.getPlaces().size();i++){
+                log.info("{}-{}: {}|{}",p.getDay(), p.getPlaces().get(i).getPlaceName(), p.getPlaces().get(i).getX(), p.getPlaces().get(i).getY());
+            }
+
+        }
+        return calculateOptimizedPaths(placeInfo,transportMode);
     }
-    public CompleteResponseDto calculateOptimizedPaths(List<PlaceInfo> placeInfoList) {
+    public CompleteResponseDto calculateOptimizedPaths(List<PlaceInfo> placeInfoList,TransportMode transportMode) {
         List<WayPointResponseDto> wayPointResponseDtos = new ArrayList<>();
         List<List<PlaceInfo.Place>> completePlaces = new ArrayList<>();
+        List<List<TmapPathResponseDto>> busPointResponsDtos = new ArrayList<>();
 
         for (PlaceInfo placeInfo : placeInfoList) {
             List<PlaceInfo.Place> places = placeInfo.getPlaces();
             int size = places.size();
             if (size < 2) continue;
-
+            log.info(String.valueOf(size));
             // 거리 행렬 생성
             double[][] path = new double[size][size];
             for (int i = 0; i < size; i++) {
@@ -252,11 +286,12 @@ public class PlanGenerator {
 
                     String origin = places.get(i).getX() + "," + places.get(i).getY();
                     String destination = places.get(j).getX() + "," + places.get(j).getY();
-
                     DestinationResponseDto response = kakaoMobilityService.getPath(
                             new DestinationRequestDto(origin, destination)
                     );
-
+                    log.info(response.toString());
+                    if(response.routes().getFirst().result_code()!=0)
+                        break;
                     int distance = response.routes().getFirst().summary().distance();
                     path[i][j] = distance;
                 }
@@ -273,21 +308,47 @@ public class PlanGenerator {
                     .map(places::get)
                     .toList();
 
-            // 출발, 경유지, 도착으로 나눔
-            CompleteLocation origin = new CompleteLocation(sortedPlaces.getFirst().getX(), sortedPlaces.getFirst().getY(),sortedPlaces.getFirst().getPlaceName());
-            List<CompleteLocation> waypoints = sortedPlaces.subList(1, sortedPlaces.size() - 1).stream()
-                    .map(p -> new CompleteLocation(p.getX(), p.getY(), p.getPlaceName()))
-                    .toList();
-            CompleteLocation destination = new CompleteLocation(sortedPlaces.getLast().getX(), sortedPlaces.getLast().getY(),sortedPlaces.getFirst().getPlaceName());
+            if(transportMode==TransportMode.transit){
+                CompleteLocation busOrigin = new CompleteLocation(sortedPlaces.getFirst().getX(), sortedPlaces.getFirst().getY(),sortedPlaces.getFirst().getPlaceName());
+                List<CompleteLocation> busPoints = sortedPlaces.subList(1, sortedPlaces.size()).stream()
+                        .map(p -> new CompleteLocation(p.getX(), p.getY(), p.getPlaceName()))
+                        .toList();
+                List<TmapPathResponseDto> tmapPathResponseDtos = new ArrayList<>();
+                for (CompleteLocation content : busPoints) {
+                    TmapPathResponseDto tmapPathResponseDto = tmapPathService.getPath(new TmapPathRequestDto(
+                            String.valueOf(busOrigin.x()),
+                            String.valueOf(busOrigin.y()),
+                            String.valueOf(content.x()),
+                            String.valueOf(content.y()),
+                            "json",
+                            1,
+                            ""));
+                    busOrigin = content;
+                    tmapPathResponseDtos.add(tmapPathResponseDto);
+                }
+                busPointResponsDtos.add(tmapPathResponseDtos);
+            }
+            if(transportMode==TransportMode.car){// 출발, 경유지, 도착으로 나눔
+                CompleteLocation origin = new CompleteLocation(sortedPlaces.getFirst().getX(), sortedPlaces.getFirst().getY(), sortedPlaces.getFirst().getPlaceName());
+                List<CompleteLocation> waypoints = sortedPlaces.subList(1, sortedPlaces.size() - 1).stream()
+                        .map(p -> new CompleteLocation(p.getX(), p.getY(), p.getPlaceName()))
+                        .toList();
+                CompleteLocation destination = new CompleteLocation(sortedPlaces.getLast().getX(), sortedPlaces.getLast().getY(), sortedPlaces.getFirst().getPlaceName());
 
-            // API 요청
-            CompleteWaypointRequestDto request = new CompleteWaypointRequestDto(origin, destination, waypoints);
-            WayPointResponseDto responseDto = kakaoMobilityService.getPaths(request);
+                // API 요청
+                CompleteWaypointRequestDto request = new CompleteWaypointRequestDto(origin, destination, waypoints);
+                WayPointResponseDto responseDto = kakaoMobilityService.getPaths(request);
 
+                wayPointResponseDtos.add(responseDto);
+            }
             completePlaces.add(sortedPlaces);
-            wayPointResponseDtos.add(responseDto);
         }
-        CompleteResponseDto completeResponseDto = new CompleteResponseDto(wayPointResponseDtos, completePlaces);
+        CompleteResponseDto completeResponseDto;
+        if(transportMode==TransportMode.car)
+            completeResponseDto = new CompleteResponseDto(wayPointResponseDtos,null , completePlaces);
+        else
+            completeResponseDto = new CompleteResponseDto(null, busPointResponsDtos , completePlaces);
+
 
         return completeResponseDto;
     }
