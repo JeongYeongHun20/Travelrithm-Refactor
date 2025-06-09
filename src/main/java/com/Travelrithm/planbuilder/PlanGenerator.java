@@ -170,7 +170,7 @@ public class PlanGenerator {
             Location destinationLocaiton = sortedContent.getLast().locations();
 
             if(transportMode==TransportMode.car){
-                WaypointRequestDto waypointRequestDto = new WaypointRequestDto(originLocaiton, destinationLocaiton, list);
+                WaypointRequestDto waypointRequestDto = new WaypointRequestDto(originLocaiton, destinationLocaiton, list,2,true);
                 WayPointResponseDto paths = kakaoMobilityService.getPaths(waypointRequestDto);
                 wayPointResponseDtos.add(paths);
             }
@@ -336,7 +336,7 @@ public class PlanGenerator {
                 CompleteLocation destination = new CompleteLocation(sortedPlaces.getLast().getX(), sortedPlaces.getLast().getY(), sortedPlaces.getFirst().getPlaceName());
 
                 // API 요청
-                CompleteWaypointRequestDto request = new CompleteWaypointRequestDto(origin, destination, waypoints);
+                CompleteWaypointRequestDto request = new CompleteWaypointRequestDto(origin, destination, waypoints,2, true);
                 WayPointResponseDto responseDto = kakaoMobilityService.getPaths(request);
 
                 wayPointResponseDtos.add(responseDto);

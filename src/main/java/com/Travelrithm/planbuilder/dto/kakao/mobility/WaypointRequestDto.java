@@ -7,6 +7,8 @@ import java.util.List;
 public record WaypointRequestDto(
         Location origin,
         Location destination,
-        List<Location> waypoints
+        List<Location> waypoints,
+        int roadevent,
+        boolean alternatives
 ) {
 }

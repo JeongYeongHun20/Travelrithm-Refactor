@@ -26,6 +26,8 @@ public class KakaoMobilityService {
                         .path("/directions")
                         .queryParam("origin", destinationRequestDto.origin())
                         .queryParam("destination", destinationRequestDto.destination())
+                        .queryParam("alternatives" , true)
+                        .queryParam("roadevent", 2)
                         .build())
                 .retrieve()
                 .bodyToMono(DestinationResponseDto.class)

@@ -8,6 +8,8 @@ import java.util.List;
 public record CompleteWaypointRequestDto(
         CompleteLocation origin,
         CompleteLocation destination,
-        List<CompleteLocation> waypoints
+        List<CompleteLocation> waypoints,
+        int roadevent,
+        boolean alternatives
 ) {
 }
