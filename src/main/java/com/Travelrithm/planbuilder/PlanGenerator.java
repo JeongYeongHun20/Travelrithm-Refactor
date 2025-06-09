@@ -272,7 +272,7 @@ public class PlanGenerator {
         List<WayPointResponseDto> wayPointResponseDtos = new ArrayList<>();
         List<List<PlaceInfo.Place>> completePlaces = new ArrayList<>();
         List<List<TmapPathResponseDto>> busPointResponsDtos = new ArrayList<>();
-
+        log.info("calculateOptimizedPaths: start");
         for (PlaceInfo placeInfo : placeInfoList) {
             List<PlaceInfo.Place> places = placeInfo.getPlaces();
             int size = places.size();
@@ -315,16 +315,24 @@ public class PlanGenerator {
                         .toList();
                 List<TmapPathResponseDto> tmapPathResponseDtos = new ArrayList<>();
                 for (CompleteLocation content : busPoints) {
-                    TmapPathResponseDto tmapPathResponseDto = tmapPathService.getPath(new TmapPathRequestDto(
-                            String.valueOf(busOrigin.x()),
-                            String.valueOf(busOrigin.y()),
-                            String.valueOf(content.x()),
-                            String.valueOf(content.y()),
-                            "json",
-                            1,
-                            ""));
-                    busOrigin = content;
-                    tmapPathResponseDtos.add(tmapPathResponseDto);
+                    TmapPathResponseDto tmapPathResponseDto;
+
+                    try{
+                        tmapPathResponseDto = tmapPathService.getPath(new TmapPathRequestDto(
+                                String.valueOf(busOrigin.x()),
+                                String.valueOf(busOrigin.y()),
+                                String.valueOf(content.x()),
+                                String.valueOf(content.y()),
+                                "json",
+                                1,
+                                ""));
+                        busOrigin = content;
+                        tmapPathResponseDtos.add(tmapPathResponseDto);
+
+                    }catch(Exception e){
+                        break;
+
+                    }
                 }
                 busPointResponsDtos.add(tmapPathResponseDtos);
             }
