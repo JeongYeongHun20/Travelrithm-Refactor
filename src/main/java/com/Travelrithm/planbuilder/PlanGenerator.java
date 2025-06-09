@@ -272,7 +272,7 @@ public class PlanGenerator {
         List<WayPointResponseDto> wayPointResponseDtos = new ArrayList<>();
         List<List<PlaceInfo.Place>> completePlaces = new ArrayList<>();
         List<List<TmapPathResponseDto>> busPointResponsDtos = new ArrayList<>();
-
+        log.info("calculateOptimizedPaths: start");
         for (PlaceInfo placeInfo : placeInfoList) {
             List<PlaceInfo.Place> places = placeInfo.getPlaces();
             int size = places.size();
@@ -345,10 +345,10 @@ public class PlanGenerator {
         }
         CompleteResponseDto completeResponseDto;
         if(transportMode==TransportMode.car)
-            completeResponseDto = new CompleteResponseDto(wayPointResponseDtos, null, completePlaces);
+            completeResponseDto = new CompleteResponseDto(wayPointResponseDtos,null , completePlaces);
         else
-            completeResponseDto = new CompleteResponseDto(null, busPointResponsDtos, completePlaces);
-
+            completeResponseDto = new CompleteResponseDto(null, busPointResponsDtos , completePlaces);
+        
         return completeResponseDto;
     }
 

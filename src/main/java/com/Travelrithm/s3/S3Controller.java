@@ -22,6 +22,6 @@ public class S3Controller {
 
     @GetMapping("/download-url")
     public String getDownloadUrl(@RequestParam String key) {
-        return s3Service.generatePreSignedGetUrl(key);
+        return s3Service.getPublicUrl(key);
     }
 }

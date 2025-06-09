@@ -19,6 +19,7 @@ public class S3Service {
 
     private final String bucketName = "travelrithm-bucket";
     private final S3Presigner preSigner;
+    private final String region = "ap-northeast-2";
 
     public Map<String,String> generatePreSignedPutUrl(String originalFilename, String contentType) {
         String key = "upload/" + UUID.randomUUID() + "_" + originalFilename;
@@ -68,5 +69,8 @@ public class S3Service {
         } catch (Exception e) {
             throw new RuntimeException("PreSigned URL 생성 실패", e);
         }
+    }
+    public String getPublicUrl(String key) {
+        return "https://" + bucketName + ".s3." + region + ".amazonaws.com/" + key;
     }
 }
