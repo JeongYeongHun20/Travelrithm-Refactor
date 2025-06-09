@@ -345,9 +345,9 @@ public class PlanGenerator {
         }
         CompleteResponseDto completeResponseDto;
         if(transportMode==TransportMode.car)
-            completeResponseDto = new CompleteResponseDto(wayPointResponseDtos,null , completePlaces);
+            completeResponseDto = new CompleteResponseDto(wayPointResponseDtos,List.of() , completePlaces);
         else
-            completeResponseDto = new CompleteResponseDto(null, busPointResponsDtos , completePlaces);
+            completeResponseDto = new CompleteResponseDto(List.of(), busPointResponsDtos , completePlaces);
 
 
         return completeResponseDto;
