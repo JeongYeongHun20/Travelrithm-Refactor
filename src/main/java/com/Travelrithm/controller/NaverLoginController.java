@@ -34,7 +34,7 @@ public class NaverLoginController {
         String accessToken = naverLoginService.getAccessToken(code);
         NaverUserResponseDto userInfo = naverLoginService.getUserInfo(accessToken);
         UserResponseDto userDto = userService.createUser(userInfo);
-        String redirectUrl = "http://localhost:3000/Main?token=" + "jwtToken";
+        String redirectUrl = "https://travelrithm.kro.kr/Main?token=" + "jwtToken";
 
         return new RedirectView(redirectUrl);
     }
