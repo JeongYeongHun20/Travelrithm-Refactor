@@ -348,7 +348,7 @@ public class PlanGenerator {
             completeResponseDto = new CompleteResponseDto(wayPointResponseDtos,null , completePlaces);
         else
             completeResponseDto = new CompleteResponseDto(null, busPointResponsDtos , completePlaces);
-        
+
         return completeResponseDto;
     }
 
