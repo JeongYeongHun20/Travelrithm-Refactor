@@ -253,10 +253,10 @@ public class PlanGenerator {
 
             List<PlaceInfo.Place> places = new ArrayList<>();
             for (DayMap.Content content : contents) {
-                places.add(new PlaceInfo.Place(content.keyword(), content.locations().x(), content.locations().y()));
+                places.add(new PlaceInfo.Place(content.keyword(),content.img(), content.locations().x(), content.locations().y()));
             }
             for (Item item : items) {
-                places.add(new PlaceInfo.Place(item.title(), safeParse(item.mapx()), safeParse(item.mapy())));
+                places.add(new PlaceInfo.Place(item.title(), !item.firstimage().isEmpty()?item.firstimage():item.firstimage2(), safeParse(item.mapx()), safeParse(item.mapy())));
             }
             placeInfo.add(new PlaceInfo(dayIndex, places));
         }

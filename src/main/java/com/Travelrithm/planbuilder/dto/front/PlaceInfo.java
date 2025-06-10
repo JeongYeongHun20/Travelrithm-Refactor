@@ -23,10 +23,12 @@ public class PlaceInfo {
     @Setter
     public static class Place{
         String placeName;
+        String url;
         double x,y;
 
-        public Place(String keyword, double x, double y) {
+        public Place(String keyword,String url, double x, double y) {
             this.placeName = keyword;
+            this.url=url;
             this.x = x;
             this.y = y;
         }

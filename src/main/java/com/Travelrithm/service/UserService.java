@@ -65,8 +65,7 @@ public class UserService {
                 .password(bCryptPasswordEncoder.encode(localUserInfo.password()))
                 .email(localUserInfo.email())
                 .nickname(localUserInfo.nickname())
-                .socialType(localUserInfo.socialType())
-                .thumbnailImageUrl(localUserInfo.thumbnail_image_url())
+                .socialType(SocialType.local)
                 .build();
         validateDuplicateEmail(userEntity);
         userRepository.save(userEntity);
