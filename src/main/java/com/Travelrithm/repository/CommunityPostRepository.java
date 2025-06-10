@@ -35,5 +35,13 @@ public interface CommunityPostRepository extends JpaRepository<CommunityPostEnti
         ORDER BY COUNT(c) DESC
     """)
     List<PlanEntity> findTopPopularPlanByRegion(@Param("regionId") Integer regionId, Pageable pageable);
+    @Query("""
+        SELECT p
+        FROM CommunityPostEntity c
+        JOIN c.planEntity p
+        WHERE p.regionEntity.regionId = :regionId
+        GROUP BY p
+    """)
+    List<PlanEntity> findTopPlanByRegion(@Param("regionId") Integer regionId);
 }
 

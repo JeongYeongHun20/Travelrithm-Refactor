@@ -1,5 +1,6 @@
 package com.Travelrithm.controller;
 
+import com.Travelrithm.domain.PlanEntity;
 import com.Travelrithm.dto.CommunityPostRequestDto;
 import com.Travelrithm.dto.CommunityPostResponseDto;
 import com.Travelrithm.dto.ScrapDto;
@@ -94,5 +95,11 @@ public class CommunityPostController {
     public ResponseEntity<List<CommunityPostResponseDto>> getMyPlanPosts(@AuthenticationPrincipal CustomUserDetails userDetails) {
         Integer userId = userDetails.getUserId();
         return ResponseEntity.ok(communityPostService.getMyPlanPosts(userId));
+    }
+
+    @GetMapping("/regionId")
+    public ResponseEntity<List<PlanEntity>> getPostRegionId(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable(name = "regionId") Integer regionId) {
+        Integer userId = userDetails.getUserId();
+        return ResponseEntity.ok(communityPostService.getPostRegionId(regionId));
     }
 }

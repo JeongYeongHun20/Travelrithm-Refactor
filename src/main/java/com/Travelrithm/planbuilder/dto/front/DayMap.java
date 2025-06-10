@@ -20,7 +20,7 @@ public record DayMap(
             Location locations,
             String category,
             String description,
-            Img img
+            String img
     ){
         public record Img(
                 String src,
