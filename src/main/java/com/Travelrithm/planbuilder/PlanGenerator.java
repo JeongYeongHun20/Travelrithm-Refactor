@@ -60,11 +60,17 @@ public class PlanGenerator {
             }
         }
         log.info(String.valueOf(allLocations.size()));
-        Map<String, Double> avgResult = calLocation(allLocations);
 
-        avgLat = String.valueOf(avgResult.get("avgLat"));
-        avgLon = String.valueOf(avgResult.get("avgLon"));
-        avgRadius = avgResult.get("avgRadius");
+        if(allLocations.size()==1){ //사용자 입력 장소가 하나일때
+            avgLat = String.valueOf(allLocations.getFirst().y());
+            avgLon = String.valueOf(allLocations.getFirst().x());
+        }else{
+            Map<String, Double> avgResult = calLocation(allLocations);
+            avgLat = String.valueOf(avgResult.get("avgLat"));
+            avgLon = String.valueOf(avgResult.get("avgLon"));
+            avgRadius = avgResult.get("avgRadius");
+        }
+
         if (avgRadius > 200000.0) avgRadius = 200000.0;
         if (avgRadius < 5000.0) avgRadius = 5000.0;
 
@@ -141,41 +147,44 @@ public class PlanGenerator {
                     .boxed()
                     .sorted(Comparator.comparingDouble(i -> path[originIdx][i]))
                     .toList();
+            log.info("sortedIndices success");
 
             List<DayMap.Content> sortedContent = sortedIndices.stream()
                     .map(contents::get)
                     .toList();
 
-            if(transportMode==TransportMode.transit){
-                Location BusoriginLocaiton = sortedContent.getFirst().locations();
-                List<Location> Buslists = sortedContent.subList(1, sortedContent.size()).stream().map(DayMap.Content::locations).toList();
-                List<TmapPathResponseDto> tmapPathResponseDtos = new ArrayList<>();
-                for (Location content : Buslists) {
-                    TmapPathResponseDto tmapPathResponseDto = tmapPathService.getPath(new TmapPathRequestDto(
-                            String.valueOf(BusoriginLocaiton.x()),
-                            String.valueOf(BusoriginLocaiton.y()),
-                            String.valueOf(content.x()),
-                            String.valueOf(content.y()),
-                            "json",
-                            1,
-                            ""));
-                    BusoriginLocaiton = content;
-                    tmapPathResponseDtos.add(tmapPathResponseDto);
+            if(size>1){
+                if (transportMode == TransportMode.transit) {
+                    Location BusoriginLocaiton = sortedContent.getFirst().locations();
+                    List<Location> Buslists = sortedContent.subList(1, sortedContent.size()).stream().map(DayMap.Content::locations).toList();
+                    List<TmapPathResponseDto> tmapPathResponseDtos = new ArrayList<>();
+                    for (Location content : Buslists) {
+                        TmapPathResponseDto tmapPathResponseDto = tmapPathService.getPath(new TmapPathRequestDto(
+                                String.valueOf(BusoriginLocaiton.x()),
+                                String.valueOf(BusoriginLocaiton.y()),
+                                String.valueOf(content.x()),
+                                String.valueOf(content.y()),
+                                "json",
+                                1,
+                                ""));
+                        BusoriginLocaiton = content;
+                        tmapPathResponseDtos.add(tmapPathResponseDto);
+                    }
+                    busPathResponseDtos.put(dayIndex, tmapPathResponseDtos);
                 }
-                busPathResponseDtos.put(dayIndex, tmapPathResponseDtos);
-            }
 
-            Location originLocaiton = sortedContent.getFirst().locations();
-            List<Location> list = sortedContent.subList(1, sortedContent.size() - 1).stream().map(DayMap.Content::locations).toList();
-            Location destinationLocaiton = sortedContent.getLast().locations();
+                Location originLocaiton = sortedContent.getFirst().locations();
+                List<Location> list = sortedContent.subList(1, sortedContent.size() - 1).stream().map(DayMap.Content::locations).toList();
+                Location destinationLocaiton = sortedContent.getLast().locations();
 
-            if(transportMode==TransportMode.car){
-                WaypointRequestDto waypointRequestDto = new WaypointRequestDto(originLocaiton, destinationLocaiton, list,2,true);
-                WayPointResponseDto paths = kakaoMobilityService.getPaths(waypointRequestDto);
-                wayPointResponseDtos.add(paths);
+                if (transportMode == TransportMode.car) {
+                    WaypointRequestDto waypointRequestDto = new WaypointRequestDto(originLocaiton, destinationLocaiton, list, 2, true);
+                    WayPointResponseDto paths = kakaoMobilityService.getPaths(waypointRequestDto);
+                    wayPointResponseDtos.add(paths);
+                }
+                sortedContent
+                        .forEach(this::calFatitgue);
             }
-            sortedContent
-                    .forEach(this::calFatitgue);
 
             result.put(dayIndex, sortedContent);
             commonResponseDtos.put(dayIndex, translatePrefer(preference));
@@ -250,14 +259,16 @@ public class PlanGenerator {
         for (int dayIndex = 0; dayIndex < stringListMap.size(); dayIndex++) {
             List<DayMap.Content> contents = stringListMap.get(dayIndex).content();
             List<Item> items = stringListMap1.get(dayIndex);
-
+            if(contents==null||items==null)continue;
             List<PlaceInfo.Place> places = new ArrayList<>();
             for (DayMap.Content content : contents) {
                 places.add(new PlaceInfo.Place(content.keyword(),content.img(), content.locations().x(), content.locations().y()));
             }
-            for (Item item : items) {
-                places.add(new PlaceInfo.Place(item.title(), !item.firstimage().isEmpty()?item.firstimage():item.firstimage2(), safeParse(item.mapx()), safeParse(item.mapy())));
-            }
+
+                for (Item item : items) {
+                    places.add(new PlaceInfo.Place(item.title(), !item.firstimage().isEmpty() ? item.firstimage() : item.firstimage2(), safeParse(item.mapx()), safeParse(item.mapy())));
+                }
+
             placeInfo.add(new PlaceInfo(dayIndex, places));
         }
         for (PlaceInfo p : placeInfo) {

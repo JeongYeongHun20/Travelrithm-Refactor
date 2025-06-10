@@ -32,7 +32,6 @@ public class UserService {
                 .name(kakaoUserInfo.kakao_account().profile().nickname())
                 .email(kakaoUserInfo.kakao_account().email())
                 .password(bCryptPasswordEncoder.encode(UUID.randomUUID().toString()))
-                .thumbnailImageUrl(kakaoUserInfo.kakao_account().profile().thumbnail_image_url())
                 .nickname(kakaoUserInfo.kakao_account().profile().nickname())
                 .build();
         validateDuplicateEmail(userEntity);

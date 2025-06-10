@@ -12,6 +12,5 @@ public record UserRequestDto(
         String email,
         String nickname,
         SocialType socialType,
-        LocalDateTime createdAt,
-        String thumbnail_image_url
+        LocalDateTime createdAt
 ) {}

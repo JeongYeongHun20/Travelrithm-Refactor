@@ -15,8 +15,8 @@ public record UserResponseDto(
         String email,
         String nickname,
         SocialType socialType,
-        LocalDateTime createdAt,
-        String thumbnail_image_url)
+        LocalDateTime createdAt
+)
 {
     public UserResponseDto(UserEntity userEntity) {
         this(
@@ -25,8 +25,7 @@ public record UserResponseDto(
                 userEntity.getEmail(),
                 userEntity.getNickname(),
                 userEntity.getSocialType(),
-                userEntity.getCreatedAt(),
-                userEntity.getThumbnailImageUrl()
+                userEntity.getCreatedAt()
         );
 
 
