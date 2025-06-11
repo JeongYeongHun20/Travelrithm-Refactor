@@ -21,7 +21,7 @@ public class LoginPageController {
     public ResponseEntity<Map<String, String>> loginPage() {
         Map<String, String> response = new HashMap<>();
         response.put("naverLocation", naverLoginService.buildAuthorizeUrl());
-        response.put("location", kakaoLoginService.buildAuthorizeUrl());
+        response.put("kakaoLocation", kakaoLoginService.buildAuthorizeUrl());
         return ResponseEntity.ok(response);
     }
 }
