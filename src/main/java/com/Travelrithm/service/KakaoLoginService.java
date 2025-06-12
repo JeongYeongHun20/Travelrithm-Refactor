@@ -27,8 +27,6 @@ public class KakaoLoginService {
     @Value("${kakao.redirect_url}")
     private String redirect_url;
 
-    @Value("${kakao.local_redirect_url}")
-    private String local_redirect_url;
 
     private final String KAKAO_BASE_URL = "https://kauth.kakao.com";
     private final String KAKAO_USER_URL = "https://kapi.kakao.com";

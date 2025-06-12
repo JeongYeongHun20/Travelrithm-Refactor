@@ -26,7 +26,7 @@ public class KakaoLoginController {
     private final UserService userService;
     private final JWTUtil jwtUtil;
 
-    @GetMapping("/kakaologin")
+    @GetMapping("/login")
     public ResponseEntity<Map<String, String>> loginPage() {
         String location = kakaoLoginService.buildAuthorizeUrl();
         Map<String, String> response = new HashMap<>();
