@@ -69,7 +69,7 @@ public class SecurityConfig {
                                 "/region",
                                 "/post",
                                 "/api/kakao/login",
-                                "/kakao/callback",
+                                "/api/kakao/callback",
                                 "/api/naver/login",
                                 "/api/naver/callback",
                                 "/api/social/login"
