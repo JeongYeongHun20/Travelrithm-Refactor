@@ -3,7 +3,7 @@ package com.Travelrithm.controller;
 
 import com.Travelrithm.dto.KakaoUserResponseDto;
 import com.Travelrithm.dto.UserResponseDto;
-import com.Travelrithm.security.jwt.JwtTokenProvider;
+import com.Travelrithm.security.jwt.JWTUtil;
 import com.Travelrithm.service.KakaoLoginService;
 import com.Travelrithm.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +23,7 @@ import java.util.Map;
 public class KakaoLoginController {
     private final KakaoLoginService kakaoLoginService;
     private final UserService userService;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final JWTUtil jwtUtil;
 
     @GetMapping("/login")
     public ResponseEntity<Map<String, String>> loginPage() {
@@ -38,7 +38,7 @@ public class KakaoLoginController {
         String accessToken = kakaoLoginService.getAccessToken(code);
         KakaoUserResponseDto userInfo = kakaoLoginService.getUserInfo(accessToken);
         UserResponseDto userDto = userService.createUser(userInfo);
-        String jwtToken = jwtTokenProvider.generateToken(userDto.email()); // 또는 userDto.getEmail() 등
+        String jwtToken = jwtUtil.createJwt(userDto.userId(),userDto.email(),"user",24*60*60*1000L); // 또는 userDto.getEmail() 등
 
         String redirectUrl = "https://travelrithm.kro.kr/Main?token=" + jwtToken;
 
