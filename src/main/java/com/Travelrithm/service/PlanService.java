@@ -67,8 +67,8 @@ public class PlanService {
     public PlanResponseDto findPlanById(Integer planId) {
         PlanEntity planEntity = planRepository.findById(planId)
                 .orElseThrow(() -> new IllegalArgumentException("해당플랜이 존재하지 않습니다"));
-        Optional<CommunityPostEntity> postOpt = postRepository.findByPlanEntity(planEntity);
-        String postContent = postOpt.map(CommunityPostEntity::getPostContent).orElse(null);
+        List<CommunityPostEntity> postOpt = postRepository.findByPlanEntity(planEntity);
+        String postContent = postOpt.isEmpty() ? null : postOpt.get(0).getPostContent();
         return new PlanResponseDto(planEntity, postContent);
     }
 
@@ -76,8 +76,8 @@ public class PlanService {
     public List<PlanResponseDto> findPlans(Integer userId) {
         List<PlanEntity> plans = planRepository.findAllByUserEntity_UserId(userId);
         return plans.stream().map(plan -> {
-            Optional<CommunityPostEntity> postOpt = postRepository.findByPlanEntity(plan);
-            String postContent = postOpt.map(CommunityPostEntity::getPostContent).orElse(null);
+            List<CommunityPostEntity> postOpt = postRepository.findByPlanEntity(plan);
+            String postContent = postOpt.isEmpty() ? null : postOpt.get(0).getPostContent();
             return new PlanResponseDto(plan, postContent);
         }).toList();
     }
@@ -91,8 +91,8 @@ public class PlanService {
         List<PlaceEntity> updatePlaces = getPlaceEntities(planDto, planEntity);
         planEntity.getPlaceEntities().addAll(updatePlaces);
 
-        Optional<CommunityPostEntity> postOpt = postRepository.findByPlanEntity(planEntity);
-        String postContent = postOpt.map(CommunityPostEntity::getPostContent).orElse(null);
+        List<CommunityPostEntity> postOpt = postRepository.findByPlanEntity(planEntity);
+        String postContent = postOpt.isEmpty() ? null : postOpt.get(0).getPostContent();
 
         return new PlanResponseDto(planEntity, postContent);
     }
