@@ -22,7 +22,7 @@ public interface CommunityPostRepository extends JpaRepository<CommunityPostEnti
 
     List<CommunityPostEntity> findAllByUserEntity_UserIdAndIsTravelPlanTrue(Integer userId);
 
-    Optional<CommunityPostEntity> findByPlanEntity(PlanEntity planEntity);
+    List<CommunityPostEntity> findByPlanEntity(PlanEntity planEntity);
 
 
     // 인기 plan 조회 (region 기준)
