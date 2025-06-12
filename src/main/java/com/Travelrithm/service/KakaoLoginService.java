@@ -25,10 +25,10 @@ public class KakaoLoginService {
     @Value("${kakao.client_id}")
     private String client_id;
     @Value("${kakao.redirect_url}")
-    private String redirect_uri;
+    private String redirect_url;
 
     @Value("${kakao.local_redirect_url}")
-    private String local_redirect_uri;
+    private String local_redirect_url;
 
     private final String KAKAO_BASE_URL = "https://kauth.kakao.com";
     private final String KAKAO_USER_URL = "https://kapi.kakao.com";
@@ -38,7 +38,7 @@ public class KakaoLoginService {
                 .path("/oauth/authorize")
                 .queryParam("response_type", "code")
                 .queryParam("client_id", client_id)
-                .queryParam("redirect_uri", redirect_uri)
+                .queryParam("redirect_uri", redirect_url)
                 .build()
                 .toUriString();
     }
@@ -52,7 +52,7 @@ public class KakaoLoginService {
                 .uri("/oauth/token")
                 .body(BodyInserters.fromFormData("grant_type", "authorization_code")
                         .with("client_id", client_id)
-                        .with("redirect_uri", redirect_uri)
+                        .with("redirect_uri", redirect_url)
                         .with("code", code))
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, clientResponse -> Mono.error(new RuntimeException("Client Error")))

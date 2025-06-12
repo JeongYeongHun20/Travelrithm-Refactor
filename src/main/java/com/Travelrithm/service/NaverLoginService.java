@@ -29,8 +29,8 @@ public class NaverLoginService {
     @Value("${naver.client_secret}")
     private String client_secret;
 
-    @Value("${naver.redirect_uri}")
-    private String redirect_uri;
+    @Value("${naver.redirect_url}")
+    private String redirect_url;
 
     private final String NAVER_BASE_URL = "https://nid.naver.com";
     private final String NAVER_USER_URL = "https://openapi.naver.com";
@@ -46,7 +46,7 @@ public class NaverLoginService {
                 .path("/oauth2.0/authorize")
                 .queryParam("response_type", "code")
                 .queryParam("client_id", client_id)
-                .queryParam("redirect_uri", redirect_uri)
+                .queryParam("redirect_uri", redirect_url)
                 .queryParam("state", state)  // 랜덤 state 값 사용
                 .build()
                 .toUriString();
@@ -63,7 +63,7 @@ public class NaverLoginService {
                 .body(BodyInserters.fromFormData("grant_type", "authorization_code")
                         .with("client_id", client_id)
                         .with("client_secret", client_secret)
-                        .with("redirect_uri", redirect_uri)
+                        .with("redirect_uri", redirect_url)
                         .with("code", code)
                         .with("state", state))
                 .retrieve()

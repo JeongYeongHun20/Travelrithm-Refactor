@@ -21,11 +21,12 @@ import java.util.Map;
 @RequestMapping("/api/kakao")
 @Slf4j
 public class KakaoLoginController {
+
     private final KakaoLoginService kakaoLoginService;
     private final UserService userService;
     private final JWTUtil jwtUtil;
 
-    @GetMapping("/login")
+    @GetMapping("/kakaologin")
     public ResponseEntity<Map<String, String>> loginPage() {
         String location = kakaoLoginService.buildAuthorizeUrl();
         Map<String, String> response = new HashMap<>();
@@ -40,7 +41,7 @@ public class KakaoLoginController {
         UserResponseDto userDto = userService.createUser(userInfo);
         String jwtToken = jwtUtil.createJwt(userDto.userId(),userDto.email(),"user",24*60*60*1000L); // 또는 userDto.getEmail() 등
 
-        String redirectUrl = "https://travelrithm.kro.kr/Main?token=" + jwtToken;
+        String redirectUrl = "http://localhost:3000/Main?token=" + jwtToken;
 
         return new RedirectView(redirectUrl);
 //        return ResponseEntity.ok(userDto);
