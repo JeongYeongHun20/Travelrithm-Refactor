@@ -96,10 +96,4 @@ public class CommunityPostController {
         Integer userId = userDetails.getUserId();
         return ResponseEntity.ok(communityPostService.getMyPlanPosts(userId));
     }
-
-    @GetMapping("/regionId")
-    public ResponseEntity<List<PlanEntity>> getPostRegionId(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable(name = "regionId") Integer regionId) {
-        Integer userId = userDetails.getUserId();
-        return ResponseEntity.ok(communityPostService.getPostRegionId(regionId));
-    }
 }

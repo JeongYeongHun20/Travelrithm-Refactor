@@ -153,10 +153,5 @@ public class CommunityPostService {
                 .toList();
     }
 
-    @Transactional
-    public List<PlanEntity> getPostRegionId(Integer regionId) {
-        return postRepository.findTopPlanByRegion(regionId);
-    }
-
 }
 
