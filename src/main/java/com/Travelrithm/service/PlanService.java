@@ -6,9 +6,14 @@ import com.Travelrithm.domain.PlaceEntity;
 import com.Travelrithm.domain.PlanEntity;
 import com.Travelrithm.domain.RegionEntity;
 import com.Travelrithm.domain.UserEntity;
+import com.Travelrithm.dto.CompletPlanResponseDto;
 import com.Travelrithm.dto.PlaceDto;
 import com.Travelrithm.dto.PlanRequestDto;
 import com.Travelrithm.dto.PlanResponseDto;
+import com.Travelrithm.planbuilder.dto.front.Location;
+import com.Travelrithm.planbuilder.dto.kakao.mobility.WayPointResponseDto;
+import com.Travelrithm.planbuilder.dto.kakao.mobility.WaypointRequestDto;
+import com.Travelrithm.planbuilder.kakaomobility.KakaoMobilityService;
 import com.Travelrithm.repository.CommunityPostRepository;
 import com.Travelrithm.repository.PlanRepository;
 import com.Travelrithm.repository.RegionRepository;
@@ -19,8 +24,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -32,6 +37,7 @@ public class PlanService {
     private final UserRepository userRepository;
     private final RegionRepository regionRepository;
     private final CommunityPostRepository postRepository;
+    private final KakaoMobilityService kakaoMobilityService;
 
     public PlanResponseDto createPlan(Integer userId, PlanRequestDto planRequestDto){
         UserEntity userEntity = userRepository.findById(userId)
@@ -116,5 +122,49 @@ public class PlanService {
     public void deletePlan(Integer planId){
         planRepository.deleteById(planId);
     }
+
+
+    public CompletPlanResponseDto planPath(Integer planId) {
+        List<WayPointResponseDto> wayPointResponseDtos=new ArrayList<>();
+        PlanResponseDto plan = findPlanById(planId);
+        Map<Integer, List<PlaceDto>> placesByDay = plan.places().stream()
+                .collect(Collectors.groupingBy(
+                        PlaceDto::day,
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                list -> list.stream()
+                                        .sorted(Comparator.comparingInt(PlaceDto::sequence))
+                                        .toList()
+                        )
+                ));
+        for (Map.Entry<Integer, List<PlaceDto>> entry : placesByDay.entrySet()) {
+            Integer day = entry.getKey();
+            List<PlaceDto> dayPlaces = entry.getValue();
+
+            if (dayPlaces.size() < 2) continue; // 경로 구성이 불가능할 경우 건너뜀
+
+            PlaceDto origin = dayPlaces.get(0);
+            PlaceDto destination = dayPlaces.get(dayPlaces.size() - 1);
+            List<PlaceDto> waypoints = dayPlaces.subList(1, dayPlaces.size() - 1); // 중간 경유지
+
+            List<Location> waypointLocations = waypoints.stream()
+                    .map(p -> new Location(p.lng().doubleValue(), p.lat().doubleValue()))
+                    .toList();
+
+            // 경로 요청
+            WayPointResponseDto path = kakaoMobilityService.getPaths(new WaypointRequestDto(new Location(origin.lng().doubleValue(), origin.lat().doubleValue()),
+                    new Location(destination.lng().doubleValue(), destination.lat().doubleValue()),
+                    waypointLocations,2,true)
+            );
+
+            wayPointResponseDtos.add(path);
+        }
+
+        return new CompletPlanResponseDto(wayPointResponseDtos, placesByDay);
+
+    }
+
+
+
 }
 
