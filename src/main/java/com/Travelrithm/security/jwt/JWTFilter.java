@@ -79,7 +79,7 @@ public class JWTFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request){
         String path = request.getRequestURI();
-        return path.startsWith("/api/kakao/login") ||
+        return path.startsWith("/api/kakao/kakaologin") ||
                 path.startsWith("/api/kakao/callback") ||
                 path.startsWith("/api/social/login") ||
                 path.startsWith("/api/naver/callback");
