@@ -41,7 +41,7 @@ public class KakaoLoginController {
         UserResponseDto userDto = userService.createUser(userInfo);
         String jwtToken = jwtUtil.createJwt(userDto.userId(),userDto.email(),"user",24*60*60*1000L); // 또는 userDto.getEmail() 등
 
-        String redirectUrl = "http://localhost:3000/Main?token=" + jwtToken;
+        String redirectUrl = "https://travelrithm.kro.kr/Main?token=" + jwtToken;
 
         return new RedirectView(redirectUrl);
 //        return ResponseEntity.ok(userDto);
