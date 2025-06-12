@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -25,19 +26,21 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-    public UserResponseDto createUser(KakaoUserResponseDto kakaoUserInfo) {
-        UserEntity userEntity = UserEntity.builder()
-                .socialId(kakaoUserInfo.id())
-                .socialType(SocialType.kakao)
-                .name(kakaoUserInfo.kakao_account().profile().nickname())
-                .email(kakaoUserInfo.kakao_account().email())
-                .password(bCryptPasswordEncoder.encode(UUID.randomUUID().toString()))
-                .nickname(kakaoUserInfo.kakao_account().profile().nickname())
-                .build();
-        validateDuplicateEmail(userEntity);
-        userRepository.save(userEntity);
 
-        return new UserResponseDto(userEntity);
+    public UserResponseDto createUser(KakaoUserResponseDto kakaoUserInfo) {
+        UserEntity user = userRepository.findByEmail(kakaoUserInfo.kakao_account().email())
+                .orElseGet(() -> {
+                    UserEntity newUser = UserEntity.builder()
+                            .socialId(kakaoUserInfo.id())
+                            .socialType(SocialType.kakao)
+                            .name(kakaoUserInfo.kakao_account().profile().nickname())
+                            .email(kakaoUserInfo.kakao_account().email())
+                            .password(bCryptPasswordEncoder.encode(UUID.randomUUID().toString()))
+                            .nickname(kakaoUserInfo.kakao_account().profile().nickname())
+                            .build();
+                    return userRepository.save(newUser);
+                });
+        return new UserResponseDto(user);
     }
 
     public UserResponseDto createUser(NaverUserResponseDto naverUserInfo) {

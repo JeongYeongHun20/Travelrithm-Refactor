@@ -76,4 +76,12 @@ public class JWTFilter extends OncePerRequestFilter {
 
         filterChain.doFilter(request, response);
     }
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request){
+        String path = request.getRequestURI();
+        return path.startsWith("/api/kakao/login") ||
+                path.startsWith("/api/kakao/callback") ||
+                path.startsWith("/api/social/login") ||
+                path.startsWith("/api/naver/callback");
+    }
 }
