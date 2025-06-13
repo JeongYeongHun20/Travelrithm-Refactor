@@ -36,9 +36,8 @@ public class NaverLoginController {
         String accessToken = naverLoginService.getAccessToken(code);
         NaverUserResponseDto userInfo = naverLoginService.getUserInfo(accessToken);
         UserResponseDto userDto = userService.createUser(userInfo);
-        String jwtToken = jwtUtil.createJwt(userDto.userId(),userDto.email(),"user",24*60*60*1000L);
+        String jwtToken = jwtUtil.createJwt(userDto.userId(),userDto.email(),"user",24*60*60*1000L); // 또는 userDto.getEmail() 등
         String redirectUrl = "https://travelrithm.kro.kr/Main?token=" + jwtToken;
-
         return new RedirectView(redirectUrl);
     }
 }
