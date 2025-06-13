@@ -31,7 +31,7 @@ public class UserEntity {
 
     @Enumerated(EnumType.STRING)
     private SocialType socialType;
-    private Long socialId;
+    private String socialId;
 
     @CreationTimestamp
     @Column(updatable = false)

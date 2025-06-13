@@ -31,7 +31,7 @@ public class UserService {
         UserEntity user = userRepository.findByEmail(kakaoUserInfo.kakao_account().email())
                 .orElseGet(() -> {
                     UserEntity newUser = UserEntity.builder()
-                            .socialId(kakaoUserInfo.id())
+                            .socialId(String.valueOf(kakaoUserInfo.id()))
                             .socialType(SocialType.kakao)
                             .name(kakaoUserInfo.kakao_account().profile().nickname())
                             .email(kakaoUserInfo.kakao_account().email())
@@ -44,21 +44,20 @@ public class UserService {
     }
 
     public UserResponseDto createUser(NaverUserResponseDto naverUserInfo) {
-        Long socialId = Long.valueOf(naverUserInfo.response().id());
+        UserEntity user = userRepository.findByEmail(naverUserInfo.response().email())
+                .orElseGet(() -> {
+                    UserEntity newUser = UserEntity.builder()
+                            .socialId(naverUserInfo.response().id())
+                            .socialType(SocialType.naver)
+                            .name(naverUserInfo.response().name())
+                            .email(naverUserInfo.response().email())
+                            .password(bCryptPasswordEncoder.encode(UUID.randomUUID().toString()))
+                            .nickname(naverUserInfo.response().nickname())
+                            .build();
+                    return userRepository.save(newUser);
+                });
 
-        UserEntity userEntity = UserEntity.builder()
-                .socialId(socialId)
-                .socialType(SocialType.naver)
-                .name(naverUserInfo.response().name())
-                .email(naverUserInfo.response().email())
-                .password(bCryptPasswordEncoder.encode(UUID.randomUUID().toString()))
-                .nickname(naverUserInfo.response().nickname())
-                .build();
-
-        validateDuplicateEmail(userEntity);
-        userRepository.save(userEntity);
-
-        return new UserResponseDto(userEntity);
+        return new UserResponseDto(user);
     }
 
     public UserResponseDto createUser(UserRequestDto localUserInfo) {
