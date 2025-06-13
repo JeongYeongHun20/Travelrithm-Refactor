@@ -81,7 +81,7 @@ public class JWTFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
         return path.equals("/api/kakao/login") ||
                 path.equals("/api/kakao/callback") ||
-                path.equals("/api/social/login") ||
+                path.equals("/api/naver/login") ||
                 path.equals("/api/naver/callback");
     }
 }
