@@ -265,11 +265,13 @@ public class PlanGenerator {
                 places.add(new PlaceInfo.Place(content.keyword(),content.img(), content.locations().x(), content.locations().y()));
             }
 
-            if (items == null) continue;
+            if (items != null) {
+                for (Item item : items) {
+                    places.add(new PlaceInfo.Place(item.title(), !item.firstimage().isEmpty() ? item.firstimage() : item.firstimage2(), safeParse(item.mapx()), safeParse(item.mapy())));
+                }
+            };
 
-            for (Item item : items) {
-                places.add(new PlaceInfo.Place(item.title(), !item.firstimage().isEmpty() ? item.firstimage() : item.firstimage2(), safeParse(item.mapx()), safeParse(item.mapy())));
-            }
+
 
             placeInfo.add(new PlaceInfo(dayIndex, places));
         }
