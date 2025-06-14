@@ -198,7 +198,7 @@ public class PlanGenerator {
     private Map<String, List<Item>> translatePrefer(String preference) {
         Map<String, List<Item>> commonResponseDtos = new HashMap<>();
         log.info("getCategory start");
-        if (preference.equals("자연")) {
+        if (preference.equals("nature")) {
             if (fatigue <= 3 && fatigue >= -3) {
                 commonResponseDtos.put("자연 관광지", publicService.getCategory(new DataRequestDto(avgLon, avgLat, String.valueOf(avgRadius), CATEGORY_MAP.get("자연"))));
                 commonResponseDtos.put("역사 관광지", publicService.getCategory(new DataRequestDto(avgLon, avgLat, String.valueOf(avgRadius), CATEGORY_MAP.get("역사"))));
@@ -215,7 +215,7 @@ public class PlanGenerator {
                 commonResponseDtos.put("역사 관광지", publicService.getCategory(new DataRequestDto(avgLon, avgLat, String.valueOf(avgRadius), CATEGORY_MAP.get("역사"))));
             }
         }
-        if (preference.equals("문화")) {
+        if (preference.equals("culture")) {
             if (fatigue <= 3 && fatigue >= -3) {
                 commonResponseDtos.put("문화 관광지", publicService.getCategory(new DataRequestDto(avgLon, avgLat, String.valueOf(avgRadius), CATEGORY_MAP.get("문화"))));
                 commonResponseDtos.put("체험 관광지", publicService.getCategory(new DataRequestDto(avgLon, avgLat, String.valueOf(avgRadius), CATEGORY_MAP.get("체험"))));
@@ -232,7 +232,7 @@ public class PlanGenerator {
                 commonResponseDtos.put("체험 관광지", publicService.getCategory(new DataRequestDto(avgLon, avgLat, String.valueOf(avgRadius), CATEGORY_MAP.get("체험"))));
             }
         }
-        if (preference.equals("액티비티")) {
+        if (preference.equals("activity")) {
             if (fatigue <= 3 && fatigue >= -3) {
                 commonResponseDtos.put("액티비티 관광지", publicService.getCategory(new DataRequestDto(avgLon, avgLat, String.valueOf(avgRadius), CATEGORY_MAP.get("액티비티"))));
                 commonResponseDtos.put("휴양 관광지", publicService.getCategory(new DataRequestDto(avgLon, avgLat, String.valueOf(avgRadius), CATEGORY_MAP.get("휴양"))));
