@@ -259,15 +259,17 @@ public class PlanGenerator {
         for (int dayIndex = 0; dayIndex < stringListMap.size(); dayIndex++) {
             List<DayMap.Content> contents = stringListMap.get(dayIndex).content();
             List<Item> items = stringListMap1.get(dayIndex);
-            if(contents==null||items==null)continue;
             List<PlaceInfo.Place> places = new ArrayList<>();
+
             for (DayMap.Content content : contents) {
                 places.add(new PlaceInfo.Place(content.keyword(),content.img(), content.locations().x(), content.locations().y()));
             }
 
-                for (Item item : items) {
-                    places.add(new PlaceInfo.Place(item.title(), !item.firstimage().isEmpty() ? item.firstimage() : item.firstimage2(), safeParse(item.mapx()), safeParse(item.mapy())));
-                }
+            if (items == null) continue;
+
+            for (Item item : items) {
+                places.add(new PlaceInfo.Place(item.title(), !item.firstimage().isEmpty() ? item.firstimage() : item.firstimage2(), safeParse(item.mapx()), safeParse(item.mapy())));
+            }
 
             placeInfo.add(new PlaceInfo(dayIndex, places));
         }
