@@ -34,7 +34,7 @@ class UserServiceSocialTest {
     @ParameterizedTest
     @MethodSource("provideSocialInfo")
     @DisplayName("소셜별 인터페이스 구현체에 따른 엔티티 생성 검증")
-    void createUser_ShouldHandleVariousSocialProviders(
+    void createOAuthUser_ShouldHandleVariousSocialProviders(
             String email, String name, SocialType socialType, String SocialId) {
 
         UserRegisterInfo info = mock(UserRegisterInfo.class);
@@ -51,7 +51,7 @@ class UserServiceSocialTest {
         when(userRepository.save(any(UserEntity.class))).thenAnswer(inv -> inv.getArgument(0));
 
         // 4. 실행
-        UserResponseDto result = userService.createUser(info);
+        UserResponseDto result = userService.createOAuthUser(info);
 
         // 5. 검증
         assertAll(
@@ -64,9 +64,9 @@ class UserServiceSocialTest {
     private static Stream<Arguments> provideSocialInfo() {
         return Stream.of(
                 // 이메일, 이름, 소셜타입, 제공ID, 예상되는SocialId문자열
-                Arguments.of("google@gmail.com", "네이버", SocialType.naver, "123"),
-                Arguments.of("kakao@kakao.com", "카카오", SocialType.kakao,  "456"),
-                Arguments.of("local@test.com", "로컬", SocialType.local, null)
+                Arguments.of("google@gmail.com", "네이버", SocialType.NAVER, "123"),
+                Arguments.of("kakao@kakao.com", "카카오", SocialType.KAKAO,  "456"),
+                Arguments.of("local@test.com", "로컬", SocialType.LOCAL, null)
                 // ↑ 현재 코드의 String.valueOf(null) 때문에 "null"이 나옴을 확인하는 케이스
         );
     }

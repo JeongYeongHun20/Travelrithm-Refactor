@@ -1,6 +1,7 @@
 package com.Travelrithm.service;
 
 
+import com.Travelrithm.domain.SocialType;
 import com.Travelrithm.dto.KakaoTokenResponseDto;
 import com.Travelrithm.dto.register.KakaoUserResponseDto;
 import com.Travelrithm.dto.register.UserRegisterInfo;
@@ -25,14 +26,14 @@ public class KakaoLoginService implements OAuthService{
 
     @Value("${kakao.client_id}")
     private String client_id;
-    @Value("${kakao.redirect_url}")
+    @Value("${kakao.local_redirect_url}")
     private String redirect_url;
 
 
     private final String KAKAO_BASE_URL = "https://kauth.kakao.com";
     private final String KAKAO_USER_URL = "https://kapi.kakao.com";
     @Override
-    public String getProvider(){return "kakao";}
+    public SocialType getProvider(){return SocialType.KAKAO;}
     @Override
     public String buildAuthorizeUrl(){
         return UriComponentsBuilder.fromUriString(KAKAO_BASE_URL)

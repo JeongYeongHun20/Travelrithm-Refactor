@@ -24,9 +24,8 @@ public class SecurityConfig {
 
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JWTUtil jwtUtil;
-
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+    public AuthenticationManager  authenticationManager(AuthenticationConfiguration configuration) throws Exception {
 
         return configuration.getAuthenticationManager();
     }
@@ -37,7 +36,8 @@ public class SecurityConfig {
     }
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-
+        LoginFilter loginFilter = new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil);
+        loginFilter.setFilterProcessesUrl("/auth/login");
         //csrf disable
         http.csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors
@@ -62,26 +62,18 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers(
-                                "/",
-                                "/login",
-                                "/join",
-                                "/users",
-                                "/region",
-                                "/post",
-                                "/api/kakao/login",
-                                "/api/kakao/callback",
-                                "/api/naver/login",
-                                "/api/naver/callback",
-                                "/api/social/login"
+                                "/auth/**",
+                                "/users"
                         ).permitAll()
-                        .requestMatchers("/admin").hasRole("ADMIN")
-                        .anyRequest().authenticated()
+
                 );
         http
-                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JWTFilter(jwtUtil),UsernamePasswordAuthenticationFilter.class);
 
         http
-                .addFilterBefore(new JWTFilter(jwtUtil),LoginFilter.class);
+                .addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class);
+
+
         //세션 설정
         http
                 .sessionManagement((session) -> session

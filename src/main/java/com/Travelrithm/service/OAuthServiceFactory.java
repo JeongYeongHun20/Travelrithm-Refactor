@@ -1,5 +1,6 @@
 package com.Travelrithm.service;
 
+import com.Travelrithm.domain.SocialType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -9,13 +10,13 @@ import java.util.stream.Collectors;
 
 @Component
 public class OAuthServiceFactory {
-    private final Map<String, OAuthService> services;
+    private final Map<SocialType, OAuthService> services;
 
     public OAuthServiceFactory(List<OAuthService> services){
         this.services=services.stream()
                 .collect(Collectors.toMap(OAuthService::getProvider, service->service));
     }
-    public OAuthService getService(String provider){
+    public OAuthService getService(SocialType provider){
         return services.get(provider);
     }
 

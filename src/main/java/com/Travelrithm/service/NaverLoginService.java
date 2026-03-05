@@ -1,5 +1,6 @@
 package com.Travelrithm.service;
 
+import com.Travelrithm.domain.SocialType;
 import com.Travelrithm.dto.NaverTokenResponseDto;
 import com.Travelrithm.dto.register.NaverUserResponseDto;
 import io.netty.handler.codec.http.HttpHeaderValues;
@@ -19,7 +20,7 @@ import java.util.UUID;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class NaverLoginService {
+public class NaverLoginService implements OAuthService{
 
     private final WebClient.Builder webClientBuilder;
 
@@ -40,6 +41,10 @@ public class NaverLoginService {
         return UUID.randomUUID().toString();
     }
 
+    @Override
+    public SocialType getProvider(){return SocialType.NAVER;}
+
+    @Override
     public String buildAuthorizeUrl(){
         String state = generateState();
         return UriComponentsBuilder.fromUriString(NAVER_BASE_URL)
@@ -52,7 +57,7 @@ public class NaverLoginService {
                 .toUriString();
     }
 
-    // state 매개변수가 있는 메서드
+    @Override
     public NaverUserResponseDto login(String code, String state) {
         WebClient webClient = webClientBuilder
                 .baseUrl(NAVER_BASE_URL)

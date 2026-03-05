@@ -33,26 +33,22 @@ public class JWTFilter extends OncePerRequestFilter {
         //Authorization 헤더 검증
         if (authorization == null || !authorization.startsWith("Bearer ")) {
 
-            log.info("token null");
+            log.info("doFilterInternal(): token null");
             filterChain.doFilter(request, response);
 
             //조건이 해당되면 메소드 종료 (필수)
             return;
         }
         log.info("authorization now");
-        //Bearer 부분 제거 후 순수 토큰만 획득
         String token = authorization.split(" ")[1];
 
-        //토큰 소멸 시간 검증
         if (jwtUtil.isExpired(token)) {
 
             log.info("token expired");
             filterChain.doFilter(request, response);
 
-            //조건이 해당되면 메소드 종료 (필수)
             return;
         }
-        //토큰에서 username과 role 획득
         String username = jwtUtil.getUsername(token);
         Integer userId = jwtUtil.getUserId(token);
         String role = jwtUtil.getRole(token);

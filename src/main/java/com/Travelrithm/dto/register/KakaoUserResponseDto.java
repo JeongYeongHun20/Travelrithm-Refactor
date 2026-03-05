@@ -36,7 +36,7 @@ public record KakaoUserResponseDto(
 
     @Override
     public SocialType getSocialType() {
-        return SocialType.kakao;
+        return SocialType.KAKAO;
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)

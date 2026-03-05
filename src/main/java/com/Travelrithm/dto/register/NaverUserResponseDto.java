@@ -31,7 +31,7 @@ public record NaverUserResponseDto(
 
     @Override
     public SocialType getSocialType() {
-        return SocialType.kakao;
+        return SocialType.NAVER;
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)

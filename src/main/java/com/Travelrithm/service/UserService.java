@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -25,7 +24,7 @@ public class UserService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
 
-    public UserResponseDto createUser(UserRegisterInfo userRegisterInfo){
+    public UserResponseDto createOAuthUser(UserRegisterInfo userRegisterInfo){
         UserEntity user = userRepository.findByEmail(userRegisterInfo.getEmail())
                 .orElseGet(() -> {
                     UserEntity newUser = UserEntity.builder()
@@ -33,7 +32,6 @@ public class UserService {
                             .socialType(userRegisterInfo.getSocialType())
                             .name(userRegisterInfo.getName())
                             .email(userRegisterInfo.getEmail())
-                            .password(bCryptPasswordEncoder.encode(UUID.randomUUID().toString()))
                             .nickname(userRegisterInfo.getNickName())
                             .build();
                     return userRepository.save(newUser);
@@ -41,11 +39,33 @@ public class UserService {
 
         return new UserResponseDto(user);/*** 차후에 userNotfoundException에러를 던져야됨***/
     }
+    public UserResponseDto createUser(UserRequestDto userRegisterInfo){
+        UserEntity user = userRepository.findByEmail(userRegisterInfo.email())
+                .orElseGet(() -> {
+                    UserEntity newUser = UserEntity.builder()
+                            .socialId(null)
+                            .socialType(userRegisterInfo.socialType())
+                            .name(userRegisterInfo.name())
+                            .email(userRegisterInfo.email())
+                            .password(bCryptPasswordEncoder.encode(userRegisterInfo.password()))
+                            .nickname(userRegisterInfo.nickname())
+                            .build();
+                    return userRepository.save(newUser);
+                });
+
+        return new UserResponseDto(user);/*** 차후에 userNotfoundException에러를 던져야됨***/
+    }
+
 
     @Transactional(readOnly = true)
     public UserResponseDto findUser(Integer id) {
         UserEntity user = userRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+        return new UserResponseDto(user);
+    }
+    public UserResponseDto findUser(String email){
+        UserEntity user=userRepository.findByEmail(email)
+                .orElseThrow(()->new IllegalArgumentException("존재하지 않는 사용자 입니다. "));
         return new UserResponseDto(user);
     }
 

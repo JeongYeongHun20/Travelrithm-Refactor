@@ -19,11 +19,13 @@ public class UserController {
     private final UserService userService;
 
 
-    @PostMapping
+    @PostMapping("/local")
     public ResponseEntity<UserResponseDto> createUser(@RequestBody UserRequestDto userRequestDto) {
         System.out.println(userRequestDto.name());
         return ResponseEntity.ok(userService.createUser(userRequestDto));
     }
+
+
 
 
     @GetMapping

@@ -2,12 +2,14 @@ package com.Travelrithm.security.jwt;
 
 import com.Travelrithm.domain.UserEntity;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
+@Slf4j
 @RequiredArgsConstructor
 public class CustomUserDetails implements UserDetails {
 
@@ -29,12 +31,14 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public String getPassword() {
+
+        log.info(userEntity.getPassword());
         return userEntity.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return userEntity.getName();
+        return userEntity.getEmail();
     }
 
     @Override
