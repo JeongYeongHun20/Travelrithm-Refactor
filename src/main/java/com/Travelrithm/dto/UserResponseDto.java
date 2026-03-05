@@ -15,6 +15,7 @@ public record UserResponseDto(
         String email,
         String nickname,
         SocialType socialType,
+        String socialId,
         LocalDateTime createdAt
 )
 {
@@ -25,6 +26,7 @@ public record UserResponseDto(
                 userEntity.getEmail(),
                 userEntity.getNickname(),
                 userEntity.getSocialType(),
+                userEntity.getSocialId(),
                 userEntity.getCreatedAt()
         );
 

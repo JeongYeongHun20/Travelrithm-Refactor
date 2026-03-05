@@ -1,6 +1,7 @@
-package com.Travelrithm.dto;
+package com.Travelrithm.dto.register;
 
 
+import com.Travelrithm.domain.SocialType;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 
@@ -12,7 +13,32 @@ public record KakaoUserResponseDto(
         Boolean has_signed_up,
         Date connected_at,
         KakaoAccount kakao_account
-) {
+)implements UserRegisterInfo {
+    @Override
+    public String getName() {
+        return kakao_account().name;
+    }
+
+    @Override
+    public String getEmail() {
+        return kakao_account().email();
+    }
+
+    @Override
+    public String getNickName() {
+        return kakao_account().profile().nickname();
+    }
+
+    @Override
+    public String getSocialId() {
+        return String.valueOf(this.id());
+    }
+
+    @Override
+    public SocialType getSocialType() {
+        return SocialType.kakao;
+    }
+
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record KakaoAccount(
         String email,

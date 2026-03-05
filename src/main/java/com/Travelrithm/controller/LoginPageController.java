@@ -11,7 +11,7 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/social")
+@RequestMapping("/social")
 public class LoginPageController {
 
     private final NaverLoginService naverLoginService;

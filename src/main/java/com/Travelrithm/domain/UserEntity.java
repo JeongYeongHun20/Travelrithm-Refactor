@@ -1,7 +1,7 @@
 package com.Travelrithm.domain;
 
 
-import com.Travelrithm.dto.UserRequestDto;
+import com.Travelrithm.dto.register.UserRequestDto;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;

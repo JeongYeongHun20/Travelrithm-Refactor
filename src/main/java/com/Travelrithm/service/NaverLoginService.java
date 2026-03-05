@@ -1,7 +1,7 @@
 package com.Travelrithm.service;
 
 import com.Travelrithm.dto.NaverTokenResponseDto;
-import com.Travelrithm.dto.NaverUserResponseDto;
+import com.Travelrithm.dto.register.NaverUserResponseDto;
 import io.netty.handler.codec.http.HttpHeaderValues;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -53,7 +53,7 @@ public class NaverLoginService {
     }
 
     // state 매개변수가 있는 메서드
-    public String getAccessToken(String code, String state) {
+    public NaverUserResponseDto login(String code, String state) {
         WebClient webClient = webClientBuilder
                 .baseUrl(NAVER_BASE_URL)
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, HttpHeaderValues.APPLICATION_X_WWW_FORM_URLENCODED.toString())
@@ -73,15 +73,10 @@ public class NaverLoginService {
                 .block();
         if(naverTokenResponseDto.access_token() == null)
             log.info("-----------token null-----------");
-        return naverTokenResponseDto.access_token();
+        return getUserInfo(naverTokenResponseDto.access_token());
     }
 
-    // state 매개변수가 없는 기존 메서드 (호환성 유지)
-    public String getAccessToken(String code) {
-        return getAccessToken(code, "STATE_STRING");
-    }
-
-    public NaverUserResponseDto getUserInfo(String token) {
+    private NaverUserResponseDto getUserInfo(String token) {
         WebClient webClient = webClientBuilder
                 .baseUrl(NAVER_USER_URL)
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, HttpHeaderValues.APPLICATION_X_WWW_FORM_URLENCODED.toString())

@@ -1,6 +1,6 @@
 package com.Travelrithm.controller;
 
-import com.Travelrithm.dto.UserRequestDto;
+import com.Travelrithm.dto.register.UserRequestDto;
 import com.Travelrithm.dto.UserResponseDto;
 import com.Travelrithm.security.jwt.CustomUserDetails;
 import com.Travelrithm.service.UserService;

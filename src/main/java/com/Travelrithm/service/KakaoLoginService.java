@@ -2,7 +2,8 @@ package com.Travelrithm.service;
 
 
 import com.Travelrithm.dto.KakaoTokenResponseDto;
-import com.Travelrithm.dto.KakaoUserResponseDto;
+import com.Travelrithm.dto.register.KakaoUserResponseDto;
+import com.Travelrithm.dto.register.UserRegisterInfo;
 import io.netty.handler.codec.http.HttpHeaderValues;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +19,7 @@ import reactor.core.publisher.Mono;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class KakaoLoginService {
+public class KakaoLoginService implements OAuthService{
 
     private final WebClient.Builder webClientBuilder;
 
@@ -30,7 +31,9 @@ public class KakaoLoginService {
 
     private final String KAKAO_BASE_URL = "https://kauth.kakao.com";
     private final String KAKAO_USER_URL = "https://kapi.kakao.com";
-
+    @Override
+    public String getProvider(){return "kakao";}
+    @Override
     public String buildAuthorizeUrl(){
         return UriComponentsBuilder.fromUriString(KAKAO_BASE_URL)
                 .path("/oauth/authorize")
@@ -40,8 +43,8 @@ public class KakaoLoginService {
                 .build()
                 .toUriString();
     }
-
-    public String getAccessToken(String code) {
+    @Override
+    public UserRegisterInfo login(String code, String state) {
         WebClient webClient = webClientBuilder
                 .baseUrl(KAKAO_BASE_URL)
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, HttpHeaderValues.APPLICATION_X_WWW_FORM_URLENCODED.toString())
@@ -59,11 +62,11 @@ public class KakaoLoginService {
                 .block();
             if(kakaoTokenResponseDto.access_token()==null)
                 log.info("-----------kakao token null-----------");
-            return kakaoTokenResponseDto.access_token();
+            return getUserInfo(kakaoTokenResponseDto.access_token());
 
     }
 
-    public KakaoUserResponseDto getUserInfo(String token) {
+    private KakaoUserResponseDto getUserInfo(String token) {
         WebClient webClient = webClientBuilder
                 .baseUrl(KAKAO_USER_URL)
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, HttpHeaderValues.APPLICATION_X_WWW_FORM_URLENCODED.toString())
