@@ -9,13 +9,17 @@ import io.netty.handler.codec.http.HttpHeaderValues;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatusCode;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
+
+import java.net.URI;
 
 @Slf4j
 @Service
@@ -44,45 +48,52 @@ public class KakaoLoginService implements OAuthService{
                 .build()
                 .toUriString();
     }
+
     @Override
     public UserRegisterInfo login(String code, String state) {
-        WebClient webClient = webClientBuilder
-                .baseUrl(KAKAO_BASE_URL)
-                .defaultHeader(HttpHeaders.CONTENT_TYPE, HttpHeaderValues.APPLICATION_X_WWW_FORM_URLENCODED.toString())
-                .build();
-        KakaoTokenResponseDto kakaoTokenResponseDto=webClient.post()
-                .uri("/oauth/token")
-                .body(BodyInserters.fromFormData("grant_type", "authorization_code")
-                        .with("client_id", client_id)
-                        .with("redirect_uri", redirect_url)
-                        .with("code", code))
-                .retrieve()
-                .onStatus(HttpStatusCode::is4xxClientError, clientResponse -> Mono.error(new RuntimeException("Client Error")))
-                .onStatus(HttpStatusCode::is5xxServerError, clientResponse -> Mono.error(new RuntimeException("Server Error")))
-                .bodyToMono(KakaoTokenResponseDto.class)
-                .block();
-            if(kakaoTokenResponseDto.access_token()==null)
-                log.info("-----------kakao token null-----------");
-            return getUserInfo(kakaoTokenResponseDto.access_token());
+        URI uri = UriComponentsBuilder
+                .fromUriString(KAKAO_BASE_URL)
+                .path("/oauth/token")
+                .build()
+                .toUri();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("grant_type", "authorization_code");
+        params.add("client_id", client_id);
+        params.add("redirect_uri", redirect_url);
+        params.add("code", code);
+
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
+
+        RestTemplate rt = new RestTemplate();
+        KakaoTokenResponseDto response = rt.postForObject(uri, request, KakaoTokenResponseDto.class);
+        if (response.access_token()==null){
+            throw new RuntimeException("카카오 토큰을 받아오지 못함");
+        }
+        return getUserInfo(response.access_token());
     }
 
     private KakaoUserResponseDto getUserInfo(String token) {
-        WebClient webClient = webClientBuilder
-                .baseUrl(KAKAO_USER_URL)
-                .defaultHeader(HttpHeaders.CONTENT_TYPE, HttpHeaderValues.APPLICATION_X_WWW_FORM_URLENCODED.toString())
-                .build();
-        KakaoUserResponseDto userInfo = webClient.get()
-                .uri("/v2/user/me")
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
-                .retrieve()
-                .onStatus(HttpStatusCode::is4xxClientError, clientResponse -> Mono.error(new RuntimeException("Client Error")))
-                .onStatus(HttpStatusCode::is5xxServerError, clientResponse -> Mono.error(new RuntimeException("Server Error")))
-                .bodyToMono(KakaoUserResponseDto.class)
-                .block();
+        URI uri=UriComponentsBuilder
+                .fromUriString(KAKAO_USER_URL)
+                .path("/v2/user/me")
+                .build()
+                .toUri();
+        HttpHeaders headers=new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        headers.setBearerAuth(token);
+        HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
+        RestTemplate rt=new RestTemplate();
+        ResponseEntity<KakaoUserResponseDto> response = rt.exchange(
+                uri,
+                HttpMethod.GET,
+                requestEntity,
+                KakaoUserResponseDto.class
+        );
+        return response.getBody();
 
-
-        return userInfo;
     }
 
 
