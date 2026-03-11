@@ -56,6 +56,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         CustomUserDetails customUserDetails=(CustomUserDetails)authentication.getPrincipal();
         String username = customUserDetails.getUsername();
         Integer userId = customUserDetails.getUserId();
+        String nickname= customUserDetails.geNickname();
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
         GrantedAuthority auth = iterator.next();
@@ -63,7 +64,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String role = auth.getAuthority();
 
         //1일짜리 토큰
-        String token = jwtUtil.createJwt(userId, username, role, 24*60*60*1000L);
+        String token = jwtUtil.createJwt(userId, username, nickname, role, 24*60*60*1000L);
 
         response.addHeader("Authorization", "Bearer "+token);
 

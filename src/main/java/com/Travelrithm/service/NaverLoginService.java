@@ -30,29 +30,24 @@ public class NaverLoginService implements OAuthService{
     @Value("${naver.client_secret}")
     private String client_secret;
 
-    @Value("${naver.redirect_url}")
+    @Value("${naver.local_redirect_url}")
     private String redirect_url;
 
     private final String NAVER_BASE_URL = "https://nid.naver.com";
     private final String NAVER_USER_URL = "https://openapi.naver.com";
 
-    // 고유한 state 값 생성 (보안 이슈) (CSRF 방지)
-    private String generateState() {
-        return UUID.randomUUID().toString();
-    }
 
     @Override
     public SocialType getProvider(){return SocialType.NAVER;}
 
     @Override
-    public String buildAuthorizeUrl(){
-        String state = generateState();
+    public String buildAuthorizeUrl(String state){
         return UriComponentsBuilder.fromUriString(NAVER_BASE_URL)
                 .path("/oauth2.0/authorize")
                 .queryParam("response_type", "code")
                 .queryParam("client_id", client_id)
                 .queryParam("redirect_uri", redirect_url)
-                .queryParam("state", state)  // 랜덤 state 값 사용
+                .queryParam("state", state)
                 .build()
                 .toUriString();
     }

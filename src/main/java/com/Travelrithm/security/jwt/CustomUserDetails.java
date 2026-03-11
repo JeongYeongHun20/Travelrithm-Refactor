@@ -4,6 +4,7 @@ import com.Travelrithm.domain.UserEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
@@ -17,16 +18,17 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-
         Collection<GrantedAuthority> collection = new ArrayList<>();
-
-        collection.add((GrantedAuthority) userEntity::getRole);
+        collection.add(new SimpleGrantedAuthority(userEntity.getRole()));
 
         return collection;
     }
 
     public Integer getUserId() {
         return userEntity.getUserId();
+    }
+    public String geNickname(){
+        return userEntity.getNickname();
     }
 
     @Override

@@ -6,6 +6,6 @@ import com.Travelrithm.dto.register.UserRegisterInfo;
 
 public interface OAuthService {
     SocialType getProvider();
-    String buildAuthorizeUrl();
+    String buildAuthorizeUrl(String state);
     UserRegisterInfo login(String code, String state);
 }

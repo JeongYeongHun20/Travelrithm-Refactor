@@ -39,7 +39,7 @@ public class KakaoLoginService implements OAuthService{
     @Override
     public SocialType getProvider(){return SocialType.KAKAO;}
     @Override
-    public String buildAuthorizeUrl(){
+    public String buildAuthorizeUrl(String state){
         return UriComponentsBuilder.fromUriString(KAKAO_BASE_URL)
                 .path("/oauth/authorize")
                 .queryParam("response_type", "code")

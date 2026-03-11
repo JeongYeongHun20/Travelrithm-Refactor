@@ -3,6 +3,7 @@ package com.Travelrithm.security.jwt;
 import com.Travelrithm.domain.UserEntity;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -23,49 +24,46 @@ public class JWTFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        // 요청 URI 출력
         String requestURI = request.getRequestURI();
         log.info("Requested URI: {}", requestURI);
 
-        //request에서 Authorization 헤더를 찾음
-        String authorization = request.getHeader("Authorization");
 
-        //Authorization 헤더 검증
-        if (authorization == null || !authorization.startsWith("Bearer ")) {
+        String token =resolveTokenFromCookie(request);
 
-            log.info("doFilterInternal(): token null");
+        if (token == null) {
+            log.info("doFilterInternal(): No JWT token found in cookies");
             filterChain.doFilter(request, response);
-
-            //조건이 해당되면 메소드 종료 (필수)
             return;
         }
         log.info("authorization now");
-        String token = authorization.split(" ")[1];
 
-        if (jwtUtil.isExpired(token)) {
-
-            log.info("token expired");
+        try {
+            if (jwtUtil.isExpired(token)) {
+                log.info("Token has expired");
+                filterChain.doFilter(request, response);
+                return;
+            }
+        } catch (Exception e) {
+            log.error("Token validation failed: {}", e.getMessage());
             filterChain.doFilter(request, response);
-
             return;
         }
-        String username = jwtUtil.getUsername(token);
+        String email = jwtUtil.getUsername(token);
         Integer userId = jwtUtil.getUserId(token);
         String role = jwtUtil.getRole(token);
-
+        String nickname= jwtUtil.getNickname(token);
         //userEntity를 생성하여 값 set
         UserEntity userEntity = UserEntity.builder()
                 .userId(userId)
-                .name(username)
+                .email(email)
+                .nickname(nickname)
                 .password("temppassword") //요청시마다 db룰 조회하기에 임시값을 설정한다
                 .role(role)
                 .build();
-        
 
-        //UserDetails에 회원 정보 객체 담기
+
         CustomUserDetails customUserDetails = new CustomUserDetails(userEntity);
 
-        //스프링 시큐리티 인증 토큰 생성
         Authentication authToken = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
         //세션에 사용자 등록
         SecurityContextHolder.getContext().setAuthentication(authToken);
@@ -75,9 +73,17 @@ public class JWTFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request){
         String path = request.getRequestURI();
-        return path.equals("/api/kakao/login") ||
-                path.equals("/api/kakao/callback") ||
-                path.equals("/api/naver/login") ||
-                path.equals("/api/naver/callback");
+        return path.startsWith("/auth/login/**") || path.startsWith("/auth/callback/**");
+    }
+    private String resolveTokenFromCookie(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("accessToken".equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
+        }
+        return null;
     }
 }

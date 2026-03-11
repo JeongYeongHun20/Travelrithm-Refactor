@@ -38,7 +38,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         LoginFilter loginFilter = new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil);
         loginFilter.setFilterProcessesUrl("/auth/login");
-        //csrf disable
+
         http.csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors
                         .configurationSource(request -> {
@@ -52,20 +52,18 @@ public class SecurityConfig {
                         })
                 );
 
-        //From 로그인 방식 disable
         http.formLogin(AbstractHttpConfigurer::disable);
 
-        //http basic 인증 방식 disable
         http.httpBasic(AbstractHttpConfigurer::disable);
 
-        //경로별 인가 작업
         http
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers(
                                 "/auth/**",
                                 "/users"
                         ).permitAll()
-
+                .requestMatchers("/auth/me").authenticated()
+                .anyRequest().authenticated()
                 );
         http
                 .addFilterBefore(new JWTFilter(jwtUtil),UsernamePasswordAuthenticationFilter.class);
@@ -74,7 +72,6 @@ public class SecurityConfig {
                 .addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class);
 
 
-        //세션 설정
         http
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
