@@ -7,14 +7,19 @@ import io.netty.handler.codec.http.HttpHeaderValues;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatusCode;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
 
+import java.math.BigInteger;
+import java.net.URI;
+import java.security.SecureRandom;
 import java.util.UUID;
 
 @Slf4j
@@ -36,6 +41,11 @@ public class NaverLoginService implements OAuthService{
     private final String NAVER_BASE_URL = "https://nid.naver.com";
     private final String NAVER_USER_URL = "https://openapi.naver.com";
 
+    @Override
+    public String generateState(){
+        SecureRandom sr=new SecureRandom();
+        return new BigInteger(130, sr).toString(32);
+    }
 
     @Override
     public SocialType getProvider(){return SocialType.NAVER;}
@@ -54,43 +64,45 @@ public class NaverLoginService implements OAuthService{
 
     @Override
     public NaverUserResponseDto login(String code, String state) {
-        WebClient webClient = webClientBuilder
-                .baseUrl(NAVER_BASE_URL)
-                .defaultHeader(HttpHeaders.CONTENT_TYPE, HttpHeaderValues.APPLICATION_X_WWW_FORM_URLENCODED.toString())
-                .build();
-        NaverTokenResponseDto naverTokenResponseDto = webClient.post()
-                .uri("/oauth2.0/token")
-                .body(BodyInserters.fromFormData("grant_type", "authorization_code")
-                        .with("client_id", client_id)
-                        .with("client_secret", client_secret)
-                        .with("redirect_uri", redirect_url)
-                        .with("code", code)
-                        .with("state", state))
-                .retrieve()
-                .onStatus(HttpStatusCode::is4xxClientError, clientResponse -> Mono.error(new RuntimeException("Client Error")))
-                .onStatus(HttpStatusCode::is5xxServerError, clientResponse -> Mono.error(new RuntimeException("Server Error")))
-                .bodyToMono(NaverTokenResponseDto.class)
-                .block();
-        if(naverTokenResponseDto.access_token() == null)
-            log.info("-----------token null-----------");
-        return getUserInfo(naverTokenResponseDto.access_token());
+        URI uri = UriComponentsBuilder
+                .fromUriString(NAVER_BASE_URL)
+                .path("/oauth2.0/token")
+                .queryParam("grant_type", "authorization_code")
+                .queryParam("client_id", client_id)
+                .queryParam("client_secret", client_secret)
+                .queryParam("redirect_uri", redirect_url)
+                .queryParam("code", code)
+                .queryParam("state", state)
+                .build()
+                .encode()
+                .toUri();
+
+        RestTemplate rt = new RestTemplate();
+        NaverTokenResponseDto response = rt.getForObject(uri, NaverTokenResponseDto.class);
+
+        if (response.access_token()==null){
+            throw new RuntimeException("네이버 토큰을 받아오지 못함");
+        }
+        return getUserInfo(response.access_token());
     }
 
     private NaverUserResponseDto getUserInfo(String token) {
-        WebClient webClient = webClientBuilder
-                .baseUrl(NAVER_USER_URL)
-                .defaultHeader(HttpHeaders.CONTENT_TYPE, HttpHeaderValues.APPLICATION_X_WWW_FORM_URLENCODED.toString())
-                .build();
-        NaverUserResponseDto userInfo = webClient.get()
-                .uri("/v1/nid/me")
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
-                .retrieve()
-                .onStatus(HttpStatusCode::is4xxClientError, clientResponse -> Mono.error(new RuntimeException("Client Error")))
-                .onStatus(HttpStatusCode::is5xxServerError, clientResponse -> Mono.error(new RuntimeException("Server Error")))
-                .bodyToMono(NaverUserResponseDto.class)
-                .block();
-
-        log.info("[Naver Service] ID: " + userInfo.response().id());
-        return userInfo;
+        URI uri=UriComponentsBuilder
+                .fromUriString(NAVER_USER_URL)
+                .path("/v1/nid/me")
+                .build()
+                .toUri();
+        HttpHeaders headers=new HttpHeaders();
+        headers.setBearerAuth(token);
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        HttpEntity<Void> request=new HttpEntity<>(headers);
+        RestTemplate rt=new RestTemplate();
+        ResponseEntity<NaverUserResponseDto> response=rt.exchange(
+                uri,
+                HttpMethod.GET,
+                request,
+                NaverUserResponseDto.class
+        );
+        return response.getBody();
     }
 }

@@ -30,13 +30,13 @@ public class CommunityPostController {
 
     @PostMapping("/createPost")
     public CommunityPostResponseDto createPost(@AuthenticationPrincipal CustomUserDetails userDetails,@RequestBody CommunityPostRequestDto request) {
-        Integer userId = userDetails.getUserId();
+        Long userId = userDetails.getUserId();
         return postService.createPost(userId, request);
     }
 
     @GetMapping("/getPosts")
     public List<CommunityPostResponseDto> getPosts(@AuthenticationPrincipal CustomUserDetails userDetails) {
-        Integer userId = userDetails.getUserId();
+        Long userId = userDetails.getUserId();
         return postService.getAllPosts(userId);
     }
 
@@ -57,7 +57,7 @@ public class CommunityPostController {
 
     @GetMapping("/{postId}/scrap")
     public ScrapDto toggleScrap(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable(name = "postId") Integer postId) {
-        Integer userId=userDetails.getUserId();
+        Long userId=userDetails.getUserId();
         return scrapService.createScrap(userId, postId);
 
     }
@@ -68,7 +68,7 @@ public class CommunityPostController {
     }
     @DeleteMapping("/{postId}/scrap")
     public ResponseEntity<Void> unToggleScrap(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable(name = "postId") Integer postId) {
-        Integer userId=userDetails.getUserId();
+        Long userId=userDetails.getUserId();
         scrapService.removeScrap(userId,postId);
 
         return ResponseEntity.noContent().build();
@@ -93,7 +93,7 @@ public class CommunityPostController {
 
     @GetMapping("/myPlans")
     public ResponseEntity<List<CommunityPostResponseDto>> getMyPlanPosts(@AuthenticationPrincipal CustomUserDetails userDetails) {
-        Integer userId = userDetails.getUserId();
+        Long userId = userDetails.getUserId();
         return ResponseEntity.ok(communityPostService.getMyPlanPosts(userId));
     }
 }

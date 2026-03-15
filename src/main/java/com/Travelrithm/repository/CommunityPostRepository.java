@@ -15,12 +15,12 @@ import java.util.Optional;
 @Repository
 public interface CommunityPostRepository extends JpaRepository<CommunityPostEntity, Integer> {
 
-    List<CommunityPostEntity> findAllByUserEntity_UserId(Integer userId);
+    List<CommunityPostEntity> findAllByUserEntity_UserId(Long userId);
 
     Page<CommunityPostEntity> findAllByIsTravelPlanTrue(Pageable pageable);   // 플랜게시판
     Page<CommunityPostEntity> findAllByIsTravelPlanFalse(Pageable pageable);  // 자유게시판
 
-    List<CommunityPostEntity> findAllByUserEntity_UserIdAndIsTravelPlanTrue(Integer userId);
+    List<CommunityPostEntity> findAllByUserEntity_UserIdAndIsTravelPlanTrue(Long userId);
 
     List<CommunityPostEntity> findByPlanEntity(PlanEntity planEntity);
 

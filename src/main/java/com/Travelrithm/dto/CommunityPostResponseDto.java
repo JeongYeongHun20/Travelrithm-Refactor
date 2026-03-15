@@ -8,7 +8,7 @@ import java.util.List;
 
 public record CommunityPostResponseDto(
         Integer postId,
-        Integer userId,
+        Long userId,
         String title,
         String postContent,
         Boolean isTravelPlan,

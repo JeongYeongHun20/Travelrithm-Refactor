@@ -49,7 +49,7 @@ public class JWTFilter extends OncePerRequestFilter {
             return;
         }
         String email = jwtUtil.getUsername(token);
-        Integer userId = jwtUtil.getUserId(token);
+        Long userId = jwtUtil.getUserId(token);
         String role = jwtUtil.getRole(token);
         String nickname= jwtUtil.getNickname(token);
         //userEntity를 생성하여 값 set

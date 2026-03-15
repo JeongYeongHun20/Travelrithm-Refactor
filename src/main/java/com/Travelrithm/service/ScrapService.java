@@ -28,7 +28,7 @@ public class ScrapService {
     private final ScrapRepository scrapRepository;
 
     @Transactional
-    public ScrapDto createScrap(Integer userId, Integer postId) {
+    public ScrapDto createScrap(Long userId, Integer postId) {
         UserEntity userEntity = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("유저 존재하지 않음"));
         CommunityPostEntity postEntity = communityPostRepository.findById(postId)
@@ -48,7 +48,7 @@ public class ScrapService {
         }
     }
 
-    public void removeScrap(Integer userId, Integer postId) {
+    public void removeScrap(Long userId, Integer postId) {
         UserEntity userEntity = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("유저 존재하지 않음"));
         CommunityPostEntity postEntity = communityPostRepository.findById(postId)
@@ -57,7 +57,7 @@ public class ScrapService {
         scrapRepository.delete(scrap);
     }
 
-    public List<ScrapDto> getMyScrap(Integer userId) {
+    public List<ScrapDto> getMyScrap(Long userId) {
         UserEntity userEntity = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("유저 존재하지 않음"));
         List<ScrapEntity> scrapEntity = scrapRepository.findByUserEntity(userEntity);

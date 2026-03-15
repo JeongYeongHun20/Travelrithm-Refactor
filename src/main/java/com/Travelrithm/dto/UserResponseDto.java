@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 
 
 public record UserResponseDto(
-        Integer userId,
+        Long userId,
         String name,
         String email,
         String nickname,

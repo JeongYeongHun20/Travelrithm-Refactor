@@ -39,7 +39,7 @@ public class PlanService {
     private final CommunityPostRepository postRepository;
     private final KakaoMobilityService kakaoMobilityService;
 
-    public PlanResponseDto createPlan(Integer userId, PlanRequestDto planRequestDto){
+    public PlanResponseDto createPlan(Long userId, PlanRequestDto planRequestDto){
         UserEntity userEntity = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("해당유저가 존재하지 않음"));
 
@@ -79,7 +79,7 @@ public class PlanService {
     }
 
     @Transactional(readOnly = true)
-    public List<PlanResponseDto> findPlans(Integer userId) {
+    public List<PlanResponseDto> findPlans(Long userId) {
         List<PlanEntity> plans = planRepository.findAllByUserEntity_UserId(userId);
         return plans.stream().map(plan -> {
             List<CommunityPostEntity> postOpt = postRepository.findByPlanEntity(plan);

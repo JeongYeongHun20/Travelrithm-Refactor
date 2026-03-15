@@ -7,6 +7,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -53,10 +55,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
             Authentication authentication
 
     ) throws IOException {
-        CustomUserDetails customUserDetails=(CustomUserDetails)authentication.getPrincipal();
-        String username = customUserDetails.getUsername();
-        Integer userId = customUserDetails.getUserId();
-        String nickname= customUserDetails.geNickname();
+        CustomUserDetails user=(CustomUserDetails)authentication.getPrincipal();
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
         GrantedAuthority auth = iterator.next();
@@ -64,17 +63,17 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String role = auth.getAuthority();
 
         //1일짜리 토큰
-        String token = jwtUtil.createJwt(userId, username, nickname, role, 24*60*60*1000L);
-
-        response.addHeader("Authorization", "Bearer "+token);
+        String jwtToken = jwtUtil.createJwt(user.getUserId(),user.getUsername(),user.geNickname(),role,24*60*60*1000L);
 
 
-        log.info("successfulAuthentication");
-
-        // 바디에도 JSON 형태로 토큰 내려주기
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        response.getWriter().write("{\"token\": \"" + token + "\"}");
+        ResponseCookie cookie = ResponseCookie.from("accessToken", jwtToken)
+                .path("/")
+                .httpOnly(true)
+                .secure(false)
+                .sameSite("Lax")
+                .maxAge(1800)
+                .build();
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
     }
 
 

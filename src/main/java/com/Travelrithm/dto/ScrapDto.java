@@ -5,7 +5,7 @@ import com.Travelrithm.domain.ScrapEntity;
 
 public record ScrapDto(
         Integer scrapId,
-        Integer userId,
+        Long userId,
         Integer postId
 
 ) {

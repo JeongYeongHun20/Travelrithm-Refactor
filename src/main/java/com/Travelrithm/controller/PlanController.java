@@ -24,13 +24,13 @@ public class PlanController {
 
     @GetMapping("myPlans")
     public ResponseEntity<List<PlanResponseDto>> myPlans(@AuthenticationPrincipal CustomUserDetails userDetails) {
-        Integer userId = userDetails.getUserId();
+        Long userId = userDetails.getUserId();
         return ResponseEntity.ok(planService.findPlans(userId));
     }
 
     @PostMapping("/createPlan")
     public ResponseEntity<PlanResponseDto> createPlan(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody PlanRequestDto planDto) {
-        Integer userId = userDetails.getUserId();
+        Long userId = userDetails.getUserId();
         return ResponseEntity.ok(planService.createPlan(userId, planDto));
 
 

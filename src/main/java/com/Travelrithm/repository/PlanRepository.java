@@ -12,7 +12,7 @@ import java.util.Optional;
 
 @Repository
 public interface PlanRepository extends JpaRepository<PlanEntity, Integer> {
-    List<PlanEntity> findAllByUserEntity_UserId(Integer userId);
+    List<PlanEntity> findAllByUserEntity_UserId(Long userId);
 
     //상위 5개 데이터만 불러옴
     @Query("""

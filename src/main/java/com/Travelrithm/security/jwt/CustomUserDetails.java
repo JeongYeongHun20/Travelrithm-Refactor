@@ -24,7 +24,7 @@ public class CustomUserDetails implements UserDetails {
         return collection;
     }
 
-    public Integer getUserId() {
+    public Long getUserId() {
         return userEntity.getUserId();
     }
     public String geNickname(){

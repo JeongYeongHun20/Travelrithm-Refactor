@@ -21,7 +21,7 @@ import java.util.List;
 public class UserEntity {
 
     @Id @GeneratedValue(strategy=GenerationType.IDENTITY)
-    private Integer userId;
+    private Long userId;
     private String name;
     private String email;
     private String password;

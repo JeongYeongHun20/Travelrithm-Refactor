@@ -12,7 +12,7 @@ import lombok.*;
 @Builder
 public class CommunityCommentRequestDto {
     private Integer postId;
-    private Integer userId;
+    private Long userId;
     private String commentContent;
 
     public CommunityCommentEntity toEntity(CommunityPostEntity postEntity, UserEntity userEntity) {

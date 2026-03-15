@@ -58,7 +58,7 @@ public class UserService {
 
 
     @Transactional(readOnly = true)
-    public UserResponseDto findUser(Integer id) {
+    public UserResponseDto findUser(Long id) {
         UserEntity user = userRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
         return new UserResponseDto(user);
@@ -76,11 +76,11 @@ public class UserService {
                 .toList();
     }
 
-    public void deleteUser(Integer id){
+    public void deleteUser(Long id){
         userRepository.deleteById(id);
     }
 
-    public UserResponseDto updateUser(Integer userId, UserRequestDto updatedUserDto){
+    public UserResponseDto updateUser(Long userId, UserRequestDto updatedUserDto){
         UserEntity userEntity = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자 입니다"));
         userEntity.update(updatedUserDto);

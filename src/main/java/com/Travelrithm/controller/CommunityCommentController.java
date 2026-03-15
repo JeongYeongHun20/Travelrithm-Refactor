@@ -21,7 +21,7 @@ public class CommunityCommentController {
     public CommunityCommentResponseDto createComment(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestBody CommunityCommentRequestDto request) {
-        Integer userId = userDetails.getUserId();
+        Long userId = userDetails.getUserId();
         request.setUserId(userId); //나중에 수정해야함
         return commentService.createComment(request);
     }

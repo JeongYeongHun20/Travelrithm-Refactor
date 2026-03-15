@@ -19,21 +19,25 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
 
+import java.math.BigInteger;
 import java.net.URI;
+import java.security.SecureRandom;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class KakaoLoginService implements OAuthService{
 
-    private final WebClient.Builder webClientBuilder;
-
     @Value("${kakao.client_id}")
     private String client_id;
     @Value("${kakao.local_redirect_url}")
     private String redirect_url;
 
-
+    @Override
+    public String generateState(){
+        SecureRandom sr=new SecureRandom();
+        return new BigInteger(130, sr).toString(32);
+    }
     private final String KAKAO_BASE_URL = "https://kauth.kakao.com";
     private final String KAKAO_USER_URL = "https://kapi.kakao.com";
     @Override
@@ -45,6 +49,7 @@ public class KakaoLoginService implements OAuthService{
                 .queryParam("response_type", "code")
                 .queryParam("client_id", client_id)
                 .queryParam("redirect_uri", redirect_url)
+                .queryParam("state", state)
                 .build()
                 .toUriString();
     }
@@ -63,6 +68,7 @@ public class KakaoLoginService implements OAuthService{
         params.add("grant_type", "authorization_code");
         params.add("client_id", client_id);
         params.add("redirect_uri", redirect_url);
+        params.add("state", state);
         params.add("code", code);
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);

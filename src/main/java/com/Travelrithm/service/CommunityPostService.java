@@ -29,7 +29,7 @@ public class CommunityPostService {
     private final UserRepository userRepository;
     private final PlanRepository planRepository;
 
-    public CommunityPostResponseDto createPost(Integer userId, CommunityPostRequestDto postRequestDto) {
+    public CommunityPostResponseDto createPost(Long userId, CommunityPostRequestDto postRequestDto) {
         UserEntity userEntity = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다"));
         PlanEntity planEntity = null;
@@ -49,7 +49,7 @@ public class CommunityPostService {
     }
 
     @Transactional(readOnly = true)
-    public List<CommunityPostResponseDto> getAllPosts(Integer userId) {
+    public List<CommunityPostResponseDto> getAllPosts(Long userId) {
         return postRepository.findAllByUserEntity_UserId(userId)
                 .stream()
                 .map(CommunityPostResponseDto::fromEntity)
@@ -147,7 +147,7 @@ public class CommunityPostService {
     }
 
     @Transactional(readOnly = true)
-    public List<CommunityPostResponseDto> getMyPlanPosts(Integer userId) {
+    public List<CommunityPostResponseDto> getMyPlanPosts(Long userId) {
         return postRepository.findAllByUserEntity_UserIdAndIsTravelPlanTrue(userId).stream()
                 .map(CommunityPostResponseDto::fromEntity)
                 .toList();

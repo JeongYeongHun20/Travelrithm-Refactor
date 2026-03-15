@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 public class CommunityCommentResponseDto {
     private Integer commentId;
     private Integer postId;
-    private Integer userId;
+    private Long userId;
     private String nickname;
     private String commentContent;
     private LocalDateTime createdAt;

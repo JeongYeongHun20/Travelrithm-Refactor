@@ -8,4 +8,5 @@ public interface OAuthService {
     SocialType getProvider();
     String buildAuthorizeUrl(String state);
     UserRegisterInfo login(String code, String state);
+    String generateState();
 }

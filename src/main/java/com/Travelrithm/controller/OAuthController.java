@@ -14,7 +14,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -30,15 +32,27 @@ public class OAuthController {
     private final OAuthServiceFactory oAuthServiceFactory;
     private final JWTUtil jwtUtil;
     private final UserService userService;
-    @Value("${travelrithm.redirectUrl}")
+    @Value("${travelrithm.social_redirectUrl}")
     private String redirectUrl;
 
-    @PostMapping("/login/{provider}")
-    public ResponseEntity<Map<String,String>> login(
+    @GetMapping("/login/{provider}")
+    public RedirectView login(
             @PathVariable(name="provider") SocialType provider,
-            @RequestParam(value = "state",required = false) String state){
+            HttpServletResponse response
+    ){
         OAuthService service = oAuthServiceFactory.getService(provider);
-        return ResponseEntity.ok(Map.of("location", service.buildAuthorizeUrl(state)));
+        String state = service.generateState();
+        ResponseCookie cookie = ResponseCookie.from("state", state)
+                .path("/")
+                .httpOnly(true)
+                .secure(false)
+                .sameSite("Lax")
+                .maxAge(600)
+                .build();
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+        String location = service.buildAuthorizeUrl(state);
+
+        return new RedirectView(location);
     }
 
     @GetMapping("/callback/{provider}")
@@ -46,20 +60,26 @@ public class OAuthController {
             @PathVariable(name = "provider") SocialType provider,
             @RequestParam("code") String code,
             @RequestParam(value = "state",required = false) String state,
+            @CookieValue(value= "state", required = false) String cookieState,
             HttpServletResponse response
 
     ){
+        if (cookieState == null || !cookieState.equals(state)) {
+            throw new RuntimeException("Invalid state");
+        }
         OAuthService service = oAuthServiceFactory.getService(provider);
         UserRegisterInfo userInfo = service.login(code, state);
         UserResponseDto user = userService.createOAuthUser(userInfo);
         String jwtToken = jwtUtil.createJwt(user.userId(),user.email(),user.nickname(),"ROLE_USER",24*60*60*1000L);
 
-        Cookie cookie=new Cookie("accessToken",jwtToken);
-        cookie.setPath("/");
-        cookie.setHttpOnly(true);
-        cookie.setSecure(false);
-        cookie.setMaxAge(1800);
-        response.addCookie(cookie);
+        ResponseCookie cookie = ResponseCookie.from("accessToken", jwtToken)
+                .path("/")
+                .httpOnly(true)
+                .secure(false)
+                .sameSite("Lax")
+                .maxAge(1800)
+                .build();
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
         return new RedirectView(redirectUrl);
 
@@ -70,7 +90,7 @@ public class OAuthController {
         if (userDetails == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
         }
-        AuthUser authUser=new AuthUser(userDetails.getUsername(),userDetails.geNickname());
+        AuthUser authUser=new AuthUser(userDetails.getUserId(),userDetails.getUsername(),userDetails.geNickname());
 
         return ResponseEntity.ok(authUser);
 
