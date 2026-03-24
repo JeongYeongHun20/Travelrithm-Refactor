@@ -6,8 +6,12 @@ import io.netty.handler.codec.http.HttpHeaderValues;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.util.UriComponentsBuilder;
+
+import java.net.URI;
 
 @Service
 @RequiredArgsConstructor
@@ -56,6 +60,10 @@ public class KakaoMobilityService {
 
 
     private WebClient getWebClient() {
+        UriComponentsBuilder.fromUriString(KAKAO_MOBILITY_URL);
+        HttpHeaders headers=new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set(HttpHeaders.AUTHORIZATION,"kakaoAK"+client_id);
         return webClientBuilder
                 .baseUrl(KAKAO_MOBILITY_URL)
                 .defaultHeader(HttpHeaders.AUTHORIZATION,"KakaoAK "+client_id)

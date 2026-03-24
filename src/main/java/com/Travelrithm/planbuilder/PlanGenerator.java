@@ -24,6 +24,10 @@ import java.util.stream.IntStream;
 @Slf4j
 public class PlanGenerator {
 
+    private final KakaoMobilityService kakaoMobilityService;
+    private final PublicService publicService;
+    private final TmapPathService tmapPathService;
+
     private String avgLat;
     private String avgLon;
     private Double avgRadius = 5000.0;
@@ -43,9 +47,6 @@ public class PlanGenerator {
             "카페", "A05020900"
     );
 
-    private final KakaoMobilityService kakaoMobilityService;
-    private final PublicService publicService;
-    private final TmapPathService tmapPathService;
 
     public TotalResponseDto generatePlan(EditPlanner editPlanner) {
         this.travelDestination = editPlanner.travelDestination();

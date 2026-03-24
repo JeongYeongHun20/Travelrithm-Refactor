@@ -22,8 +22,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+
 @ExtendWith(MockitoExtension.class)
 class UserServiceSocialTest {
 
@@ -47,7 +47,7 @@ class UserServiceSocialTest {
 
         // 3. 기존 로직 모킹
         when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
-        when(bCryptPasswordEncoder.encode(anyString())).thenReturn("hashed_password");
+        lenient().when(bCryptPasswordEncoder.encode(anyString())).thenReturn("hashed_password");
         when(userRepository.save(any(UserEntity.class))).thenAnswer(inv -> inv.getArgument(0));
 
         // 4. 실행

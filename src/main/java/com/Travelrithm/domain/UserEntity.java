@@ -41,9 +41,6 @@ public class UserEntity {
     private LocalDateTime updatedAt;
     private LocalDateTime nicknameUpdatedAt;
 
-    @OneToMany(mappedBy = "userEntity", cascade = CascadeType.ALL)
-    @Builder.Default
-    private List<PlanEntity> planEntities = new ArrayList<>();
 
     public void update(UserRequestDto dto) {
         this.name = dto.name();

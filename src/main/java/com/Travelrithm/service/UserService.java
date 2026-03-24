@@ -28,7 +28,7 @@ public class UserService {
         UserEntity user = userRepository.findByEmail(userRegisterInfo.getEmail())
                 .orElseGet(() -> {
                     UserEntity newUser = UserEntity.builder()
-                            .socialId(userRegisterInfo.getSocialId()!=null?String.valueOf(userRegisterInfo.getSocialId()):null)
+                            .socialId(userRegisterInfo.getSocialId())
                             .socialType(userRegisterInfo.getSocialType())
                             .name(userRegisterInfo.getName())
                             .email(userRegisterInfo.getEmail())

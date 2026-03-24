@@ -26,9 +26,6 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class NaverLoginService implements OAuthService{
-
-    private final WebClient.Builder webClientBuilder;
-
     @Value("${naver.client_id}")
     private String client_id;
 
