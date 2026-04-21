@@ -15,7 +15,6 @@ public record CommunityPostResponseDto(
         Integer planId,
         LocalDateTime createdAt,
         LocalDateTime updatedAt,
-        String regionThumbnailUrl,
         String nickname,
         PlanResponseDto plan,
         List<PlaceDto> places,
@@ -23,17 +22,13 @@ public record CommunityPostResponseDto(
         Integer viewCount,
         Integer scrapCount,
         Integer commentCount,
-        String regionName
+        String sigunguName
 ) {
     /**
      * 정적 팩토리 메서드: CommunityPostEntity → CommunityPostResponseDto 변환
      */
     public static CommunityPostResponseDto fromEntity(CommunityPostEntity post) {
         PlanEntity plan = post.getPlanEntity();
-
-        String regionThumbnail = (plan != null && plan.getRegionEntity() != null)
-                ? plan.getRegionEntity().getThumbnailImageUrl()
-                : null;
 
         PlanResponseDto planDto = (plan != null) ? new PlanResponseDto(plan, null) : null;
 
@@ -53,7 +48,6 @@ public record CommunityPostResponseDto(
                 (plan != null) ? plan.getPlanId() : null,
                 post.getCreatedAt(),
                 post.getUpdatedAt(),
-                regionThumbnail,
                 post.getUserEntity().getNickname(),
                 planDto,
                 places,
@@ -61,7 +55,7 @@ public record CommunityPostResponseDto(
                 post.getViewCount(),
                 post.getScrapEntities().size(),
                 post.getCommentEntities().size(),
-                (plan != null && plan.getRegionEntity() != null) ? plan.getRegionEntity().getName() : null
+                plan.getRegionEntity().getSigunguName()
 
         );
     }

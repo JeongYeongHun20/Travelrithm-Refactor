@@ -7,9 +7,8 @@ import java.util.List;
 
 public record PlanResponseDto(
         Integer planId,
-        Integer regionId,
-        String RegionName,
-        String regionThumbnailUrl,
+        String sigunguCd,
+        String sigunguName,
         LocalDate startDate,
         LocalDate endDate,
         Integer companionCount,
@@ -24,9 +23,8 @@ public record PlanResponseDto(
     public PlanResponseDto(PlanEntity planEntity, String postContent) {
         this(
                 planEntity.getPlanId(),
-                planEntity.getRegionEntity().getRegionId(),
-                planEntity.getRegionEntity().getName(),
-                planEntity.getRegionEntity().getThumbnailImageUrl(),
+                planEntity.getRegionEntity().getSigunguCd(),
+                planEntity.getRegionEntity().getSigunguName(),
                 planEntity.getStartDate(),
                 planEntity.getEndDate(),
                 planEntity.getCompanionCount(),

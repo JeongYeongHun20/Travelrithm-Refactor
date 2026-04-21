@@ -1,4 +1,4 @@
-package com.Travelrithm.planbuilder.publicdata;
+package com.Travelrithm.publicdata;
 
 
 import com.Travelrithm.planbuilder.dto.publicdata.CommonResponseDto;
@@ -20,7 +20,7 @@ import java.util.Optional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class PublicService {
+public class PublicDataApi {
 
     @Value("${data.service_key}")
     private String serviceKey;
@@ -28,11 +28,10 @@ public class PublicService {
     private final String DATA_URL = "https://apis.data.go.kr/B551011/KorService2";
 
     public List<Item> getCategory(DataRequestDto dataRequestDto) {
+        log.info("Enter: getCategory");
         String cat1 = dataRequestDto.category().substring(0, 3);
         String cat2 = dataRequestDto.category();
 
-        log.info(cat1+cat2);
-        log.info("getCategory middle");
         URI uri = UriComponentsBuilder.fromHttpUrl(DATA_URL)
                 .path("/locationBasedList2")
                 .queryParam("MobileOS", "WEB")
@@ -46,22 +45,17 @@ public class PublicService {
                 .queryParam("serviceKey", serviceKey)
                 .build(true)
                 .toUri();
-        log.info(uri.toString());
 
         DataResponseDto response = Optional.ofNullable(restTemplate.getForObject(uri, DataResponseDto.class))
                 .orElse(null);
         if (response == null) return List.<Item>of((Item) null);
-
-        log.info("getCategory end: "+response.toString());
-
         return getCategoryCommon(response);
     }
 
     public List<Item> getCategoryCommon(DataResponseDto dataResponseDto) {
-        log.info("getCategoryCommon start");
+        log.info("Enter: getCategoryCommon");
         List<DataResponseDto.Response.Body.Items.Item> items = dataResponseDto.response().body().items().item();
         List<Item> resultItem = new ArrayList<>();
-        log.info("getCategoryCommon middle");
 
         for(int i=0;i<items.size();i++) {
             log.info(items.get(i).contentid());

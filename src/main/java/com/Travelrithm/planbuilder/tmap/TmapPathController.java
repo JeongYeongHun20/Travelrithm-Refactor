@@ -13,11 +13,11 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin(origins = "http://localhost:3000")
 public class TmapPathController {
 
-    private final TmapPathService tmapPathService;
+    private final TmapPathApi tmapPathApi;
 
     @PostMapping("/routes")
     public ResponseEntity<TmapPathResponseDto> findPath(@RequestBody TmapPathRequestDto tmapPathRequestDto) {
-        return ResponseEntity.ok(tmapPathService.getPath(tmapPathRequestDto));
+        return ResponseEntity.ok(tmapPathApi.getPath(tmapPathRequestDto));
 
     }
 

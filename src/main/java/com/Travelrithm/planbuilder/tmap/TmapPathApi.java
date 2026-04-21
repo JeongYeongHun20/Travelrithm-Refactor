@@ -17,7 +17,7 @@ import reactor.core.publisher.Mono;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class TmapPathService {
+public class TmapPathApi {
 
     @Value("${tmap.app_key}")
     private String appKey;

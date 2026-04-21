@@ -16,7 +16,7 @@ import reactor.core.publisher.Mono;
 
 @Service
 @RequiredArgsConstructor
-public class KakaoPlaceService {
+public class KakaoPlaceApi {
 
     @Value("${kakao.client_id}")
     private String client_id;

@@ -13,12 +13,12 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class KakaoPlaceController {
 
-    private final KakaoPlaceService kakaoPlaceService;
+    private final KakaoPlaceApi kakaoPlaceApi;
 
 
     @GetMapping("/place")
     public ResponseEntity<KakaoPlaceResopnseDto> getPlaceInfo(@RequestBody KakaoPlaceRequestDto kakaoPlaceRequestDto) {
-        return ResponseEntity.ok(kakaoPlaceService.getPlaceInfo(kakaoPlaceRequestDto));
+        return ResponseEntity.ok(kakaoPlaceApi.getPlaceInfo(kakaoPlaceRequestDto));
     }
 
 

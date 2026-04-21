@@ -14,15 +14,12 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "region")
+@Table(name = "area_code")
 public class RegionEntity {
     @Id
-    private Integer regionId;
-    private String name;
-
-    @Column(columnDefinition = "TEXT")
-    private String context;
-    private String thumbnailImageUrl;
-    private String code;
+    private String sigunguCd;
+    private String sigunguName;
+    private String areaCd;
+    private String areaName;
 
 }

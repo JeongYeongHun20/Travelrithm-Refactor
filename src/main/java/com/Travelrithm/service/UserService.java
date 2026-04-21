@@ -47,6 +47,7 @@ public class UserService {
                             .socialType(userRegisterInfo.socialType())
                             .name(userRegisterInfo.name())
                             .email(userRegisterInfo.email())
+                            .role("ROLE_USER")
                             .password(bCryptPasswordEncoder.encode(userRegisterInfo.password()))
                             .nickname(userRegisterInfo.nickname())
                             .build();

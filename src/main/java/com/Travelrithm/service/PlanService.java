@@ -13,7 +13,7 @@ import com.Travelrithm.dto.PlanResponseDto;
 import com.Travelrithm.planbuilder.dto.front.Location;
 import com.Travelrithm.planbuilder.dto.kakao.mobility.WayPointResponseDto;
 import com.Travelrithm.planbuilder.dto.kakao.mobility.WaypointRequestDto;
-import com.Travelrithm.planbuilder.kakaomobility.KakaoMobilityService;
+import com.Travelrithm.kakaomobility.KakaoMobilityApi;
 import com.Travelrithm.repository.CommunityPostRepository;
 import com.Travelrithm.repository.PlanRepository;
 import com.Travelrithm.repository.RegionRepository;
@@ -37,7 +37,7 @@ public class PlanService {
     private final UserRepository userRepository;
     private final RegionRepository regionRepository;
     private final CommunityPostRepository postRepository;
-    private final KakaoMobilityService kakaoMobilityService;
+    private final KakaoMobilityApi kakaoMobilityApi;
 
     public PlanResponseDto createPlan(Long userId, PlanRequestDto planRequestDto){
         UserEntity userEntity = userRepository.findById(userId)
@@ -46,7 +46,7 @@ public class PlanService {
         RegionEntity regionEntity = regionRepository.findById(planRequestDto.regionId())
                 .orElseThrow(() -> new IllegalArgumentException("해당지역 존재하지 않음"));
 
-        log.info(regionEntity.getName());
+        log.info(regionEntity.getAreaName());
 
         PlanEntity planEntity = PlanEntity.builder()
                 .userEntity(userEntity)
@@ -152,7 +152,7 @@ public class PlanService {
                     .toList();
 
             // 경로 요청
-            WayPointResponseDto path = kakaoMobilityService.getPaths(new WaypointRequestDto(new Location(origin.lng().doubleValue(), origin.lat().doubleValue()),
+            WayPointResponseDto path = kakaoMobilityApi.getPaths(new WaypointRequestDto(new Location(origin.lng().doubleValue(), origin.lat().doubleValue()),
                     new Location(destination.lng().doubleValue(), destination.lat().doubleValue()),
                     waypointLocations,2,true)
             );

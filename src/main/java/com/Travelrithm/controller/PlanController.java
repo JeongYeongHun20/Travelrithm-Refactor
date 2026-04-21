@@ -5,8 +5,6 @@ package com.Travelrithm.controller;
 import com.Travelrithm.dto.CompletPlanResponseDto;
 import com.Travelrithm.dto.PlanRequestDto;
 import com.Travelrithm.dto.PlanResponseDto;
-import com.Travelrithm.planbuilder.dto.kakao.mobility.WaypointRequestDto;
-import com.Travelrithm.planbuilder.kakaomobility.KakaoMobilityService;
 import com.Travelrithm.security.jwt.CustomUserDetails;
 import com.Travelrithm.service.PlanService;
 import lombok.RequiredArgsConstructor;

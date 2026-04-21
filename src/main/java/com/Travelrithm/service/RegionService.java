@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Stream;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,7 +31,7 @@ public class RegionService {
     }
 
     public List<RegionDto> getRegionByName(String name) {
-        List<RegionEntity> regions = regionRepository.findByNameContaining(name);
+        List<RegionEntity> regions = regionRepository.findBySigunguNameStartingWith(name);
         if (regions.isEmpty()) {
             throw new IllegalArgumentException("해당 지역이 존재하지 않습니다.");
         }

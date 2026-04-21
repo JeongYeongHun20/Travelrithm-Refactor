@@ -30,10 +30,10 @@ public interface CommunityPostRepository extends JpaRepository<CommunityPostEnti
         SELECT p
         FROM CommunityPostEntity c
         JOIN c.planEntity p
-        WHERE p.regionEntity.regionId = :regionId
+        WHERE p.regionEntity.sigunguCd = :sigunguCd
         GROUP BY p
         ORDER BY COUNT(c) DESC
     """)
-    List<PlanEntity> findTopPopularPlanByRegion(@Param("regionId") Integer regionId, Pageable pageable);
+    List<PlanEntity> findTopPopularPlanByRegion(@Param("regionId") String sigunguCd, Pageable pageable);
 }
 

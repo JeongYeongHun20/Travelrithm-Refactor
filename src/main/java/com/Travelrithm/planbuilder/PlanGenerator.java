@@ -8,10 +8,10 @@ import com.Travelrithm.planbuilder.dto.publicdata.Item;
 import com.Travelrithm.planbuilder.dto.publicdata.TotalResponseDto;
 import com.Travelrithm.planbuilder.dto.tmap.TmapPathRequestDto;
 import com.Travelrithm.planbuilder.dto.tmap.TmapPathResponseDto;
-import com.Travelrithm.planbuilder.kakaomobility.KakaoMobilityService;
+import com.Travelrithm.kakaomobility.KakaoMobilityApi;
 
-import com.Travelrithm.planbuilder.publicdata.PublicService;
-import com.Travelrithm.planbuilder.tmap.TmapPathService;
+import com.Travelrithm.publicdata.PublicDataApi;
+import com.Travelrithm.planbuilder.tmap.TmapPathApi;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -24,15 +24,15 @@ import java.util.stream.IntStream;
 @Slf4j
 public class PlanGenerator {
 
-    private final KakaoMobilityService kakaoMobilityService;
-    private final PublicService publicService;
-    private final TmapPathService tmapPathService;
+    private final KakaoMobilityApi kakaoMobilityApi;
+    private final PublicDataApi publicDataApi;
+    private final TmapPathApi tmapPathApi;
 
     private String avgLat;
     private String avgLon;
     private Double avgRadius = 5000.0;
     private String travelDestination;
-    private String preference="자연";
+    private String preference="nature";
     private TransportMode transportMode;
     private Integer fatigue;
     private Integer weight;
@@ -58,6 +58,7 @@ public class PlanGenerator {
         for (DayMap dayMap : dayMapList) {
             for (DayMap.Content content : dayMap.content()) {
                 allLocations.add(content.locations());
+                log.info(content.locations().x()+" "+content.locations().y());
             }
         }
         log.info(String.valueOf(allLocations.size()));
@@ -83,6 +84,9 @@ public class PlanGenerator {
         if (locations == null || locations.isEmpty()) {
             System.out.println("위치 정보가 없습니다.");
             return null;
+        }
+        for(Location location: locations){
+            log.info(location.x()+" "+location.y());
         }
 
         double sumLat = 0, sumLon = 0;
@@ -121,7 +125,7 @@ public class PlanGenerator {
             fatigue = fati;
             weight = 0;
             double[][] path = new double[size][size];
-
+            log.info("size: "+size);
             for (int i = 0; i < size; i++) {
                 for (int j = 0; j < size; j++) {
                     if (i == j) continue;
@@ -132,7 +136,7 @@ public class PlanGenerator {
                     String originStr = origin.x() + "," + origin.y();
                     String destinationStr = destination.x() + "," + destination.y();
 
-                    DestinationResponseDto response = kakaoMobilityService.getPath(
+                    DestinationResponseDto response = kakaoMobilityApi.getPath(
                             new DestinationRequestDto(originStr, destinationStr)
                     );
 
@@ -156,11 +160,12 @@ public class PlanGenerator {
 
             if(size>1){
                 if (transportMode == TransportMode.transit) {
+                    log.info("Enter: TransprotMode.transit");
                     Location BusoriginLocaiton = sortedContent.getFirst().locations();
                     List<Location> Buslists = sortedContent.subList(1, sortedContent.size()).stream().map(DayMap.Content::locations).toList();
                     List<TmapPathResponseDto> tmapPathResponseDtos = new ArrayList<>();
                     for (Location content : Buslists) {
-                        TmapPathResponseDto tmapPathResponseDto = tmapPathService.getPath(new TmapPathRequestDto(
+                        TmapPathResponseDto tmapPathResponseDto = tmapPathApi.getPath(new TmapPathRequestDto(
                                 String.valueOf(BusoriginLocaiton.x()),
                                 String.valueOf(BusoriginLocaiton.y()),
                                 String.valueOf(content.x()),
@@ -179,8 +184,9 @@ public class PlanGenerator {
                 Location destinationLocaiton = sortedContent.getLast().locations();
 
                 if (transportMode == TransportMode.car) {
+                    log.info("Enter: TransportMode.car");
                     WaypointRequestDto waypointRequestDto = new WaypointRequestDto(originLocaiton, destinationLocaiton, list, 2, true);
-                    WayPointResponseDto paths = kakaoMobilityService.getPaths(waypointRequestDto);
+                    WayPointResponseDto paths = kakaoMobilityApi.getPaths(waypointRequestDto);
                     wayPointResponseDtos.add(paths);
                 }
                 sortedContent
@@ -199,53 +205,54 @@ public class PlanGenerator {
     private Map<String, List<Item>> translatePrefer(String preference) {
         Map<String, List<Item>> commonResponseDtos = new HashMap<>();
         log.info("getCategory start");
+        log.info(preference);
         if (preference.equals("nature")) {
             if (fatigue <= 3 && fatigue >= -3) {
-                commonResponseDtos.put("자연 관광지", publicService.getCategory(new DataRequestDto(avgLon, avgLat, String.valueOf(avgRadius), CATEGORY_MAP.get("자연"))));
-                commonResponseDtos.put("역사 관광지", publicService.getCategory(new DataRequestDto(avgLon, avgLat, String.valueOf(avgRadius), CATEGORY_MAP.get("역사"))));
-                commonResponseDtos.put("휴양 관광지", publicService.getCategory(new DataRequestDto(avgLon, avgLat, String.valueOf(avgRadius), CATEGORY_MAP.get("휴양"))));
-                commonResponseDtos.put("음식점", publicService.getCategory(new DataRequestDto(avgLon, avgLat, String.valueOf(avgRadius), CATEGORY_MAP.get("음식점"))));
+                commonResponseDtos.put("자연 관광지", publicDataApi.getCategory(new DataRequestDto(avgLon, avgLat, String.valueOf(avgRadius), CATEGORY_MAP.get("자연"))));
+                commonResponseDtos.put("역사 관광지", publicDataApi.getCategory(new DataRequestDto(avgLon, avgLat, String.valueOf(avgRadius), CATEGORY_MAP.get("역사"))));
+                commonResponseDtos.put("휴양 관광지", publicDataApi.getCategory(new DataRequestDto(avgLon, avgLat, String.valueOf(avgRadius), CATEGORY_MAP.get("휴양"))));
+                commonResponseDtos.put("음식점", publicDataApi.getCategory(new DataRequestDto(avgLon, avgLat, String.valueOf(avgRadius), CATEGORY_MAP.get("음식점"))));
             }
             if (fatigue > 3) {
-                commonResponseDtos.put("휴양 관광지", publicService.getCategory(new DataRequestDto(avgLon, avgLat, String.valueOf(avgRadius), CATEGORY_MAP.get("휴양"))));
-                commonResponseDtos.put("음식점", publicService.getCategory(new DataRequestDto(avgLon, avgLat, String.valueOf(avgRadius), CATEGORY_MAP.get("음식점"))));
+                commonResponseDtos.put("휴양 관광지", publicDataApi.getCategory(new DataRequestDto(avgLon, avgLat, String.valueOf(avgRadius), CATEGORY_MAP.get("휴양"))));
+                commonResponseDtos.put("음식점", publicDataApi.getCategory(new DataRequestDto(avgLon, avgLat, String.valueOf(avgRadius), CATEGORY_MAP.get("음식점"))));
 
             }
             if (fatigue < -3) {
-                commonResponseDtos.put("자연 관광지", publicService.getCategory(new DataRequestDto(avgLon, avgLat, String.valueOf(avgRadius), CATEGORY_MAP.get("자연"))));
-                commonResponseDtos.put("역사 관광지", publicService.getCategory(new DataRequestDto(avgLon, avgLat, String.valueOf(avgRadius), CATEGORY_MAP.get("역사"))));
+                commonResponseDtos.put("자연 관광지", publicDataApi.getCategory(new DataRequestDto(avgLon, avgLat, String.valueOf(avgRadius), CATEGORY_MAP.get("자연"))));
+                commonResponseDtos.put("역사 관광지", publicDataApi.getCategory(new DataRequestDto(avgLon, avgLat, String.valueOf(avgRadius), CATEGORY_MAP.get("역사"))));
             }
         }
         if (preference.equals("culture")) {
             if (fatigue <= 3 && fatigue >= -3) {
-                commonResponseDtos.put("문화 관광지", publicService.getCategory(new DataRequestDto(avgLon, avgLat, String.valueOf(avgRadius), CATEGORY_MAP.get("문화"))));
-                commonResponseDtos.put("체험 관광지", publicService.getCategory(new DataRequestDto(avgLon, avgLat, String.valueOf(avgRadius), CATEGORY_MAP.get("체험"))));
-                commonResponseDtos.put("휴양 관광지", publicService.getCategory(new DataRequestDto(avgLon, avgLat, String.valueOf(avgRadius), CATEGORY_MAP.get("휴양"))));
-                commonResponseDtos.put("음식점", publicService.getCategory(new DataRequestDto(avgLon, avgLat, String.valueOf(avgRadius), CATEGORY_MAP.get("음식점"))));
+                commonResponseDtos.put("문화 관광지", publicDataApi.getCategory(new DataRequestDto(avgLon, avgLat, String.valueOf(avgRadius), CATEGORY_MAP.get("문화"))));
+                commonResponseDtos.put("체험 관광지", publicDataApi.getCategory(new DataRequestDto(avgLon, avgLat, String.valueOf(avgRadius), CATEGORY_MAP.get("체험"))));
+                commonResponseDtos.put("휴양 관광지", publicDataApi.getCategory(new DataRequestDto(avgLon, avgLat, String.valueOf(avgRadius), CATEGORY_MAP.get("휴양"))));
+                commonResponseDtos.put("음식점", publicDataApi.getCategory(new DataRequestDto(avgLon, avgLat, String.valueOf(avgRadius), CATEGORY_MAP.get("음식점"))));
             }
             if (fatigue > 3) {
-                commonResponseDtos.put("휴양 관광지", publicService.getCategory(new DataRequestDto(avgLon, avgLat, String.valueOf(avgRadius), CATEGORY_MAP.get("휴양"))));
-                commonResponseDtos.put("음식점", publicService.getCategory(new DataRequestDto(avgLon, avgLat, String.valueOf(avgRadius), CATEGORY_MAP.get("음식점"))));
+                commonResponseDtos.put("휴양 관광지", publicDataApi.getCategory(new DataRequestDto(avgLon, avgLat, String.valueOf(avgRadius), CATEGORY_MAP.get("휴양"))));
+                commonResponseDtos.put("음식점", publicDataApi.getCategory(new DataRequestDto(avgLon, avgLat, String.valueOf(avgRadius), CATEGORY_MAP.get("음식점"))));
 
             }
             if (fatigue < -3) {
-                commonResponseDtos.put("문화 관광지", publicService.getCategory(new DataRequestDto(avgLon, avgLat, String.valueOf(avgRadius), CATEGORY_MAP.get("문화"))));
-                commonResponseDtos.put("체험 관광지", publicService.getCategory(new DataRequestDto(avgLon, avgLat, String.valueOf(avgRadius), CATEGORY_MAP.get("체험"))));
+                commonResponseDtos.put("문화 관광지", publicDataApi.getCategory(new DataRequestDto(avgLon, avgLat, String.valueOf(avgRadius), CATEGORY_MAP.get("문화"))));
+                commonResponseDtos.put("체험 관광지", publicDataApi.getCategory(new DataRequestDto(avgLon, avgLat, String.valueOf(avgRadius), CATEGORY_MAP.get("체험"))));
             }
         }
         if (preference.equals("activity")) {
             if (fatigue <= 3 && fatigue >= -3) {
-                commonResponseDtos.put("액티비티 관광지", publicService.getCategory(new DataRequestDto(avgLon, avgLat, String.valueOf(avgRadius), CATEGORY_MAP.get("액티비티"))));
-                commonResponseDtos.put("휴양 관광지", publicService.getCategory(new DataRequestDto(avgLon, avgLat, String.valueOf(avgRadius), CATEGORY_MAP.get("휴양"))));
-                commonResponseDtos.put("음식점", publicService.getCategory(new DataRequestDto(avgLon, avgLat, String.valueOf(avgRadius), CATEGORY_MAP.get("음식점"))));
+                commonResponseDtos.put("액티비티 관광지", publicDataApi.getCategory(new DataRequestDto(avgLon, avgLat, String.valueOf(avgRadius), CATEGORY_MAP.get("액티비티"))));
+                commonResponseDtos.put("휴양 관광지", publicDataApi.getCategory(new DataRequestDto(avgLon, avgLat, String.valueOf(avgRadius), CATEGORY_MAP.get("휴양"))));
+                commonResponseDtos.put("음식점", publicDataApi.getCategory(new DataRequestDto(avgLon, avgLat, String.valueOf(avgRadius), CATEGORY_MAP.get("음식점"))));
             }
             if (fatigue > 3) {
-                commonResponseDtos.put("휴양 관광지", publicService.getCategory(new DataRequestDto(avgLon, avgLat, String.valueOf(avgRadius), CATEGORY_MAP.get("휴양"))));
-                commonResponseDtos.put("음식점", publicService.getCategory(new DataRequestDto(avgLon, avgLat, String.valueOf(avgRadius), CATEGORY_MAP.get("음식점"))));
+                commonResponseDtos.put("휴양 관광지", publicDataApi.getCategory(new DataRequestDto(avgLon, avgLat, String.valueOf(avgRadius), CATEGORY_MAP.get("휴양"))));
+                commonResponseDtos.put("음식점", publicDataApi.getCategory(new DataRequestDto(avgLon, avgLat, String.valueOf(avgRadius), CATEGORY_MAP.get("음식점"))));
 
             }
             if (fatigue < -3) {
-                commonResponseDtos.put("액티비티 관광지", publicService.getCategory(new DataRequestDto(avgLon, avgLat, String.valueOf(avgRadius), CATEGORY_MAP.get("액티비티"))));
+                commonResponseDtos.put("액티비티 관광지", publicDataApi.getCategory(new DataRequestDto(avgLon, avgLat, String.valueOf(avgRadius), CATEGORY_MAP.get("액티비티"))));
             }
         }
         return commonResponseDtos;
@@ -302,7 +309,7 @@ public class PlanGenerator {
 
                     String origin = places.get(i).getX() + "," + places.get(i).getY();
                     String destination = places.get(j).getX() + "," + places.get(j).getY();
-                    DestinationResponseDto response = kakaoMobilityService.getPath(
+                    DestinationResponseDto response = kakaoMobilityApi.getPath(
                             new DestinationRequestDto(origin, destination)
                     );
                     log.info(response.toString());
@@ -331,7 +338,7 @@ public class PlanGenerator {
                         .toList();
                 List<TmapPathResponseDto> tmapPathResponseDtos = new ArrayList<>();
                 for (CompleteLocation content : busPoints) {
-                    TmapPathResponseDto tmapPathResponseDto = tmapPathService.getPath(new TmapPathRequestDto(
+                    TmapPathResponseDto tmapPathResponseDto = tmapPathApi.getPath(new TmapPathRequestDto(
                             String.valueOf(busOrigin.x()),
                             String.valueOf(busOrigin.y()),
                             String.valueOf(content.x()),
@@ -353,7 +360,7 @@ public class PlanGenerator {
 
                 // API 요청
                 CompleteWaypointRequestDto request = new CompleteWaypointRequestDto(origin, destination, waypoints,2, true);
-                WayPointResponseDto responseDto = kakaoMobilityService.getPaths(request);
+                WayPointResponseDto responseDto = kakaoMobilityApi.getPaths(request);
 
                 wayPointResponseDtos.add(responseDto);
             }

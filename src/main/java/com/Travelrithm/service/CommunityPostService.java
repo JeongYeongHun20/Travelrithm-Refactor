@@ -81,8 +81,8 @@ public class CommunityPostService {
         postRepository.deleteById(postId);
     }
 
-    public PlanEntity getPopularPlanByRegion(Integer regionId) {
-        List<PlanEntity> plans = postRepository.findTopPopularPlanByRegion(regionId, PageRequest.of(0, 1));
+    public PlanEntity getPopularPlanByRegion(String sigunguCd) {
+        List<PlanEntity> plans = postRepository.findTopPopularPlanByRegion(sigunguCd, PageRequest.of(0, 1));
         return plans.isEmpty() ? null : plans.get(0);
     }
 
@@ -93,10 +93,6 @@ public class CommunityPostService {
             PlanEntity plan = post.getPlanEntity();
             if (plan == null) return null;
 
-            String regionThumbnail = (plan.getRegionEntity() != null)
-                    ? plan.getRegionEntity().getThumbnailImageUrl()
-                    : null;
-
             PlanResponseDto planDto = new PlanResponseDto(plan, null);
 
             List<PlaceDto> places = plan.getPlaceEntities().stream()
@@ -104,7 +100,7 @@ public class CommunityPostService {
                     .toList();
 
             // 지역 기반 인기 플랜 조회
-            PlanEntity popular = getPopularPlanByRegion(plan.getRegionEntity().getRegionId());
+            PlanEntity popular = getPopularPlanByRegion(plan.getRegionEntity().getSigunguCd());
             PlanResponseDto popularDto = new PlanResponseDto(popular, null);
 
             return new CommunityPostResponseDto(
@@ -116,7 +112,6 @@ public class CommunityPostService {
                     plan.getPlanId(),
                     post.getCreatedAt(),
                     post.getUpdatedAt(),
-                    regionThumbnail,
                     post.getUserEntity().getNickname(),
                     planDto,
                     places,
@@ -124,7 +119,7 @@ public class CommunityPostService {
                     post.getViewCount(),
                     post.getScrapEntities().size(),
                     post.getCommentEntities().size(),
-                    (plan.getRegionEntity() != null) ? plan.getRegionEntity().getName() : null
+                    plan.getRegionEntity().getSigunguName()
             );
         }).filter(dto -> dto != null).toList();
     }

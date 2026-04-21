@@ -16,10 +16,10 @@ public interface PlanRepository extends JpaRepository<PlanEntity, Integer> {
 
     //상위 5개 데이터만 불러옴
     @Query("""
-        SELECT new com.Travelrithm.dto.RegionDto(r.regionId, r.name, r.context,COUNT(p),r.thumbnailImageUrl, r.code)
+        SELECT new com.Travelrithm.dto.RegionDto(r.sigunguCd, r.sigunguName, r.areaCd, r.areaName)
         FROM PlanEntity p
         JOIN p.regionEntity r
-        GROUP BY r.regionId, r.name, r.code
+        GROUP BY r.sigunguCd, r.sigunguName
         ORDER BY COUNT(p) DESC
         LIMIT 5
     """)

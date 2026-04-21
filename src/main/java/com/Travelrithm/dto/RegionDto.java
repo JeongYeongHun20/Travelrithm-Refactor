@@ -3,21 +3,17 @@ package com.Travelrithm.dto;
 import com.Travelrithm.domain.RegionEntity;
 
 public record RegionDto(
-        Integer regionId,
-        String name,
-        String context,
-        Long planCount,
-        String thumbnailImageUrl,
-        String code
+    String sigunguCd,
+    String sigungu_name,
+    String areaCd,
+    String areaName
 ) {
     public RegionDto(RegionEntity regionEntity) {
         this(
-                regionEntity.getRegionId(),
-                regionEntity.getName(),
-                regionEntity.getContext(),
-                0L,
-                regionEntity.getThumbnailImageUrl(),
-                regionEntity.getCode()
+                regionEntity.getSigunguCd(),
+                regionEntity.getSigunguName(),
+                regionEntity.getAreaCd(),
+                regionEntity.getAreaName()
         );
     }
 

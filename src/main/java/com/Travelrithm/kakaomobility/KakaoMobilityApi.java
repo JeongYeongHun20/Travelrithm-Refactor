@@ -1,21 +1,22 @@
-package com.Travelrithm.planbuilder.kakaomobility;
+package com.Travelrithm.kakaomobility;
 
 
 import com.Travelrithm.planbuilder.dto.kakao.mobility.*;
 import io.netty.handler.codec.http.HttpHeaderValues;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
-
-import java.net.URI;
+import reactor.core.publisher.Mono;
 
 @Service
 @RequiredArgsConstructor
-public class KakaoMobilityService {
+@Slf4j
+public class KakaoMobilityApi {
 
     @Value("${kakao.client_id}")
     private String client_id;
@@ -25,6 +26,7 @@ public class KakaoMobilityService {
 
     public DestinationResponseDto getPath(DestinationRequestDto destinationRequestDto) {
         WebClient webClient = getWebClient();
+        log.info(destinationRequestDto.origin()+" "+destinationRequestDto.destination());
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/directions")
@@ -35,6 +37,10 @@ public class KakaoMobilityService {
                         .build())
                 .retrieve()
                 .bodyToMono(DestinationResponseDto.class)
+                .onErrorResume(e->{
+                    log.error("Error: "+e);
+                    return Mono.just(null);
+                })
                 .block();
     }
     public WayPointResponseDto getPaths(WaypointRequestDto waypointRequestDto) {

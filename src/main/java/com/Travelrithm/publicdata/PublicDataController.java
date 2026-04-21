@@ -1,4 +1,4 @@
-package com.Travelrithm.planbuilder.publicdata;
+package com.Travelrithm.publicdata;
 
 
 import com.Travelrithm.planbuilder.dto.publicdata.DataRequestDto;
@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/data")
-public class PublicController {
-    private final PublicService publicService;
+@RequestMapping("/data")
+public class PublicDataController {
+    private final PublicDataApi publicDataApi;
     @GetMapping("/places")
     public ResponseEntity<DataResponseDto> getCategory(@RequestBody DataRequestDto dataRequestDto) {
         return ResponseEntity.ok(null);

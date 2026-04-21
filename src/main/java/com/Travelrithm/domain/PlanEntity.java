@@ -24,7 +24,6 @@ import java.util.List;
 @Builder
 @Table(name = "travel_plan")
 public class PlanEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer planId;
@@ -34,7 +33,7 @@ public class PlanEntity {
     private UserEntity userEntity;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "region_id")
+    @JoinColumn(name = "sigunguCd")
     private RegionEntity regionEntity;
 
     private LocalDate startDate;
