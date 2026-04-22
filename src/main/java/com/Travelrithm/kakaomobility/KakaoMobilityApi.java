@@ -1,7 +1,7 @@
 package com.Travelrithm.kakaomobility;
 
 
-import com.Travelrithm.planbuilder.dto.kakao.mobility.*;
+import com.Travelrithm.kakaomobility.dto.*;
 import io.netty.handler.codec.http.HttpHeaderValues;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -1,6 +1,6 @@
 package com.Travelrithm.dto;
 
-import com.Travelrithm.planbuilder.dto.kakao.mobility.WayPointResponseDto;
+import com.Travelrithm.kakaomobility.dto.WayPointResponseDto;
 
 
 import java.util.List;

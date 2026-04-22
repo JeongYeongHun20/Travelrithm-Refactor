@@ -1,8 +1,8 @@
 package com.Travelrithm.publicdata;
 
 
-import com.Travelrithm.planbuilder.dto.publicdata.DataRequestDto;
-import com.Travelrithm.planbuilder.dto.publicdata.DataResponseDto;
+import com.Travelrithm.publicdata.dto.DataRequestDto;
+import com.Travelrithm.publicdata.dto.DataResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

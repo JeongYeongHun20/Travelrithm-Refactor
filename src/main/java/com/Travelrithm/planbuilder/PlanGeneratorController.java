@@ -1,16 +1,13 @@
 package com.Travelrithm.planbuilder;
 
 
-import com.Travelrithm.planbuilder.dto.front.CompletePlanner;
-import com.Travelrithm.planbuilder.dto.front.CompleteResponseDto;
-import com.Travelrithm.planbuilder.dto.front.EditPlanner;
-import com.Travelrithm.planbuilder.dto.kakao.mobility.WayPointResponseDto;
-import com.Travelrithm.planbuilder.dto.publicdata.TotalResponseDto;
+import com.Travelrithm.planbuilder.dto.CompletePlanner;
+import com.Travelrithm.planbuilder.dto.CompleteResponseDto;
+import com.Travelrithm.planbuilder.dto.EditPlanner;
+import com.Travelrithm.publicdata.dto.TotalResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor

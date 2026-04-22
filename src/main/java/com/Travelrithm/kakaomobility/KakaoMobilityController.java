@@ -1,8 +1,8 @@
 package com.Travelrithm.kakaomobility;
 
 
-import com.Travelrithm.planbuilder.dto.kakao.mobility.DestinationRequestDto;
-import com.Travelrithm.planbuilder.dto.kakao.mobility.DestinationResponseDto;
+import com.Travelrithm.kakaomobility.dto.DestinationRequestDto;
+import com.Travelrithm.kakaomobility.dto.DestinationResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

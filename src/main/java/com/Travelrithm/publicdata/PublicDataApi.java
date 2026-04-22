@@ -1,10 +1,10 @@
 package com.Travelrithm.publicdata;
 
 
-import com.Travelrithm.planbuilder.dto.publicdata.CommonResponseDto;
-import com.Travelrithm.planbuilder.dto.publicdata.DataRequestDto;
-import com.Travelrithm.planbuilder.dto.publicdata.DataResponseDto;
-import com.Travelrithm.planbuilder.dto.publicdata.Item;
+import com.Travelrithm.publicdata.dto.CommonResponseDto;
+import com.Travelrithm.publicdata.dto.DataRequestDto;
+import com.Travelrithm.publicdata.dto.DataResponseDto;
+import com.Travelrithm.publicdata.dto.Item;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
