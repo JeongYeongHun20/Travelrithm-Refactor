@@ -9,14 +9,14 @@ public record PublicApiLocationResponse(
         String title,
         String firstimage,
         String firstimage2,
-        String mapX,
-        String mapY,
+        String mapx,
+        String mapy,
         String overview
 ){
     public Location toLocation(){
         return new Location(
-                Double.parseDouble(this.mapX),
-                Double.parseDouble(this.mapY)
+                Double.parseDouble(this.mapx),
+                Double.parseDouble(this.mapy)
         );
     }
 }

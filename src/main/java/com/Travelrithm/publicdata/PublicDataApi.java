@@ -45,7 +45,7 @@ public class PublicDataApi {
                 .queryParam("serviceKey", serviceKey)
                 .build(true)
                 .toUri();
-
+        log.info("Request uri: "+uri);
         DataResponseDto response = Optional.ofNullable(restTemplate.getForObject(uri, DataResponseDto.class))
                 .orElse(null);
         if (response == null) return List.<Item>of((Item) null);

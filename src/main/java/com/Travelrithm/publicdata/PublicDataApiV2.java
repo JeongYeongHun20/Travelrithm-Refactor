@@ -2,14 +2,7 @@ package com.Travelrithm.publicdata;
 
 
 import com.Travelrithm.planBuilderV2.dto.AvgCoordinate;
-import com.Travelrithm.publicdata.dto.RegionLocation;
-import com.Travelrithm.publicdata.dto.RegionLocationDay;
-import com.Travelrithm.publicdata.dto.RegionLocationResponse;
-import com.Travelrithm.publicdata.dto.PublicApiLocationResponse;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.Travelrithm.publicdata.dto.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,31 +20,73 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class PublicDataApiV2 {
 
-    @Value("${data.service_key}")
+    @Value("${data.service_keyV2}")
     private String serviceKey;
     private final RestTemplate restTemplate = new RestTemplate();
-    private final ObjectMapper objectMapper;
     private final String DATA_URL = "https://apis.data.go.kr/B551011/KorService2";
     private final String LOCATION_PATH="/locationBasedList2";
-    private final Map<String, String> CATEGORY_MAP = Map.of(
-            "nature", "A0101",
-            "culture", "A0206",
-            "activity", "A0301"
+    private final String DETAIL_PATH="/detailCommon2";
+    private final Map<String, Map<String, String>> CATEGORY_MAP = Map.of(
+            "nature", Map.of(
+                    "자연 관광지", "A0101",
+                    "역사 관광지", "A0201",
+                    "휴양 관광지", "A0202",
+                    "음식점", "A0502"
+            ),
+            "culture", Map.of(
+                    "문화 관광지", "A0206",
+                    "체험 관광지", "A0203",
+                    "휴양 관광지", "A0202",
+                    "음식점", "A0502"
+            ),
+            "activity", Map.of(
+                    "액티비티 관광지", "A0301",
+                    "휴양 관광지", "A0202",
+                    "음식점", "A0502"
+            )
     );
 
     public RegionLocationResponse getCategory(List<AvgCoordinate> avgCoordinates, String preference) {//일자별 기본 정보 요청
         log.info("Enter: getCategory");
         List<RegionLocationDay> result = new ArrayList<>();
-        String category = CATEGORY_MAP.getOrDefault(preference, CATEGORY_MAP.get("nature"));
+        Map<String, String> categories = CATEGORY_MAP.getOrDefault(preference, CATEGORY_MAP.get("nature"));
 
         for (AvgCoordinate avgCoordinate : avgCoordinates) {
+            List<RegionLocationCategory> regionLocationCategories = categories.entrySet().stream()
+                    .map(category -> new RegionLocationCategory(
+                            category.getKey(),
+                            requestCategory(avgCoordinate, category.getValue())
+                    ))
+                    .toList();
+
             result.add(new RegionLocationDay(
                     avgCoordinate.day(),
-                    requestCategory(avgCoordinate, category)
+                    regionLocationCategories
             ));
         }
 
         return new RegionLocationResponse(result);
+    }
+    public String getOverView(String contentId){
+        URI uri=UriComponentsBuilder.fromHttpUrl(DATA_URL)
+                .path(DETAIL_PATH)
+                .queryParam("MobileOS", "WEB")
+                .queryParam("MobileApp", "Travelrithm")
+                .queryParam("_type", "json")
+                .queryParam("contentId", contentId)
+                .queryParam("serviceKey", serviceKey)
+                .build(true)
+                .toUri();
+
+        DetailCommon detailCommon = restTemplate.getForObject(uri, DetailCommon.class);
+        if (detailCommon == null ||
+                detailCommon.response() == null ||
+                detailCommon.response().body() == null ||
+                detailCommon.response().body().items() == null ||
+                detailCommon.response().body().items().item() == null) {
+            return "상세정보 없음";
+        }
+        return detailCommon.response().body().items().item().overview();
     }
 
     private List<RegionLocation> requestCategory(AvgCoordinate avgCoordinate, String category) {
@@ -72,49 +107,15 @@ public class PublicDataApiV2 {
                 .build(true)
                 .toUri();
 
-        String responseBody = restTemplate.getForObject(uri, String.class);
-        if (responseBody == null || responseBody.isBlank()) {
-            return List.of();
-        }
+        log.info("Request category URL: {}", uri);
+        LocationBasedListResponseDto responseBody = restTemplate.getForObject(uri, LocationBasedListResponseDto.class);
+        return responseBody.response()
+                .body()
+                .items()
+                .item()
+                .stream()
+                .map(RegionLocation::from)
+                .toList();
 
-        try {
-            return toItems(responseBody);
-        } catch (JsonProcessingException e) {
-            log.error("Failed to parse location based list response", e);
-            return List.of();
-        }
-    }
-
-    private List<RegionLocation> toItems(String responseBody) throws JsonProcessingException {
-        JsonNode itemsNode = objectMapper.readTree(responseBody)
-                .path("response")
-                .path("body")
-                .path("items");
-        if (!itemsNode.isObject()) {
-            return List.of();
-        }
-
-        JsonNode itemNode = itemsNode.path("item");
-        if (itemNode.isMissingNode() || itemNode.isNull()) {
-            return List.of();
-        }
-
-        if (itemNode.isArray()) {
-            List<PublicApiLocationResponse> items = objectMapper.convertValue(
-                    itemNode,
-                    new TypeReference<>() {
-                    }
-            );
-            return items.stream()
-                    .map(RegionLocation::from)
-                    .toList();
-        }
-
-        if (itemNode.isObject()) {
-            PublicApiLocationResponse item = objectMapper.convertValue(itemNode, PublicApiLocationResponse.class);
-            return List.of(RegionLocation.from(item));
-        }
-
-        return List.of();
     }
 }

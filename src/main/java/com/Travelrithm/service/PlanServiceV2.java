@@ -16,7 +16,7 @@ import com.Travelrithm.planBuilderV2.dto.SortedDayPlan;
 import com.Travelrithm.planBuilderV2.generator.Generator;
 import com.Travelrithm.kakaomobility.KakaoMobilityApi;
 import com.Travelrithm.publicdata.PublicDataApiV2;
-import com.Travelrithm.publicdata.dto.RegionLocation;
+import com.Travelrithm.publicdata.dto.RegionLocationCategory;
 import com.Travelrithm.publicdata.dto.RegionLocationDay;
 import com.Travelrithm.publicdata.dto.RegionLocationResponse;
 import com.Travelrithm.repository.PlanRepository;
@@ -93,7 +93,7 @@ public class PlanServiceV2 {
         return List.of(new GeneratedRoute(response));
     }
 
-    private List<RegionLocation> findCategoriesByDay(RegionLocationResponse targetAreas, int day) {
+    private List<RegionLocationCategory> findCategoriesByDay(RegionLocationResponse targetAreas, int day) {
         if (targetAreas == null || targetAreas.days() == null) {
             return List.of();
         }
@@ -101,7 +101,7 @@ public class PlanServiceV2 {
         return targetAreas.days().stream()
                 .filter(regionLocationDay -> regionLocationDay.day() == day)
                 .findFirst()
-                .map(RegionLocationDay::locations)
+                .map(RegionLocationDay::categories)
                 .orElse(List.of());
     }
 

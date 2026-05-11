@@ -74,7 +74,7 @@ public class PlanGenerator {
         }
 
         if (avgRadius > 200000.0) avgRadius = 200000.0;
-        if (avgRadius < 5000.0) avgRadius = 5000.0;
+        if (avgRadius < 50000.0) avgRadius = 50000.0;
 
         return greedyAlgorithm(dayMapList, fatigue, transportMode);
     }

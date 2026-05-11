@@ -13,7 +13,8 @@ import java.util.List;
 @Slf4j
 public class CenterLocationCalculator {
     private final int R = 6371000; // 지구 반지름 (단위: m)
-
+    private final double MIN_RADIUS=50000.0;
+    private final double MAX_RADIUS=200000.0;
     public AvgCoordinate calLocation(CalculateRequestDto calculateRequestDto) {
         int day=calculateRequestDto.day();
         List<LocationV2> locations=calculateRequestDto.locations();
@@ -52,7 +53,8 @@ public class CenterLocationCalculator {
 
         System.out.printf("중심점 위도: %.6f, 경도: %.6f\n", avgLat, avgLon);
         System.out.printf("평균 반지름 (좌표 기준): %.6f\n", avgRadius);
-
+        if (avgRadius > MAX_RADIUS) avgRadius = MAX_RADIUS;
+        if (avgRadius < MIN_RADIUS) avgRadius = MIN_RADIUS;
         return new AvgCoordinate(day,new Location(avgLon,avgLat), avgRadius);
     }
 

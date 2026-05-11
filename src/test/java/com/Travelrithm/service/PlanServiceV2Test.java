@@ -12,6 +12,7 @@ import com.Travelrithm.planBuilderV2.generator.Generator;
 import com.Travelrithm.planbuilder.dto.Location;
 import com.Travelrithm.publicdata.PublicDataApiV2;
 import com.Travelrithm.publicdata.dto.RegionLocation;
+import com.Travelrithm.publicdata.dto.RegionLocationCategory;
 import com.Travelrithm.publicdata.dto.RegionLocationDay;
 import com.Travelrithm.publicdata.dto.RegionLocationResponse;
 import com.Travelrithm.repository.PlanRepository;
@@ -90,7 +91,10 @@ class PlanServiceV2Test {
                 new Location(126.9784, 37.5816)
         );
         RegionLocationResponse categoryResponse = new RegionLocationResponse(
-                List.of(new RegionLocationDay(1, List.of(category)))
+                List.of(new RegionLocationDay(
+                        1,
+                        List.of(new RegionLocationCategory("문화 관광지", List.of(category)))
+                ))
         );
 
         when(generator.generatePlan(request)).thenReturn(List.of(sortedDayPlan));
@@ -104,7 +108,9 @@ class PlanServiceV2Test {
         assertThat(result).hasSize(1);
         assertThat(result.getFirst().day()).isEqualTo(1);
         assertThat(result.getFirst().contents()).containsExactly(firstContent, secondContent);
-        assertThat(result.getFirst().categories()).containsExactly(category);
+        assertThat(result.getFirst().categories()).hasSize(1);
+        assertThat(result.getFirst().categories().getFirst().categoryName()).isEqualTo("문화 관광지");
+        assertThat(result.getFirst().categories().getFirst().locations()).containsExactly(category);
         assertThat(result.getFirst().routes()).isEmpty();
 
         verify(generator).generatePlan(request);
