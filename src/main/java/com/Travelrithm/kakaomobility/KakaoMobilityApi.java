@@ -64,6 +64,17 @@ public class KakaoMobilityApi {
                 .block();
     }
 
+    public WayPointResponseDto getPathsV2(WaypointRequestV2 waypointRequestV2) {
+        WebClient webClient = getWebClient();
+
+        return webClient.post()
+                .uri("/waypoints/directions")
+                .bodyValue(waypointRequestV2)
+                .retrieve()
+                .bodyToMono(WayPointResponseDto.class)
+                .block();
+    }
+
 
     private WebClient getWebClient() {
         UriComponentsBuilder.fromUriString(KAKAO_MOBILITY_URL);

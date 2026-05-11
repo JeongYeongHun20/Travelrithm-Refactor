@@ -1,6 +1,6 @@
 package com.Travelrithm.service;
 
-import com.Travelrithm.domain.RegionEntity;
+import com.Travelrithm.domain.Region;
 import com.Travelrithm.dto.RegionDto;
 import com.Travelrithm.dto.RegionResponseDto;
 import com.Travelrithm.repository.PlanRepository;
@@ -25,13 +25,13 @@ public class RegionService {
     }
 
     public RegionDto getRegion(Integer regionId){
-        RegionEntity regionEntity = regionRepository.findById(regionId)
+        Region region = regionRepository.findById(regionId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 지역은 존재하지 않습니다"));
-        return new RegionDto(regionEntity);
+        return new RegionDto(region);
     }
 
     public List<RegionDto> getRegionByName(String name) {
-        List<RegionEntity> regions = regionRepository.findBySigunguNameStartingWith(name);
+        List<Region> regions = regionRepository.findBySigunguNameStartingWith(name);
         if (regions.isEmpty()) {
             throw new IllegalArgumentException("해당 지역이 존재하지 않습니다.");
         }

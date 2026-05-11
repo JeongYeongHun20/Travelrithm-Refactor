@@ -24,7 +24,7 @@ public class JWTUtil {
     }
 
     public Long getUserId(String token) {
-        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("userId", Long.class);
+        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("memberId", Long.class);
     }
     public String getNickname(String token){
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("nickname", String.class);
@@ -43,7 +43,7 @@ public class JWTUtil {
     public String createJwt(Long userId, String email, String nickname, String role, Long expiredMs) {
 
         return Jwts.builder()
-                .claim("userId",userId)
+                .claim("memberId",userId)
                 .claim("email", email)
                 .claim("nickname",nickname)
                 .claim("role", role)

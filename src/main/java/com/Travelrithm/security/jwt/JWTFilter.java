@@ -1,6 +1,6 @@
 package com.Travelrithm.security.jwt;
 
-import com.Travelrithm.domain.UserEntity;
+import com.Travelrithm.domain.Member;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -49,12 +49,12 @@ public class JWTFilter extends OncePerRequestFilter {
             return;
         }
         String email = jwtUtil.getUsername(token);
-        Long userId = jwtUtil.getUserId(token);
+        Long memberId = jwtUtil.getUserId(token);
         String role = jwtUtil.getRole(token);
         String nickname= jwtUtil.getNickname(token);
         //userEntity를 생성하여 값 set
-        UserEntity userEntity = UserEntity.builder()
-                .userId(userId)
+        Member member = Member.builder()
+                .memberId(memberId)
                 .email(email)
                 .nickname(nickname)
                 .password("temppassword") //요청시마다 db룰 조회하기에 임시값을 설정한다
@@ -62,7 +62,7 @@ public class JWTFilter extends OncePerRequestFilter {
                 .build();
 
 
-        CustomUserDetails customUserDetails = new CustomUserDetails(userEntity);
+        CustomUserDetails customUserDetails = new CustomUserDetails(member);
 
         Authentication authToken = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
         //세션에 사용자 등록

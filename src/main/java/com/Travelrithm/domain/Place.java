@@ -8,21 +8,21 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "travel_place")
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-public class PlaceEntity {
+public class Place {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer placeId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "plan_id", nullable = false)
-    private PlanEntity planEntity;
+    @JoinColumn(name = "plan_id", nullable = false,
+            foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    private Plan plan;
 
     private String placeName;
     private String placeAddress;

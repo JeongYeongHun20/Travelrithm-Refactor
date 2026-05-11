@@ -3,8 +3,8 @@
 //
 //import com.Travelrithm.domain.SocialType;
 //import com.Travelrithm.dto.KakaoTokenResponseDto;
-//import com.Travelrithm.dto.register.KakaoUserResponseDto;
-//import com.Travelrithm.dto.register.UserRegisterInfo;
+//import com.Travelrithm.dto.register.KakaoMemberResponseDto;
+//import com.Travelrithm.dto.register.MemberRegisterInfo;
 //import com.Travelrithm.global.External.ExternalApi;
 //import lombok.RequiredArgsConstructor;
 //import lombok.extern.slf4j.Slf4j;
@@ -53,7 +53,7 @@
 //    }
 //
 //    @Override
-//    public UserRegisterInfo login(String code, String state) {
+//    public MemberRegisterInfo login(String code, String state) {
 //        URI uri = UriComponentsBuilder
 //                .fromUriString(KAKAO_BASE_URL)
 //                .path("/oauth/token")
@@ -80,7 +80,7 @@
 //    }
 //
 //
-//    private KakaoUserResponseDto getUserInfo(String token) {
+//    private KakaoMemberResponseDto getUserInfo(String token) {
 //        URI uri=UriComponentsBuilder
 //                .fromUriString(KAKAO_USER_URL)
 //                .path("/v2/user/me")
@@ -91,11 +91,11 @@
 //        headers.setBearerAuth(token);
 //        HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
 //        RestTemplate rt=new RestTemplate();
-//        ResponseEntity<KakaoUserResponseDto> response = rt.exchange(
+//        ResponseEntity<KakaoMemberResponseDto> response = rt.exchange(
 //                uri,
 //                HttpMethod.GET,
 //                requestEntity,
-//                KakaoUserResponseDto.class
+//                KakaoMemberResponseDto.class
 //        );
 //        return response.getBody();
 //

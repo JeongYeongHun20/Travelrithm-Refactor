@@ -1,7 +1,7 @@
 package com.Travelrithm.dto;
 
 
-import com.Travelrithm.domain.ScrapEntity;
+import com.Travelrithm.domain.Scrap;
 
 public record ScrapDto(
         Integer scrapId,
@@ -9,11 +9,11 @@ public record ScrapDto(
         Integer postId
 
 ) {
-    public ScrapDto(ScrapEntity scrapEntity){
+    public ScrapDto(Scrap scrap){
         this(
-             scrapEntity.getScrapId(),
-             scrapEntity.getUserEntity().getUserId(),
-             scrapEntity.getPostEntity().getPostId()
+             scrap.getScrapId(),
+             scrap.getMember().getMemberId(),
+             scrap.getPostEntity().getCommunityPostId()
         );
     }
 }

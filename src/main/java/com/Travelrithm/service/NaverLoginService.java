@@ -2,25 +2,18 @@ package com.Travelrithm.service;
 
 import com.Travelrithm.domain.SocialType;
 import com.Travelrithm.dto.NaverTokenResponseDto;
-import com.Travelrithm.dto.register.NaverUserResponseDto;
-import io.netty.handler.codec.http.HttpHeaderValues;
+import com.Travelrithm.dto.register.NaverMemberResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.reactive.function.BodyInserters;
-import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
-import reactor.core.publisher.Mono;
 
 import java.math.BigInteger;
 import java.net.URI;
 import java.security.SecureRandom;
-import java.util.UUID;
 
 @Slf4j
 @Service
@@ -60,7 +53,7 @@ public class NaverLoginService implements OAuthService{
     }
 
     @Override
-    public NaverUserResponseDto login(String code, String state) {
+    public NaverMemberResponseDto login(String code, String state) {
         URI uri = UriComponentsBuilder
                 .fromUriString(NAVER_BASE_URL)
                 .path("/oauth2.0/token")
@@ -83,7 +76,7 @@ public class NaverLoginService implements OAuthService{
         return getUserInfo(response.access_token());
     }
 
-    private NaverUserResponseDto getUserInfo(String token) {
+    private NaverMemberResponseDto getUserInfo(String token) {
         URI uri=UriComponentsBuilder
                 .fromUriString(NAVER_USER_URL)
                 .path("/v1/nid/me")
@@ -94,11 +87,11 @@ public class NaverLoginService implements OAuthService{
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         HttpEntity<Void> request=new HttpEntity<>(headers);
         RestTemplate rt=new RestTemplate();
-        ResponseEntity<NaverUserResponseDto> response=rt.exchange(
+        ResponseEntity<NaverMemberResponseDto> response=rt.exchange(
                 uri,
                 HttpMethod.GET,
                 request,
-                NaverUserResponseDto.class
+                NaverMemberResponseDto.class
         );
         return response.getBody();
     }

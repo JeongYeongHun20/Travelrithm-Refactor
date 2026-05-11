@@ -1,11 +1,8 @@
 package com.Travelrithm.service;
 
 
-import com.Travelrithm.domain.CommunityPostEntity;
-import com.Travelrithm.domain.PlaceEntity;
-import com.Travelrithm.domain.PlanEntity;
-import com.Travelrithm.domain.RegionEntity;
-import com.Travelrithm.domain.UserEntity;
+import com.Travelrithm.domain.*;
+import com.Travelrithm.domain.Plan;
 import com.Travelrithm.dto.CompletPlanResponseDto;
 import com.Travelrithm.dto.PlaceDto;
 import com.Travelrithm.dto.PlanRequestDto;
@@ -17,7 +14,7 @@ import com.Travelrithm.kakaomobility.KakaoMobilityApi;
 import com.Travelrithm.repository.CommunityPostRepository;
 import com.Travelrithm.repository.PlanRepository;
 import com.Travelrithm.repository.RegionRepository;
-import com.Travelrithm.repository.UserRepository;
+import com.Travelrithm.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -34,23 +31,23 @@ import java.util.stream.Collectors;
 public class PlanService {
 
     private final PlanRepository planRepository;
-    private final UserRepository userRepository;
+    private final MemberRepository memberRepository;
     private final RegionRepository regionRepository;
     private final CommunityPostRepository postRepository;
     private final KakaoMobilityApi kakaoMobilityApi;
 
     public PlanResponseDto createPlan(Long userId, PlanRequestDto planRequestDto){
-        UserEntity userEntity = userRepository.findById(userId)
+        Member member = memberRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("해당유저가 존재하지 않음"));
 
-        RegionEntity regionEntity = regionRepository.findById(planRequestDto.regionId())
+        Region region = regionRepository.findById(planRequestDto.regionId())
                 .orElseThrow(() -> new IllegalArgumentException("해당지역 존재하지 않음"));
 
-        log.info(regionEntity.getAreaName());
+        log.info(region.getAreaName());
 
-        PlanEntity planEntity = PlanEntity.builder()
-                .userEntity(userEntity)
-                .regionEntity(regionEntity)
+        Plan plan = Plan.builder()
+                .member(member)
+                .region(region)
                 .startDate(planRequestDto.startDate())
                 .endDate(planRequestDto.endDate())
                 .createdAt(LocalDateTime.now())
@@ -62,50 +59,50 @@ public class PlanService {
                 .travelPurpose(planRequestDto.travelPurpose())
                 .build();
 
-        List<PlaceEntity> createPlaces = getPlaceEntities(planRequestDto, planEntity);
-        planEntity.getPlaceEntities().addAll(createPlaces);
+        List<Place> createPlaces = getPlaceEntities(planRequestDto, plan);
+        plan.getPlaceEntities().addAll(createPlaces);
 
-        planRepository.save(planEntity);
-        return new PlanResponseDto(planEntity, null); // postContent 없음
+        planRepository.save(plan);
+        return new PlanResponseDto(plan, null); // postContent 없음
     }
 
     @Transactional(readOnly = true)
     public PlanResponseDto findPlanById(Integer planId) {
-        PlanEntity planEntity = planRepository.findById(planId)
+        Plan plan = planRepository.findById(planId)
                 .orElseThrow(() -> new IllegalArgumentException("해당플랜이 존재하지 않습니다"));
-        List<CommunityPostEntity> postOpt = postRepository.findByPlanEntity(planEntity);
+        List<CommunityPost> postOpt = postRepository.findByPlan(plan);
         String postContent = postOpt.isEmpty() ? null : postOpt.get(0).getPostContent();
-        return new PlanResponseDto(planEntity, postContent);
+        return new PlanResponseDto(plan, postContent);
     }
 
     @Transactional(readOnly = true)
     public List<PlanResponseDto> findPlans(Long userId) {
-        List<PlanEntity> plans = planRepository.findAllByUserEntity_UserId(userId);
+        List<Plan> plans = planRepository.findAllByMember_MemberId(userId);
         return plans.stream().map(plan -> {
-            List<CommunityPostEntity> postOpt = postRepository.findByPlanEntity(plan);
+            List<CommunityPost> postOpt = postRepository.findByPlan(plan);
             String postContent = postOpt.isEmpty() ? null : postOpt.get(0).getPostContent();
             return new PlanResponseDto(plan, postContent);
         }).toList();
     }
 
     public PlanResponseDto updatePlan(Integer planId, PlanRequestDto planDto) {
-        PlanEntity planEntity = planRepository.findById(planId)
+        Plan plan = planRepository.findById(planId)
                 .orElseThrow(() -> new IllegalArgumentException("해당플랜이 존재하지 않습니다"));
-        planEntity.update(planDto);
+        plan.update(planDto);
 
-        planEntity.getPlaceEntities().clear();
-        List<PlaceEntity> updatePlaces = getPlaceEntities(planDto, planEntity);
-        planEntity.getPlaceEntities().addAll(updatePlaces);
+        plan.getPlaceEntities().clear();
+        List<Place> updatePlaces = getPlaceEntities(planDto, plan);
+        plan.getPlaceEntities().addAll(updatePlaces);
 
-        List<CommunityPostEntity> postOpt = postRepository.findByPlanEntity(planEntity);
+        List<CommunityPost> postOpt = postRepository.findByPlan(plan);
         String postContent = postOpt.isEmpty() ? null : postOpt.get(0).getPostContent();
 
-        return new PlanResponseDto(planEntity, postContent);
+        return new PlanResponseDto(plan, postContent);
     }
 
-    private static List<PlaceEntity> getPlaceEntities(PlanRequestDto planDto, PlanEntity planEntity) {
+    private static List<Place> getPlaceEntities(PlanRequestDto planDto, Plan plan) {
         return planDto.placesDto().stream()
-                .map(dto -> PlaceEntity.builder()
+                .map(dto -> Place.builder()
                         .placeName(dto.placeName())
                         .placeAddress(dto.placeAddress())
                         .lat(dto.lat())
@@ -114,7 +111,7 @@ public class PlanService {
                         .day(dto.day())
                         .sequence(dto.sequence())
                         .category(dto.category())
-                        .planEntity(planEntity)
+                        .plan(plan)
                         .build()
                 ).toList();
     }

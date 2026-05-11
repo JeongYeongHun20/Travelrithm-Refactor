@@ -1,27 +1,24 @@
 package com.Travelrithm.domain;
 
 
-import com.Travelrithm.dto.register.UserRequestDto;
+import com.Travelrithm.dto.register.MemberRequestDto;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
-@Table(name="users")
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)// jpa사용하기위하여, Builder로만 접근 가능
 @AllArgsConstructor
 @Builder
-public class UserEntity {
+public class Member {
 
     @Id @GeneratedValue(strategy=GenerationType.IDENTITY)
-    private Long userId;
+    private Long memberId;
     private String name;
     private String email;
     private String password;
@@ -42,7 +39,7 @@ public class UserEntity {
     private LocalDateTime nicknameUpdatedAt;
 
 
-    public void update(UserRequestDto dto) {
+    public void update(MemberRequestDto dto) {
         this.name = dto.name();
         this.password=dto.password();
         this.email = dto.email();

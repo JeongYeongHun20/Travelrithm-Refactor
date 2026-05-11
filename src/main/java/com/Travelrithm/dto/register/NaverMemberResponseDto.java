@@ -4,11 +4,11 @@ import com.Travelrithm.domain.SocialType;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public record NaverUserResponseDto(
+public record NaverMemberResponseDto(
         String resultcode,
         String message,
         Response response
-) implements  UserRegisterInfo{
+) implements MemberRegisterInfo {
     @Override
     public String getName() {
         return response().name();

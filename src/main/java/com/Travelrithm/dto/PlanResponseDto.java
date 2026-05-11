@@ -1,6 +1,7 @@
 package com.Travelrithm.dto;
 
-import com.Travelrithm.domain.PlanEntity;
+import com.Travelrithm.domain.Plan;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -17,25 +18,42 @@ public record PlanResponseDto(
         String travelPurpose,
         String transportMode,
         List<PlaceDto> places,
-        String postContent,
         String nickname
 ) {
-    public PlanResponseDto(PlanEntity planEntity, String postContent) {
+    public PlanResponseDto(Plan plan){
         this(
-                planEntity.getPlanId(),
-                planEntity.getRegionEntity().getSigunguCd(),
-                planEntity.getRegionEntity().getSigunguName(),
-                planEntity.getStartDate(),
-                planEntity.getEndDate(),
-                planEntity.getCompanionCount(),
-                planEntity.getCompanionType().name(),
-                planEntity.getTravelTaste().name(),
-                planEntity.getTravelPurpose().name(),
-                planEntity.getTransportMode().name(),
-                planEntity.getPlaceEntities().stream().map(PlaceDto::new).toList(),
-                postContent,
-                planEntity.getUserEntity().getNickname()
+                plan.getPlanId(),
+                plan.getRegion().getSigunguCd(),
+                plan.getRegion().getSigunguName(),
+                plan.getStartDate(),
+                plan.getEndDate(),
+                plan.getCompanionCount(),
+                plan.getCompanionType().name(),
+                plan.getTravelTaste().name(),
+                plan.getTravelPurpose().name(),
+                plan.getTransportMode().name(),
+                plan.getPlaceEntities().stream().map(PlaceDto::new).toList(),
+                plan.getMember().getNickname()
         );
+    }
+    public PlanResponseDto(Plan plan, String postContent) {
+        this(
+                plan.getPlanId(),
+                plan.getRegion().getSigunguCd(),
+                plan.getRegion().getSigunguName(),
+                plan.getStartDate(),
+                plan.getEndDate(),
+                plan.getCompanionCount(),
+                plan.getCompanionType().name(),
+                plan.getTravelTaste().name(),
+                plan.getTravelPurpose().name(),
+                plan.getTransportMode().name(),
+                plan.getPlaceEntities().stream().map(PlaceDto::new).toList(),
+                plan.getMember().getNickname()
+        );
+    }
+    public static PlanResponseDto from(Plan plan){
+        return new PlanResponseDto(plan);
     }
 }
 

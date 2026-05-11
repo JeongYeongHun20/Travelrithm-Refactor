@@ -1,15 +1,15 @@
 package com.Travelrithm.service;
 
-import com.Travelrithm.domain.CommunityPostEntity;
-import com.Travelrithm.domain.PlanEntity;
-import com.Travelrithm.domain.UserEntity;
+import com.Travelrithm.domain.CommunityPost;
+import com.Travelrithm.domain.Plan;
+import com.Travelrithm.domain.Member;
 import com.Travelrithm.dto.CommunityPostRequestDto;
 import com.Travelrithm.dto.CommunityPostResponseDto;
 import com.Travelrithm.dto.PlaceDto;
 import com.Travelrithm.dto.PlanResponseDto;
 import com.Travelrithm.repository.CommunityPostRepository;
 import com.Travelrithm.repository.PlanRepository;
-import com.Travelrithm.repository.UserRepository;
+import com.Travelrithm.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -26,31 +26,31 @@ import java.util.List;
 public class CommunityPostService {
 
     private final CommunityPostRepository postRepository;
-    private final UserRepository userRepository;
+    private final MemberRepository memberRepository;
     private final PlanRepository planRepository;
 
     public CommunityPostResponseDto createPost(Long userId, CommunityPostRequestDto postRequestDto) {
-        UserEntity userEntity = userRepository.findById(userId)
+        Member member = memberRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다"));
-        PlanEntity planEntity = null;
+        Plan plan = null;
         if (postRequestDto.isTravelPlan() && postRequestDto.planId() != null) {
-            planEntity = planRepository.findById(postRequestDto.planId())
+            plan = planRepository.findById(postRequestDto.planId())
                     .orElseThrow(() -> new IllegalArgumentException("해당 플랜이 존재하지 않습니다"));
         }
-        CommunityPostEntity postEntity = CommunityPostEntity.builder()
-                .userEntity(userEntity)
-                .planEntity(planEntity)
+        CommunityPost postEntity = CommunityPost.builder()
+                .member(member)
+                .plan(plan)
                 .title(postRequestDto.title())
                 .postContent(postRequestDto.postContent())
                 .isTravelPlan(postRequestDto.isTravelPlan())
                 .build();
-        CommunityPostEntity saved = postRepository.save(postEntity);
+        CommunityPost saved = postRepository.save(postEntity);
         return CommunityPostResponseDto.fromEntity(saved);
     }
 
     @Transactional(readOnly = true)
     public List<CommunityPostResponseDto> getAllPosts(Long userId) {
-        return postRepository.findAllByUserEntity_UserId(userId)
+        return postRepository.findAllByMember_MemberId(userId)
                 .stream()
                 .map(CommunityPostResponseDto::fromEntity)
                 .toList();
@@ -58,7 +58,7 @@ public class CommunityPostService {
 
     @Transactional(readOnly = true)
     public CommunityPostResponseDto getPost(Integer postId) {
-        CommunityPostEntity post = postRepository.findById(postId)
+        CommunityPost post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다"));
 
         if (!post.getIsTravelPlan()) {
@@ -69,11 +69,11 @@ public class CommunityPostService {
     }
 
     public CommunityPostResponseDto updatePost(Integer postId, CommunityPostRequestDto postRequestDto) {
-        CommunityPostEntity postEntity = postRepository.findById(postId)
+        CommunityPost postEntity = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
-        PlanEntity planEntity = planRepository.findById(postRequestDto.planId())
+        Plan plan = planRepository.findById(postRequestDto.planId())
                 .orElseThrow(() -> new IllegalArgumentException("해당 플랜이 존재하지 않음"));
-        postEntity.update(postRequestDto, planEntity);
+        postEntity.update(postRequestDto, plan);
         return CommunityPostResponseDto.fromEntity(postEntity);
     }
 
@@ -81,16 +81,16 @@ public class CommunityPostService {
         postRepository.deleteById(postId);
     }
 
-    public PlanEntity getPopularPlanByRegion(String sigunguCd) {
-        List<PlanEntity> plans = postRepository.findTopPopularPlanByRegion(sigunguCd, PageRequest.of(0, 1));
+    public Plan getPopularPlanByRegion(String sigunguCd) {
+        List<Plan> plans = postRepository.findTopPopularPlanByRegion(sigunguCd, PageRequest.of(0, 1));
         return plans.isEmpty() ? null : plans.get(0);
     }
 
     public List<CommunityPostResponseDto> getPlanPosts(int page) {
-        Page<CommunityPostEntity> postPage = postRepository.findAllByIsTravelPlanTrue(PageRequest.of(page, 10));
+        Page<CommunityPost> postPage = postRepository.findAllByIsTravelPlanTrue(PageRequest.of(page, 10));
 
         return postPage.stream().map(post -> {
-            PlanEntity plan = post.getPlanEntity();
+            Plan plan = post.getPlan();
             if (plan == null) return null;
 
             PlanResponseDto planDto = new PlanResponseDto(plan, null);
@@ -100,33 +100,33 @@ public class CommunityPostService {
                     .toList();
 
             // 지역 기반 인기 플랜 조회
-            PlanEntity popular = getPopularPlanByRegion(plan.getRegionEntity().getSigunguCd());
+            Plan popular = getPopularPlanByRegion(plan.getRegion().getSigunguCd());
             PlanResponseDto popularDto = new PlanResponseDto(popular, null);
 
             return new CommunityPostResponseDto(
-                    post.getPostId(),
-                    post.getUserEntity().getUserId(),
+                    post.getCommunityPostId(),
+                    post.getMember().getMemberId(),
                     post.getTitle(),
                     post.getPostContent(),
                     post.getIsTravelPlan(),
                     plan.getPlanId(),
                     post.getCreatedAt(),
                     post.getUpdatedAt(),
-                    post.getUserEntity().getNickname(),
+                    post.getMember().getNickname(),
                     planDto,
                     places,
                     popularDto,
                     post.getViewCount(),
                     post.getScrapEntities().size(),
                     post.getCommentEntities().size(),
-                    plan.getRegionEntity().getSigunguName()
+                    plan.getRegion().getSigunguName()
             );
         }).filter(dto -> dto != null).toList();
     }
 
 
     public List<CommunityPostResponseDto> getFreePosts(int page) {
-        Page<CommunityPostEntity> postPage = postRepository.findAllByIsTravelPlanFalse(PageRequest.of(page, 10));
+        Page<CommunityPost> postPage = postRepository.findAllByIsTravelPlanFalse(PageRequest.of(page, 10));
 
         return postPage.stream()
                 .map(CommunityPostResponseDto::fromEntity)
@@ -135,7 +135,7 @@ public class CommunityPostService {
 
     @Transactional
     public void increaseViewCount(Integer postId) {
-        CommunityPostEntity post = postRepository.findById(postId)
+        CommunityPost post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("게시물을 찾을 수 없습니다."));
 
         post.increaseViewCount();
@@ -143,7 +143,7 @@ public class CommunityPostService {
 
     @Transactional(readOnly = true)
     public List<CommunityPostResponseDto> getMyPlanPosts(Long userId) {
-        return postRepository.findAllByUserEntity_UserIdAndIsTravelPlanTrue(userId).stream()
+        return postRepository.findAllByMember_MemberIdAndIsTravelPlanTrue(userId).stream()
                 .map(CommunityPostResponseDto::fromEntity)
                 .toList();
     }

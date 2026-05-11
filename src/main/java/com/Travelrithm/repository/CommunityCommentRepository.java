@@ -1,12 +1,12 @@
 package com.Travelrithm.repository;
 
-import com.Travelrithm.domain.CommunityCommentEntity;
+import com.Travelrithm.domain.CommunityComment;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface CommunityCommentRepository extends JpaRepository<CommunityCommentEntity, Integer> {
-    List<CommunityCommentEntity> findByPostEntity_PostId(Integer postId);
+public interface CommunityCommentRepository extends JpaRepository<CommunityComment, Integer> {
+    List<CommunityComment> findByCommunityPost_CommunityPostId(Integer communityPostId);
 
 }
 

@@ -1,7 +1,6 @@
 package com.Travelrithm.domain;
 
 
-import com.Travelrithm.dto.PlaceDto;
 import com.Travelrithm.dto.PlanRequestDto;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -22,19 +21,20 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-@Table(name = "travel_plan")
-public class PlanEntity {
+public class Plan {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer planId;
 
-    @ManyToOne(fetch = FetchType.LAZY) //.getUser 하기전에 객체를 불러오지 않음(지연로딩)
-    @JoinColumn(name = "user_id")
-    private UserEntity userEntity;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id",
+            foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sigunguCd")
-    private RegionEntity regionEntity;
+    @JoinColumn(name = "sigunguCd",
+            foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    private Region region;
 
     private LocalDate startDate;
     private LocalDate endDate;
@@ -56,13 +56,13 @@ public class PlanEntity {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "planEntity", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "plan", cascade = CascadeType.ALL)
     @Builder.Default
-    private List<PlaceEntity> placeEntities = new ArrayList<>();
+    private List<Place> placeEntities = new ArrayList<>();
 
-    @OneToMany(mappedBy = "planEntity", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "plan", cascade = CascadeType.ALL)
     @Builder.Default
-    private List<CommunityPostEntity> postEntities = new ArrayList<>();
+    private List<CommunityPost> postEntities = new ArrayList<>();
 
     public void update(PlanRequestDto planDto) {
 

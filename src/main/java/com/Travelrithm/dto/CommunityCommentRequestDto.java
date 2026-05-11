@@ -1,8 +1,8 @@
 package com.Travelrithm.dto;
 
-import com.Travelrithm.domain.CommunityCommentEntity;
-import com.Travelrithm.domain.CommunityPostEntity;
-import com.Travelrithm.domain.UserEntity;
+import com.Travelrithm.domain.CommunityComment;
+import com.Travelrithm.domain.CommunityPost;
+import com.Travelrithm.domain.Member;
 import lombok.*;
 
 @Getter
@@ -15,10 +15,10 @@ public class CommunityCommentRequestDto {
     private Long userId;
     private String commentContent;
 
-    public CommunityCommentEntity toEntity(CommunityPostEntity postEntity, UserEntity userEntity) {
-        return CommunityCommentEntity.builder()
-                .postEntity(postEntity)
-                .userEntity(userEntity)
+    public CommunityComment toEntity(CommunityPost postEntity, Member member) {
+        return CommunityComment.builder()
+                .communityPost(postEntity)
+                .member(member)
                 .commentContent(commentContent)
                 .build();
     }

@@ -22,18 +22,17 @@ public class PlanController {
 
     @GetMapping("myPlans")
     public ResponseEntity<List<PlanResponseDto>> myPlans(@AuthenticationPrincipal CustomUserDetails userDetails) {
-        Long userId = userDetails.getUserId();
+        Long userId = userDetails.getMemberId();
         return ResponseEntity.ok(planService.findPlans(userId));
     }
 
     @PostMapping("/createPlan")
     public ResponseEntity<PlanResponseDto> createPlan(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody PlanRequestDto planDto) {
-        Long userId = userDetails.getUserId();
+        Long userId = userDetails.getMemberId();
         return ResponseEntity.ok(planService.createPlan(userId, planDto));
 
 
     }
-
     //검색 기능이니까 PlanName등으로 바꿔야 함
     @GetMapping("/{planId}")
     public ResponseEntity<PlanResponseDto> findPlan(@PathVariable(name = "planId") Integer planId) {

@@ -1,16 +1,14 @@
 package com.Travelrithm.service;
 
-import com.Travelrithm.domain.CommunityPostEntity;
+import com.Travelrithm.domain.CommunityPost;
 
-import com.Travelrithm.domain.RegionEntity;
-import com.Travelrithm.domain.ScrapEntity;
-import com.Travelrithm.domain.UserEntity;
-import com.Travelrithm.dto.RegionDto;
+import com.Travelrithm.domain.Scrap;
+import com.Travelrithm.domain.Member;
 import com.Travelrithm.dto.ScrapDto;
 import com.Travelrithm.repository.CommunityPostRepository;
 
 import com.Travelrithm.repository.ScrapRepository;
-import com.Travelrithm.repository.UserRepository;
+import com.Travelrithm.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,24 +21,24 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Transactional
 public class ScrapService {
-    private final UserRepository userRepository;
+    private final MemberRepository memberRepository;
     private final CommunityPostRepository communityPostRepository;
     private final ScrapRepository scrapRepository;
 
     @Transactional
-    public ScrapDto createScrap(Long userId, Integer postId) {
-        UserEntity userEntity = userRepository.findById(userId)
+    public ScrapDto createScrap(Long memberId, Integer postId) {
+        Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("유저 존재하지 않음"));
-        CommunityPostEntity postEntity = communityPostRepository.findById(postId)
+        CommunityPost postEntity = communityPostRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("게시물 존재하지 않음"));
-        ScrapEntity existing = scrapRepository.findByUserEntityAndPostEntity(userEntity, postEntity);
+        Scrap existing = scrapRepository.findByMemberAndPostEntity(member, postEntity);
 
         if (existing != null) {
             scrapRepository.delete(existing);
             return null; // scrap 있으면 기존 거 삭제
         } else {
-            ScrapEntity newScrap = ScrapEntity.builder()
-                    .userEntity(userEntity)
+            Scrap newScrap = Scrap.builder()
+                    .member(member)
                     .postEntity(postEntity)
                     .createdAt(LocalDateTime.now())
                     .build();
@@ -48,20 +46,20 @@ public class ScrapService {
         }
     }
 
-    public void removeScrap(Long userId, Integer postId) {
-        UserEntity userEntity = userRepository.findById(userId)
+    public void removeScrap(Long memberId, Integer postId) {
+        Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("유저 존재하지 않음"));
-        CommunityPostEntity postEntity = communityPostRepository.findById(postId)
+        CommunityPost postEntity = communityPostRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("게시물 존재하지 않음"));
-        ScrapEntity scrap = scrapRepository.findByUserEntityAndPostEntity(userEntity,postEntity);
+        Scrap scrap = scrapRepository.findByMemberAndPostEntity(member,postEntity);
         scrapRepository.delete(scrap);
     }
 
-    public List<ScrapDto> getMyScrap(Long userId) {
-        UserEntity userEntity = userRepository.findById(userId)
+    public List<ScrapDto> getMyScrap(Long memberId) {
+        Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("유저 존재하지 않음"));
-        List<ScrapEntity> scrapEntity = scrapRepository.findByUserEntity(userEntity);
-        return scrapEntity.stream()
+        List<Scrap> scrap = scrapRepository.findByMember(member);
+        return scrap.stream()
                 .map(ScrapDto ::new)
                 .collect(Collectors.toList());
     }

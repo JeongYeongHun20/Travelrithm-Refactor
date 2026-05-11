@@ -1,6 +1,6 @@
 package com.Travelrithm.dto;
 
-import com.Travelrithm.domain.FestivalEntity;
+import com.Travelrithm.domain.Festival;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -14,7 +14,7 @@ public record FestivalResponseDto(
         BigDecimal longitude,
         String address
 ) {
-    public static FestivalResponseDto fromEntity(FestivalEntity e) {
+    public static FestivalResponseDto fromEntity(Festival e) {
         return new FestivalResponseDto(
                 e.getFestivalName(),
                 e.getStartDate(),

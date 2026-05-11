@@ -196,5 +196,6 @@ gradle-app.setting
 #Env file
 .env
 application-secret.yml
+AGENTS.md
 
 # End of https://www.toptal.com/developers/gitignore/api/intellij,java,gradle,windows

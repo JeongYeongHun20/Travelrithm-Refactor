@@ -1,7 +1,7 @@
 package com.Travelrithm.dto;
 
-import com.Travelrithm.domain.CommunityPostEntity;
-import com.Travelrithm.domain.PlanEntity;
+import com.Travelrithm.domain.CommunityPost;
+import com.Travelrithm.domain.Plan;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -27,8 +27,8 @@ public record CommunityPostResponseDto(
     /**
      * 정적 팩토리 메서드: CommunityPostEntity → CommunityPostResponseDto 변환
      */
-    public static CommunityPostResponseDto fromEntity(CommunityPostEntity post) {
-        PlanEntity plan = post.getPlanEntity();
+    public static CommunityPostResponseDto fromEntity(CommunityPost post) {
+        Plan plan = post.getPlan();
 
         PlanResponseDto planDto = (plan != null) ? new PlanResponseDto(plan, null) : null;
 
@@ -40,22 +40,22 @@ public record CommunityPostResponseDto(
         PlanResponseDto popularPlanDto = (plan != null) ? new PlanResponseDto(plan, null) : null;
 
         return new CommunityPostResponseDto(
-                post.getPostId(),
-                post.getUserEntity().getUserId(),
+                post.getCommunityPostId(),
+                post.getMember().getMemberId(),
                 post.getTitle(),
                 post.getPostContent(),
                 post.getIsTravelPlan(),
                 (plan != null) ? plan.getPlanId() : null,
                 post.getCreatedAt(),
                 post.getUpdatedAt(),
-                post.getUserEntity().getNickname(),
+                post.getMember().getNickname(),
                 planDto,
                 places,
                 popularPlanDto,
                 post.getViewCount(),
                 post.getScrapEntities().size(),
                 post.getCommentEntities().size(),
-                plan.getRegionEntity().getSigunguName()
+                plan.getRegion().getSigunguName()
 
         );
     }

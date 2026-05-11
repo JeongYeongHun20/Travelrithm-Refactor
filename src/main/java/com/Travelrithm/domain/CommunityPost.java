@@ -16,33 +16,34 @@ import java.util.List;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Table(name = "community_post")
-public class CommunityPostEntity {
+public class CommunityPost {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer postId;
+    private Integer communityPostId;
 
     @OneToMany(mappedBy = "postEntity", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
-    private List<ScrapEntity> scrapEntities = new ArrayList<>();
+    private List<Scrap> scrapEntities = new ArrayList<>();
 
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private UserEntity userEntity;
+    @JoinColumn(name = "user_id",
+            foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    private Member member;
 
     private String title;
 
     private String postContent;
 
-    @OneToMany(mappedBy = "postEntity", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "communityPost", cascade = CascadeType.ALL)
     @Builder.Default
-    private List<CommunityCommentEntity> commentEntities = new ArrayList<>();
+    private List<CommunityComment> commentEntities = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "plan_id")
-    private PlanEntity planEntity;
+    @JoinColumn(name = "plan_id",
+            foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    private Plan plan;
 
     @CreationTimestamp
     @Column(updatable = false)
@@ -61,11 +62,11 @@ public class CommunityPostEntity {
         this.viewCount++;
     }
 
-    public void update(CommunityPostRequestDto requestDto, PlanEntity planEntity) {
+    public void update(CommunityPostRequestDto requestDto, Plan plan) {
         this.title = requestDto.title();
         this.postContent = requestDto.postContent();
         this.isTravelPlan = requestDto.isTravelPlan();
-        this.planEntity = planEntity;
+        this.plan = plan;
     }
 
 }

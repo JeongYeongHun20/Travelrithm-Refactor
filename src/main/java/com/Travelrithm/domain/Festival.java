@@ -9,11 +9,10 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "festival")
 @Getter
 @Setter
 @NoArgsConstructor
-public class FestivalEntity {
+public class Festival {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,6 +1,6 @@
 package com.Travelrithm.dto;
 
-import com.Travelrithm.domain.RegionEntity;
+import com.Travelrithm.domain.Region;
 
 public record RegionDto(
     String sigunguCd,
@@ -8,12 +8,12 @@ public record RegionDto(
     String areaCd,
     String areaName
 ) {
-    public RegionDto(RegionEntity regionEntity) {
+    public RegionDto(Region region) {
         this(
-                regionEntity.getSigunguCd(),
-                regionEntity.getSigunguName(),
-                regionEntity.getAreaCd(),
-                regionEntity.getAreaName()
+                region.getSigunguCd(),
+                region.getSigunguName(),
+                region.getAreaCd(),
+                region.getAreaName()
         );
     }
 

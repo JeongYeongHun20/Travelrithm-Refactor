@@ -4,9 +4,6 @@ package com.Travelrithm.domain;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.ArrayList;
-import java.util.List;
-
 
 @Getter
 @Setter
@@ -14,8 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "area_code")
-public class RegionEntity {
+public class Region {
     @Id
     private String sigunguCd;
     private String sigunguName;

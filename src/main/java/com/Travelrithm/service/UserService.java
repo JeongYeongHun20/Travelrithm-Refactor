@@ -1,11 +1,11 @@
 package com.Travelrithm.service;
 
 
-import com.Travelrithm.domain.UserEntity;
+import com.Travelrithm.domain.Member;
 import com.Travelrithm.dto.*;
-import com.Travelrithm.dto.register.UserRegisterInfo;
-import com.Travelrithm.dto.register.UserRequestDto;
-import com.Travelrithm.repository.UserRepository;
+import com.Travelrithm.dto.register.MemberRegisterInfo;
+import com.Travelrithm.dto.register.MemberRequestDto;
+import com.Travelrithm.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -20,29 +20,29 @@ import java.util.List;
 @Slf4j
 public class UserService {
 
-    private final UserRepository userRepository;
+    private final MemberRepository memberRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
 
-    public UserResponseDto createOAuthUser(UserRegisterInfo userRegisterInfo){
-        UserEntity user = userRepository.findByEmail(userRegisterInfo.getEmail())
+    public MemberResponseDto createOAuthUser(MemberRegisterInfo memberRegisterInfo){
+        Member user = memberRepository.findByEmail(memberRegisterInfo.getEmail())
                 .orElseGet(() -> {
-                    UserEntity newUser = UserEntity.builder()
-                            .socialId(userRegisterInfo.getSocialId())
-                            .socialType(userRegisterInfo.getSocialType())
-                            .name(userRegisterInfo.getName())
-                            .email(userRegisterInfo.getEmail())
-                            .nickname(userRegisterInfo.getNickName())
+                    Member newUser = Member.builder()
+                            .socialId(memberRegisterInfo.getSocialId())
+                            .socialType(memberRegisterInfo.getSocialType())
+                            .name(memberRegisterInfo.getName())
+                            .email(memberRegisterInfo.getEmail())
+                            .nickname(memberRegisterInfo.getNickName())
                             .build();
-                    return userRepository.save(newUser);
+                    return memberRepository.save(newUser);
                 });
 
-        return new UserResponseDto(user);/*** 차후에 userNotfoundException에러를 던져야됨***/
+        return new MemberResponseDto(user);/*** 차후에 userNotfoundException에러를 던져야됨***/
     }
-    public UserResponseDto createUser(UserRequestDto userRegisterInfo){
-        UserEntity user = userRepository.findByEmail(userRegisterInfo.email())
+    public MemberResponseDto createUser(MemberRequestDto userRegisterInfo){
+        Member user = memberRepository.findByEmail(userRegisterInfo.email())
                 .orElseGet(() -> {
-                    UserEntity newUser = UserEntity.builder()
+                    Member newUser = Member.builder()
                             .socialId(null)
                             .socialType(userRegisterInfo.socialType())
                             .name(userRegisterInfo.name())
@@ -51,45 +51,45 @@ public class UserService {
                             .password(bCryptPasswordEncoder.encode(userRegisterInfo.password()))
                             .nickname(userRegisterInfo.nickname())
                             .build();
-                    return userRepository.save(newUser);
+                    return memberRepository.save(newUser);
                 });
 
-        return new UserResponseDto(user);/*** 차후에 userNotfoundException에러를 던져야됨***/
+        return new MemberResponseDto(user);/*** 차후에 userNotfoundException에러를 던져야됨***/
     }
 
 
     @Transactional(readOnly = true)
-    public UserResponseDto findUser(Long id) {
-        UserEntity user = userRepository.findById(id)
+    public MemberResponseDto findUser(Long id) {
+        Member user = memberRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
-        return new UserResponseDto(user);
+        return new MemberResponseDto(user);
     }
-    public UserResponseDto findUser(String email){
-        UserEntity user=userRepository.findByEmail(email)
+    public MemberResponseDto findUser(String email){
+        Member user= memberRepository.findByEmail(email)
                 .orElseThrow(()->new IllegalArgumentException("존재하지 않는 사용자 입니다. "));
-        return new UserResponseDto(user);
+        return new MemberResponseDto(user);
     }
 
     @Transactional(readOnly = true)
-    public List<UserResponseDto> findAllUsers() {
-        return userRepository.findAll().stream()
-                .map(UserResponseDto::new)
+    public List<MemberResponseDto> findAllUsers() {
+        return memberRepository.findAll().stream()
+                .map(MemberResponseDto::new)
                 .toList();
     }
 
     public void deleteUser(Long id){
-        userRepository.deleteById(id);
+        memberRepository.deleteById(id);
     }
 
-    public UserResponseDto updateUser(Long userId, UserRequestDto updatedUserDto){
-        UserEntity userEntity = userRepository.findById(userId)
+    public MemberResponseDto updateUser(Long userId, MemberRequestDto updatedUserDto){
+        Member member = memberRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자 입니다"));
-        userEntity.update(updatedUserDto);
-        return new UserResponseDto(userEntity);
+        member.update(updatedUserDto);
+        return new MemberResponseDto(member);
     }
 
-    private void validateDuplicateEmail(UserEntity user) {
-        userRepository.findByEmail(user.getEmail())
+    private void validateDuplicateEmail(Member user) {
+        memberRepository.findByEmail(user.getEmail())
                 .ifPresent(i-> {
                     throw new IllegalStateException("이미 존재하는 회원입니다.");
                 });

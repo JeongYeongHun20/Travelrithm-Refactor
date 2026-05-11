@@ -1,18 +1,15 @@
 package com.Travelrithm.controller;
 
-import com.Travelrithm.domain.PlanEntity;
 import com.Travelrithm.dto.CommunityPostRequestDto;
 import com.Travelrithm.dto.CommunityPostResponseDto;
 import com.Travelrithm.dto.ScrapDto;
 import com.Travelrithm.security.jwt.CustomUserDetails;
 import com.Travelrithm.service.CommunityPostService;
-import com.Travelrithm.service.PlanService;
 import com.Travelrithm.service.ScrapService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,13 +27,13 @@ public class CommunityPostController {
 
     @PostMapping("/createPost")
     public CommunityPostResponseDto createPost(@AuthenticationPrincipal CustomUserDetails userDetails,@RequestBody CommunityPostRequestDto request) {
-        Long userId = userDetails.getUserId();
+        Long userId = userDetails.getMemberId();
         return postService.createPost(userId, request);
     }
 
     @GetMapping("/getPosts")
     public List<CommunityPostResponseDto> getPosts(@AuthenticationPrincipal CustomUserDetails userDetails) {
-        Long userId = userDetails.getUserId();
+        Long userId = userDetails.getMemberId();
         return postService.getAllPosts(userId);
     }
 
@@ -57,18 +54,18 @@ public class CommunityPostController {
 
     @GetMapping("/{postId}/scrap")
     public ScrapDto toggleScrap(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable(name = "postId") Integer postId) {
-        Long userId=userDetails.getUserId();
+        Long userId=userDetails.getMemberId();
         return scrapService.createScrap(userId, postId);
 
     }
 
     @GetMapping("/myScrap")
     public ResponseEntity<List<ScrapDto>> getMyScrap(@AuthenticationPrincipal CustomUserDetails userDetails) {
-        return ResponseEntity.ok(scrapService.getMyScrap(userDetails.getUserId()));
+        return ResponseEntity.ok(scrapService.getMyScrap(userDetails.getMemberId()));
     }
     @DeleteMapping("/{postId}/scrap")
     public ResponseEntity<Void> unToggleScrap(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable(name = "postId") Integer postId) {
-        Long userId=userDetails.getUserId();
+        Long userId=userDetails.getMemberId();
         scrapService.removeScrap(userId,postId);
 
         return ResponseEntity.noContent().build();
@@ -93,7 +90,7 @@ public class CommunityPostController {
 
     @GetMapping("/myPlans")
     public ResponseEntity<List<CommunityPostResponseDto>> getMyPlanPosts(@AuthenticationPrincipal CustomUserDetails userDetails) {
-        Long userId = userDetails.getUserId();
+        Long userId = userDetails.getMemberId();
         return ResponseEntity.ok(communityPostService.getMyPlanPosts(userId));
     }
 }

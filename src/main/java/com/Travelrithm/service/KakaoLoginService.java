@@ -2,8 +2,8 @@ package com.Travelrithm.service;
 
 import com.Travelrithm.domain.SocialType;
 import com.Travelrithm.dto.KakaoTokenResponseDto;
-import com.Travelrithm.dto.register.KakaoUserResponseDto;
-import com.Travelrithm.dto.register.UserRegisterInfo;
+import com.Travelrithm.dto.register.KakaoMemberResponseDto;
+import com.Travelrithm.dto.register.MemberRegisterInfo;
 import com.Travelrithm.global.External.ApiRequest;
 import com.Travelrithm.global.External.ExternalApi;
 import com.Travelrithm.global.External.GetApiRequest;
@@ -50,7 +50,7 @@ public class KakaoLoginService implements OAuthService{
                 .toUriString();
     }
     @Override
-    public UserRegisterInfo login(String code, String state) {
+    public MemberRegisterInfo login(String code, String state) {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -71,7 +71,7 @@ public class KakaoLoginService implements OAuthService{
         return getUserInfo(response.access_token());
     }
 
-    private KakaoUserResponseDto getUserInfo(String token) {
+    private KakaoMemberResponseDto getUserInfo(String token) {
         HttpHeaders headers=new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         headers.setBearerAuth(token);
@@ -79,7 +79,7 @@ public class KakaoLoginService implements OAuthService{
                 .path("/v2/user/me")
                 .headers(headers)
                 .build();
-        return apiExecutor.executeGet(request, KakaoUserResponseDto.class);
+        return apiExecutor.executeGet(request, KakaoMemberResponseDto.class);
 
     }
 

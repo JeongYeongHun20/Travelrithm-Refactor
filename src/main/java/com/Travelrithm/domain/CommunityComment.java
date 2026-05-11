@@ -13,21 +13,22 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Table(name = "community_comment")
-public class CommunityCommentEntity {
+public class CommunityComment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer commentId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private UserEntity userEntity;
+    @JoinColumn(name = "member_id",
+            foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    private Member member;
 
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id")
-    private CommunityPostEntity postEntity;
+    @JoinColumn(name = "communityPost_id",
+            foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    private CommunityPost communityPost;
 
 
     @Column(name = "comment_content", columnDefinition = "TEXT")

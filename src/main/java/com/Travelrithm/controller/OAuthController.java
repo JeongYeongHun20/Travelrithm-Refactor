@@ -2,14 +2,13 @@ package com.Travelrithm.controller;
 
 import com.Travelrithm.domain.SocialType;
 import com.Travelrithm.dto.AuthUser;
-import com.Travelrithm.dto.UserResponseDto;
-import com.Travelrithm.dto.register.UserRegisterInfo;
+import com.Travelrithm.dto.MemberResponseDto;
+import com.Travelrithm.dto.register.MemberRegisterInfo;
 import com.Travelrithm.security.jwt.CustomUserDetails;
 import com.Travelrithm.security.jwt.JWTUtil;
 import com.Travelrithm.service.OAuthService;
 import com.Travelrithm.service.OAuthServiceFactory;
 import com.Travelrithm.service.UserService;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,8 +20,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
-
-import java.util.Map;
 
 @Slf4j
 @RestController
@@ -68,9 +65,9 @@ public class OAuthController {
             throw new RuntimeException("Invalid state");
         }
         OAuthService service = oAuthServiceFactory.getService(provider);
-        UserRegisterInfo userInfo = service.login(code, state);
-        UserResponseDto user = userService.createOAuthUser(userInfo);
-        String jwtToken = jwtUtil.createJwt(user.userId(),user.email(),user.nickname(),"ROLE_USER",24*60*60*1000L);
+        MemberRegisterInfo userInfo = service.login(code, state);
+        MemberResponseDto user = userService.createOAuthUser(userInfo);
+        String jwtToken = jwtUtil.createJwt(user.memberId(),user.email(),user.nickname(),"ROLE_USER",24*60*60*1000L);
 
         ResponseCookie cookie = ResponseCookie.from("accessToken", jwtToken)
                 .path("/")
@@ -90,7 +87,7 @@ public class OAuthController {
         if (userDetails == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
         }
-        AuthUser authUser=new AuthUser(userDetails.getUserId(),userDetails.getUsername(),userDetails.geNickname());
+        AuthUser authUser=new AuthUser(userDetails.getMemberId(),userDetails.getUsername(),userDetails.geNickname());
 
         return ResponseEntity.ok(authUser);
 

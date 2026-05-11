@@ -6,7 +6,7 @@ import com.Travelrithm.domain.SocialType;
 import java.time.LocalDateTime;
 
 
-public record UserRequestDto(
+public record MemberRequestDto(
         String name,
         String password,
         String email,

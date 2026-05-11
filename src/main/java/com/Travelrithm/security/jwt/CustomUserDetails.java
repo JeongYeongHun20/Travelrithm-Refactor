@@ -1,6 +1,6 @@
 package com.Travelrithm.security.jwt;
 
-import com.Travelrithm.domain.UserEntity;
+import com.Travelrithm.domain.Member;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
@@ -14,33 +14,33 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public class CustomUserDetails implements UserDetails {
 
-    private final UserEntity userEntity;
+    private final Member member;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Collection<GrantedAuthority> collection = new ArrayList<>();
-        collection.add(new SimpleGrantedAuthority(userEntity.getRole()));
+        collection.add(new SimpleGrantedAuthority(member.getRole()));
 
         return collection;
     }
 
-    public Long getUserId() {
-        return userEntity.getUserId();
+    public Long getMemberId() {
+        return member.getMemberId();
     }
     public String geNickname(){
-        return userEntity.getNickname();
+        return member.getNickname();
     }
 
     @Override
     public String getPassword() {
 
-        log.info(userEntity.getPassword());
-        return userEntity.getPassword();
+        log.info(member.getPassword());
+        return member.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return userEntity.getEmail();
+        return member.getEmail();
     }
 
     @Override

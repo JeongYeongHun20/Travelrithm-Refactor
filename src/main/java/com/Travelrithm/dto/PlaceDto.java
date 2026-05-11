@@ -2,7 +2,7 @@ package com.Travelrithm.dto;
 
 
 
-import com.Travelrithm.domain.PlaceEntity;
+import com.Travelrithm.domain.Place;
 
 import java.math.BigDecimal;
 
@@ -18,7 +18,7 @@ public record PlaceDto(
         Integer sequence,
         String category
 ) {
-    public PlaceDto(PlaceEntity entity) {
+    public PlaceDto(Place entity) {
         this(
                 entity.getPlaceId(),
                 entity.getPlaceName(),

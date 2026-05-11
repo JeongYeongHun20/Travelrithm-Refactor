@@ -27,7 +27,7 @@ public class PublicDataApi {
     private final RestTemplate restTemplate = new RestTemplate();
     private final String DATA_URL = "https://apis.data.go.kr/B551011/KorService2";
 
-    public List<Item> getCategory(DataRequestDto dataRequestDto) {
+    public List<Item> getCategory(DataRequestDto dataRequestDto) {//기본 정보들 요청
         log.info("Enter: getCategory");
         String cat1 = dataRequestDto.category().substring(0, 3);
         String cat2 = dataRequestDto.category();
@@ -52,7 +52,7 @@ public class PublicDataApi {
         return getCategoryCommon(response);
     }
 
-    public List<Item> getCategoryCommon(DataResponseDto dataResponseDto) {
+    public List<Item> getCategoryCommon(DataResponseDto dataResponseDto) {//각 지역들의 부가설명 및 이미지 정보 요청
         log.info("Enter: getCategoryCommon");
         List<DataResponseDto.Response.Body.Items.Item> items = dataResponseDto.response().body().items().item();
         List<Item> resultItem = new ArrayList<>();

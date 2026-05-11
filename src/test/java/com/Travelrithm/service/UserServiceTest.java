@@ -1,10 +1,10 @@
 package com.Travelrithm.service;
 
 import com.Travelrithm.domain.SocialType;
-import com.Travelrithm.domain.UserEntity;
-import com.Travelrithm.dto.register.UserRegisterInfo;
-import com.Travelrithm.dto.UserResponseDto;
-import com.Travelrithm.repository.UserRepository;
+import com.Travelrithm.domain.Member;
+import com.Travelrithm.dto.register.MemberRegisterInfo;
+import com.Travelrithm.dto.MemberResponseDto;
+import com.Travelrithm.repository.MemberRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -27,7 +27,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class UserServiceSocialTest {
 
-    @Mock private UserRepository userRepository;
+    @Mock private MemberRepository memberRepository;
     @Mock private BCryptPasswordEncoder bCryptPasswordEncoder;
     @InjectMocks private UserService userService;
 
@@ -37,7 +37,7 @@ class UserServiceSocialTest {
     void createOAuthUser_ShouldHandleVariousSocialProviders(
             String email, String name, SocialType socialType, String SocialId) {
 
-        UserRegisterInfo info = mock(UserRegisterInfo.class);
+        MemberRegisterInfo info = mock(MemberRegisterInfo.class);
 
         when(info.getEmail()).thenReturn(email);
         when(info.getName()).thenReturn(name);
@@ -46,12 +46,12 @@ class UserServiceSocialTest {
         when(info.getNickName()).thenReturn("nick_" + name);
 
         // 3. 기존 로직 모킹
-        when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
+        when(memberRepository.findByEmail(email)).thenReturn(Optional.empty());
         lenient().when(bCryptPasswordEncoder.encode(anyString())).thenReturn("hashed_password");
-        when(userRepository.save(any(UserEntity.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(memberRepository.save(any(Member.class))).thenAnswer(inv -> inv.getArgument(0));
 
         // 4. 실행
-        UserResponseDto result = userService.createOAuthUser(info);
+        MemberResponseDto result = userService.createOAuthUser(info);
 
         // 5. 검증
         assertAll(

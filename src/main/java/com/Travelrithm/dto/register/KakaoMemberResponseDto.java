@@ -8,12 +8,12 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.Date;
 
 @JsonIgnoreProperties(ignoreUnknown = true)//역직렬화 시 dto 객체 필드에 없는 json정보 무시
-public record KakaoUserResponseDto(
+public record KakaoMemberResponseDto(
         Long id,
         Boolean has_signed_up,
         Date connected_at,
         KakaoAccount kakao_account
-)implements UserRegisterInfo {
+)implements MemberRegisterInfo {
     @Override
     public String getName() {
         return kakao_account().name;

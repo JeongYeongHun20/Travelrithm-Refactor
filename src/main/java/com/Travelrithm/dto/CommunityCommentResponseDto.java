@@ -1,6 +1,6 @@
 package com.Travelrithm.dto;
 
-import com.Travelrithm.domain.CommunityCommentEntity;
+import com.Travelrithm.domain.CommunityComment;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -19,11 +19,11 @@ public class CommunityCommentResponseDto {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public CommunityCommentResponseDto(CommunityCommentEntity entity) {
+    public CommunityCommentResponseDto(CommunityComment entity) {
         this.commentId = entity.getCommentId();
-        this.postId = entity.getPostEntity().getPostId();
-        this.userId = entity.getUserEntity().getUserId();
-        this.nickname = entity.getUserEntity() != null ? entity.getUserEntity().getNickname() : null;
+        this.postId = entity.getCommunityPost().getCommunityPostId();
+        this.userId = entity.getMember().getMemberId();
+        this.nickname = entity.getMember() != null ? entity.getMember().getNickname() : null;
         this.commentContent = entity.getCommentContent();
         this.createdAt = entity.getCreatedAt();
         this.updatedAt = entity.getUpdatedAt();

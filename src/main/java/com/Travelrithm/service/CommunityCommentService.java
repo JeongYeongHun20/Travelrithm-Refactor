@@ -1,13 +1,13 @@
 package com.Travelrithm.service;
 
-import com.Travelrithm.domain.CommunityCommentEntity;
-import com.Travelrithm.domain.CommunityPostEntity;
-import com.Travelrithm.domain.UserEntity;
+import com.Travelrithm.domain.CommunityComment;
+import com.Travelrithm.domain.CommunityPost;
+import com.Travelrithm.domain.Member;
 import com.Travelrithm.dto.CommunityCommentRequestDto;
 import com.Travelrithm.dto.CommunityCommentResponseDto;
 import com.Travelrithm.repository.CommunityCommentRepository;
 import com.Travelrithm.repository.CommunityPostRepository;
-import com.Travelrithm.repository.UserRepository;
+import com.Travelrithm.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,30 +22,30 @@ public class CommunityCommentService {
 
     private final CommunityCommentRepository commentRepository;
     private final CommunityPostRepository postRepository;
-    private final UserRepository userRepository;
+    private final MemberRepository memberRepository;
 
 
     public CommunityCommentResponseDto createComment(CommunityCommentRequestDto request) {
-        CommunityPostEntity postEntity = postRepository.findById(request.getPostId())
+        CommunityPost postEntity = postRepository.findById(request.getPostId())
                 .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
 
-        UserEntity userEntity = userRepository.findById(request.getUserId())
+        Member member = memberRepository.findById(request.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다."));
 
-        CommunityCommentEntity entity = request.toEntity(postEntity, userEntity);
+        CommunityComment entity = request.toEntity(postEntity, member);
         return new CommunityCommentResponseDto(commentRepository.save(entity));
     }
 
 
     public List<CommunityCommentResponseDto> getCommentsByPostId(Integer postId) {
-        return commentRepository.findByPostEntity_PostId(postId)
+        return commentRepository.findByCommunityPost_CommunityPostId(postId)
                 .stream()
                 .map(CommunityCommentResponseDto::new)
                 .collect(Collectors.toList());
     }
 
     public CommunityCommentResponseDto updateComment(Integer commentId, CommunityCommentRequestDto request) {
-        CommunityCommentEntity entity = commentRepository.findById(commentId)
+        CommunityComment entity = commentRepository.findById(commentId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 댓글이 존재하지 않습니다."));
         entity.update(request.getCommentContent());
         return new CommunityCommentResponseDto(entity);

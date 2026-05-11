@@ -1,8 +1,8 @@
 package com.Travelrithm.controller;
 
 import com.Travelrithm.dto.AuthUser;
-import com.Travelrithm.dto.register.UserRequestDto;
-import com.Travelrithm.dto.UserResponseDto;
+import com.Travelrithm.dto.register.MemberRequestDto;
+import com.Travelrithm.dto.MemberResponseDto;
 import com.Travelrithm.security.jwt.CustomUserDetails;
 import com.Travelrithm.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -16,28 +16,28 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/users")
-public class UserController {
+public class MemberController {
 
     private final UserService userService;
 
 
     @PostMapping("/local")
-    public ResponseEntity<UserResponseDto> createUser(@RequestBody UserRequestDto userRequestDto) {
-        System.out.println(userRequestDto.name());
-        return ResponseEntity.ok(userService.createUser(userRequestDto));
+    public ResponseEntity<MemberResponseDto> createUser(@RequestBody MemberRequestDto memberRequestDto) {
+        System.out.println(memberRequestDto.name());
+        return ResponseEntity.ok(userService.createUser(memberRequestDto));
     }
 
 
 
 
     @GetMapping
-    public ResponseEntity<List<UserResponseDto>> getAllUsers() {
+    public ResponseEntity<List<MemberResponseDto>> getAllUsers() {
         return ResponseEntity.ok(userService.findAllUsers());
     }
 
     @GetMapping("/myPage")
-    public ResponseEntity<UserResponseDto> getUserById(@AuthenticationPrincipal CustomUserDetails userDetails) {
-        Long userId = userDetails.getUserId();
+    public ResponseEntity<MemberResponseDto> getUserById(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        Long userId = userDetails.getMemberId();
         return ResponseEntity.ok(userService.findUser(userId));
     }
 
@@ -46,16 +46,16 @@ public class UserController {
         if (userDetails == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
         }
-        AuthUser authUser=new AuthUser(userDetails.getUserId(),userDetails.getUsername(),userDetails.geNickname());
+        AuthUser authUser=new AuthUser(userDetails.getMemberId(),userDetails.getUsername(),userDetails.geNickname());
 
         return ResponseEntity.ok(authUser);
 
     }
 
     @PutMapping("/update") //전체 수정
-    public ResponseEntity<UserResponseDto> updateUser(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody UserRequestDto userRequestDto) {
-        Long userId = userDetails.getUserId();
-        return ResponseEntity.ok(userService.updateUser(userId, userRequestDto));
+    public ResponseEntity<MemberResponseDto> updateUser(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody MemberRequestDto memberRequestDto) {
+        Long userId = userDetails.getMemberId();
+        return ResponseEntity.ok(userService.updateUser(userId, memberRequestDto));
     }
     /*
     @PatchMapping("/{id}") //부분 수정(추후 추가)
@@ -66,7 +66,7 @@ public class UserController {
 
     @DeleteMapping
     public ResponseEntity<Void> deleteUser(@AuthenticationPrincipal CustomUserDetails userDetails) {
-        Long userId = userDetails.getUserId();
+        Long userId = userDetails.getMemberId();
         userService.deleteUser(userId);
         return ResponseEntity.noContent().build();
     }
