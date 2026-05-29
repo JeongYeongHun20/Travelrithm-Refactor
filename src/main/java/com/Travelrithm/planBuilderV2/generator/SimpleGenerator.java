@@ -15,7 +15,7 @@ import java.util.stream.IntStream;
 
 @Service
 @RequiredArgsConstructor
-public class GeneratorBurteForce implements Generator {
+public class SimpleGenerator implements Generator {
     private final RouteMatrixProvider routeMatrixProvider;
 
     @Override

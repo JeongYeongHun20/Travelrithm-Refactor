@@ -13,7 +13,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class GeneratorBurteForceTest {
+class SimpleGeneratorTest {
 
     @Test
     void sortByDistanceFromOrigin() {
@@ -26,7 +26,7 @@ class GeneratorBurteForceTest {
                 {new RouteEdge(30, 300), new RouteEdge(0, 0), new RouteEdge(20, 200)},
                 {new RouteEdge(10, 100), new RouteEdge(20, 200), new RouteEdge(0, 0)}
         };
-        Generator generator = new GeneratorBurteForce(routeMatrixProvider);
+        Generator generator = new SimpleGenerator(routeMatrixProvider);
 
         List<SortedDayPlan> result = generator.generatePlan(request(List.of(dayMap)));
 
@@ -40,7 +40,7 @@ class GeneratorBurteForceTest {
         DayMapV2.Content origin = content("출발지", 126.1, 37.1);
         DayMapV2 dayMap = new DayMapV2(List.of(origin), 1);
         CountingRouteMatrixProvider routeMatrixProvider = new CountingRouteMatrixProvider();
-        Generator generator = new GeneratorBurteForce(routeMatrixProvider);
+        Generator generator = new SimpleGenerator(routeMatrixProvider);
 
         List<SortedDayPlan> result = generator.generatePlan(request(List.of(dayMap)));
 
