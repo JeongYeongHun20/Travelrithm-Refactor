@@ -1,12 +1,11 @@
 package com.Travelrithm.planBuilderV2.generator;
 
-import com.Travelrithm.kakaomobility.KakaoMobilityApi;
-import com.Travelrithm.kakaomobility.dto.WayPointResponseDto;
-import com.Travelrithm.kakaomobility.dto.WaypointRequestV2;
 import com.Travelrithm.planBuilderV2.dto.DayMapV2;
-import com.Travelrithm.planBuilderV2.dto.LocationV2;
 import com.Travelrithm.planBuilderV2.dto.PlanGenerateRequest;
 import com.Travelrithm.planBuilderV2.dto.SortedDayPlan;
+import com.Travelrithm.planBuilderV2.route.RouteEdge;
+import com.Travelrithm.planBuilderV2.route.RouteMatrixProvider;
+import com.Travelrithm.planBuilderV2.route.RouteMetric;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +16,7 @@ import java.util.stream.IntStream;
 @Service
 @RequiredArgsConstructor
 public class GeneratorBurteForce implements Generator {
-    private final KakaoMobilityApi kakaoMobilityApi;
+    private final RouteMatrixProvider routeMatrixProvider;
 
     @Override
     public List<SortedDayPlan> generatePlan(PlanGenerateRequest planGenerateRequest) {
@@ -32,46 +31,14 @@ public class GeneratorBurteForce implements Generator {
             return new SortedDayPlan(dayMap.day(), contents);
         }
 
-        double[][] distanceMatrix = createDistanceMatrix(contents);
+        RouteEdge[][] routeMatrix = routeMatrixProvider.create(contents);
         int originIdx = 0;
         List<DayMapV2.Content> sortedContents = IntStream.range(0, contents.size())
                 .boxed()
-                .sorted(Comparator.comparingDouble(i -> distanceMatrix[originIdx][i]))
+                .sorted(Comparator.comparingDouble(i -> routeMatrix[originIdx][i].cost(RouteMetric.DISTANCE)))
                 .map(contents::get)
                 .toList();
 
         return new SortedDayPlan(dayMap.day(), sortedContents);
-    }
-
-    private double[][]
-    createDistanceMatrix(List<DayMapV2.Content> contents) {
-        int size = contents.size();
-        double[][] distanceMatrix = new double[size][size];
-
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
-                if (i == j) {
-                    continue;
-                }
-
-                LocationV2 origin = contents.get(i).locations();
-                LocationV2 destination = contents.get(j).locations();
-                distanceMatrix[i][j] = getDistance(origin, destination);
-            }
-        }
-
-        return distanceMatrix;
-    }
-
-    private double getDistance(LocationV2 origin, LocationV2 destination) {
-        WayPointResponseDto response = kakaoMobilityApi.getPathsV2(
-                new WaypointRequestV2(origin, destination, List.of(), 2, true)
-        );
-
-        if (response == null || response.routes() == null || response.routes().isEmpty()) {
-            return Double.MAX_VALUE;
-        }
-
-        return response.routes().getFirst().summary().distance();
     }
 }
