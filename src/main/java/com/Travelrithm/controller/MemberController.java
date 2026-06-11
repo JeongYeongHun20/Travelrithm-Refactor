@@ -4,7 +4,7 @@ import com.Travelrithm.dto.AuthUser;
 import com.Travelrithm.dto.register.MemberRequestDto;
 import com.Travelrithm.dto.MemberResponseDto;
 import com.Travelrithm.security.jwt.CustomUserDetails;
-import com.Travelrithm.service.UserService;
+import com.Travelrithm.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,13 +18,13 @@ import java.util.List;
 @RequestMapping("/users")
 public class MemberController {
 
-    private final UserService userService;
+    private final MemberService memberService;
 
 
     @PostMapping("/local")
     public ResponseEntity<MemberResponseDto> createUser(@RequestBody MemberRequestDto memberRequestDto) {
         System.out.println(memberRequestDto.name());
-        return ResponseEntity.ok(userService.createUser(memberRequestDto));
+        return ResponseEntity.ok(memberService.createUser(memberRequestDto));
     }
 
 
@@ -32,13 +32,13 @@ public class MemberController {
 
     @GetMapping
     public ResponseEntity<List<MemberResponseDto>> getAllUsers() {
-        return ResponseEntity.ok(userService.findAllUsers());
+        return ResponseEntity.ok(memberService.findAllUsers());
     }
 
     @GetMapping("/myPage")
     public ResponseEntity<MemberResponseDto> getUserById(@AuthenticationPrincipal CustomUserDetails userDetails) {
         Long userId = userDetails.getMemberId();
-        return ResponseEntity.ok(userService.findUser(userId));
+        return ResponseEntity.ok(memberService.findUser(userId));
     }
 
     @GetMapping("/me")
@@ -55,7 +55,7 @@ public class MemberController {
     @PutMapping("/update") //전체 수정
     public ResponseEntity<MemberResponseDto> updateUser(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody MemberRequestDto memberRequestDto) {
         Long userId = userDetails.getMemberId();
-        return ResponseEntity.ok(userService.updateUser(userId, memberRequestDto));
+        return ResponseEntity.ok(memberService.updateUser(userId, memberRequestDto));
     }
     /*
     @PatchMapping("/{id}") //부분 수정(추후 추가)
@@ -67,7 +67,7 @@ public class MemberController {
     @DeleteMapping
     public ResponseEntity<Void> deleteUser(@AuthenticationPrincipal CustomUserDetails userDetails) {
         Long userId = userDetails.getMemberId();
-        userService.deleteUser(userId);
+        memberService.deleteUser(userId);
         return ResponseEntity.noContent().build();
     }
 }

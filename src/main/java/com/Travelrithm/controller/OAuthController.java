@@ -6,9 +6,9 @@ import com.Travelrithm.dto.MemberResponseDto;
 import com.Travelrithm.dto.register.MemberRegisterInfo;
 import com.Travelrithm.security.jwt.CustomUserDetails;
 import com.Travelrithm.security.jwt.JWTUtil;
+import com.Travelrithm.service.MemberService;
 import com.Travelrithm.service.OAuthService;
 import com.Travelrithm.service.OAuthServiceFactory;
-import com.Travelrithm.service.UserService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +28,7 @@ import org.springframework.web.servlet.view.RedirectView;
 public class OAuthController {
     private final OAuthServiceFactory oAuthServiceFactory;
     private final JWTUtil jwtUtil;
-    private final UserService userService;
+    private final MemberService memberService;
     @Value("${travelrithm.social_redirectUrl}")
     private String redirectUrl;
 
@@ -66,7 +66,7 @@ public class OAuthController {
         }
         OAuthService service = oAuthServiceFactory.getService(provider);
         MemberRegisterInfo userInfo = service.login(code, state);
-        MemberResponseDto user = userService.createOAuthUser(userInfo);
+        MemberResponseDto user = memberService.createOAuthUser(userInfo);
         String jwtToken = jwtUtil.createJwt(user.memberId(),user.email(),user.nickname(),"ROLE_USER",24*60*60*1000L);
 
         ResponseCookie cookie = ResponseCookie.from("accessToken", jwtToken)

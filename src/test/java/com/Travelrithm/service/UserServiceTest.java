@@ -25,11 +25,11 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class UserServiceSocialTest {
+class MemberServiceSocialTest {
 
     @Mock private MemberRepository memberRepository;
     @Mock private BCryptPasswordEncoder bCryptPasswordEncoder;
-    @InjectMocks private UserService userService;
+    @InjectMocks private MemberService memberService;
 
     @ParameterizedTest
     @MethodSource("provideSocialInfo")
@@ -51,7 +51,7 @@ class UserServiceSocialTest {
         when(memberRepository.save(any(Member.class))).thenAnswer(inv -> inv.getArgument(0));
 
         // 4. 실행
-        MemberResponseDto result = userService.createOAuthUser(info);
+        MemberResponseDto result = memberService.createOAuthUser(info);
 
         // 5. 검증
         assertAll(

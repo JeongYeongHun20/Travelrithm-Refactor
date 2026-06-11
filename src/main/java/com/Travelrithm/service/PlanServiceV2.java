@@ -40,6 +40,7 @@ public class PlanServiceV2 {
     }
 
     public List<GeneratedPlan> generatePlan(PlanGenerateRequest planGenerateRequest){
+
         CompletableFuture<List<SortedDayPlan>> sortedDayPlansFuture = CompletableFuture.supplyAsync(
                 () -> routeSequencer.sequence(planGenerateRequest)
         );
