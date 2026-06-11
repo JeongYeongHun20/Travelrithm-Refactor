@@ -24,7 +24,7 @@ import java.util.List;
 public class Plan {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer planId;
+    private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id",
@@ -32,7 +32,7 @@ public class Plan {
     private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sigunguCd",
+    @JoinColumn(name = "region_sigunguCd",
             foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private Region region;
 

@@ -1,7 +1,6 @@
 package com.Travelrithm.dto;
 
 import com.Travelrithm.domain.Plan;
-import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -22,7 +21,7 @@ public record PlanResponseDto(
 ) {
     public PlanResponseDto(Plan plan){
         this(
-                plan.getPlanId(),
+                plan.getId(),
                 plan.getRegion().getSigunguCd(),
                 plan.getRegion().getSigunguName(),
                 plan.getStartDate(),
@@ -38,7 +37,7 @@ public record PlanResponseDto(
     }
     public PlanResponseDto(Plan plan, String postContent) {
         this(
-                plan.getPlanId(),
+                plan.getId(),
                 plan.getRegion().getSigunguCd(),
                 plan.getRegion().getSigunguName(),
                 plan.getStartDate(),

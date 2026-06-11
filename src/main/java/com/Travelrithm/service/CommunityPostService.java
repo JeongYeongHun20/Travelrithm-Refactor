@@ -50,7 +50,7 @@ public class CommunityPostService {
 
     @Transactional(readOnly = true)
     public List<CommunityPostResponseDto> getAllPosts(Long userId) {
-        return postRepository.findAllByMember_MemberId(userId)
+        return postRepository.findAllByMember_Id(userId)
                 .stream()
                 .map(CommunityPostResponseDto::fromEntity)
                 .toList();
@@ -104,12 +104,12 @@ public class CommunityPostService {
             PlanResponseDto popularDto = new PlanResponseDto(popular, null);
 
             return new CommunityPostResponseDto(
-                    post.getCommunityPostId(),
-                    post.getMember().getMemberId(),
+                    post.getId(),
+                    post.getMember().getId(),
                     post.getTitle(),
                     post.getPostContent(),
                     post.getIsTravelPlan(),
-                    plan.getPlanId(),
+                    plan.getId(),
                     post.getCreatedAt(),
                     post.getUpdatedAt(),
                     post.getMember().getNickname(),
@@ -117,8 +117,8 @@ public class CommunityPostService {
                     places,
                     popularDto,
                     post.getViewCount(),
-                    post.getScrapEntities().size(),
-                    post.getCommentEntities().size(),
+                    post.getScraps().size(),
+                    post.getComments().size(),
                     plan.getRegion().getSigunguName()
             );
         }).filter(dto -> dto != null).toList();
@@ -143,7 +143,7 @@ public class CommunityPostService {
 
     @Transactional(readOnly = true)
     public List<CommunityPostResponseDto> getMyPlanPosts(Long userId) {
-        return postRepository.findAllByMember_MemberIdAndIsTravelPlanTrue(userId).stream()
+        return postRepository.findAllByMember_IdAndIsTravelPlanTrue(userId).stream()
                 .map(CommunityPostResponseDto::fromEntity)
                 .toList();
     }

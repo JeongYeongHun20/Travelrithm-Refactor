@@ -40,12 +40,12 @@ public record CommunityPostResponseDto(
         PlanResponseDto popularPlanDto = (plan != null) ? new PlanResponseDto(plan, null) : null;
 
         return new CommunityPostResponseDto(
-                post.getCommunityPostId(),
-                post.getMember().getMemberId(),
+                post.getId(),
+                post.getMember().getId(),
                 post.getTitle(),
                 post.getPostContent(),
                 post.getIsTravelPlan(),
-                (plan != null) ? plan.getPlanId() : null,
+                (plan != null) ? plan.getId() : null,
                 post.getCreatedAt(),
                 post.getUpdatedAt(),
                 post.getMember().getNickname(),
@@ -53,8 +53,8 @@ public record CommunityPostResponseDto(
                 places,
                 popularPlanDto,
                 post.getViewCount(),
-                post.getScrapEntities().size(),
-                post.getCommentEntities().size(),
+                post.getScraps().size(),
+                post.getComments().size(),
                 plan.getRegion().getSigunguName()
 
         );

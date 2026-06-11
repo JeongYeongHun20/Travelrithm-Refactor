@@ -11,7 +11,7 @@ import java.util.List;
 
 @Repository
 public interface PlanRepository extends JpaRepository<Plan, Integer> {
-    List<Plan> findAllByMember_MemberId(Long memberId);
+    List<Plan> findAllByMember_Id(Long memberId);
 
     //상위 5개 데이터만 불러옴
     @Query("""

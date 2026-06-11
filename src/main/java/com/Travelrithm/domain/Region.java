@@ -13,7 +13,9 @@ import lombok.*;
 @Entity
 public class Region {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String sigunguCd;
+
     private String sigunguName;
     private String areaCd;
     private String areaName;

@@ -1,7 +1,5 @@
 package com.Travelrithm.service;
 
-import com.Travelrithm.domain.Plan;
-import com.Travelrithm.dto.PlanResponseDto;
 import com.Travelrithm.kakaomobility.dto.WayPointResponseDto;
 import com.Travelrithm.kakaomobility.dto.WaypointRequestV2;
 import com.Travelrithm.planBuilderV2.CenterLocationCalculator;
@@ -13,13 +11,13 @@ import com.Travelrithm.planBuilderV2.dto.GeneratedRoute;
 import com.Travelrithm.planBuilderV2.dto.LocationV2;
 import com.Travelrithm.planBuilderV2.dto.PlanGenerateRequest;
 import com.Travelrithm.planBuilderV2.dto.SortedDayPlan;
-import com.Travelrithm.planBuilderV2.generator.Generator;
+import com.Travelrithm.planBuilderV2.generator.RouteSequencer;
 import com.Travelrithm.kakaomobility.KakaoMobilityApi;
 import com.Travelrithm.publicdata.PublicDataApiV2;
 import com.Travelrithm.publicdata.dto.RegionLocationCategory;
 import com.Travelrithm.publicdata.dto.RegionLocationDay;
 import com.Travelrithm.publicdata.dto.RegionLocationResponse;
-import com.Travelrithm.repository.PlanRepository;
+import com.Travelrithm.repository.PlanV2Repository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -30,19 +28,20 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class PlanServiceV2 {
-    private final Generator generator;
-    private final PlanRepository planRepository;
+    private final RouteSequencer routeSequencer;
+    private final PlanV2Repository planRepository;
     private final KakaoMobilityApi kakaoMobilityApi;
     private final PublicDataApiV2 publicDataApiV2;
     private final CenterLocationCalculator calculator;
 
 
     public void createPlan(List<GeneratedPlan> generatedPlans){
+
     }
 
     public List<GeneratedPlan> generatePlan(PlanGenerateRequest planGenerateRequest){
         CompletableFuture<List<SortedDayPlan>> sortedDayPlansFuture = CompletableFuture.supplyAsync(
-                () -> generator.generatePlan(planGenerateRequest)
+                () -> routeSequencer.sequence(planGenerateRequest)
         );
         CompletableFuture<RegionLocationResponse> targetAreasFuture = CompletableFuture.supplyAsync(
                 () -> retrieveTargetAreas(planGenerateRequest.dayMapList(), planGenerateRequest.preference())
@@ -60,8 +59,16 @@ public class PlanServiceV2 {
                 ))
                 .toList();
     }
-    public List<SortedDayPlan> reRoutePlan(PlanGenerateRequest planGenerateRequest){
-        return generator.generatePlan(planGenerateRequest);
+    public List<GeneratedPlan> reRoutePlan(PlanGenerateRequest planGenerateRequest){
+        List<SortedDayPlan> sortedDayPlans = routeSequencer.sequence(planGenerateRequest);
+        return sortedDayPlans.stream()
+                .map(sortedDayPlan -> new GeneratedPlan(
+                        sortedDayPlan.day(),
+                        sortedDayPlan.contents(),
+                        null,
+                        retrieveRoutes(sortedDayPlan)
+                ))
+                .toList();
     }
     public RegionLocationResponse retrieveTargetAreas(List<DayMapV2> dayMaps, String preference){
         List<AvgCoordinate> avgCoordinates = calculateLocation(dayMaps);
@@ -125,10 +132,10 @@ public class PlanServiceV2 {
     public void generatePlan(){
     }
 
-    public List<PlanResponseDto> findMyPlans(Long memberId){
-        List<Plan> plans = planRepository.findAllByMember_MemberId(memberId);
-        return plans.stream().map(PlanResponseDto::from).toList();
-    }
+//    public List<PlanResponseDto> findMyPlans(Long memberId){
+//        List<PlanV2> plans = planRepository.findAllByMember_MemberId(memberId);
+//        return plans.stream().map(PlanResponseDto::from).toList();
+//    }
 
 
 }

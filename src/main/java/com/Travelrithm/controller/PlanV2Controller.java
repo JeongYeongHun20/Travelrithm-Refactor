@@ -3,6 +3,7 @@ package com.Travelrithm.controller;
 import com.Travelrithm.dto.PlanResponseDto;
 import com.Travelrithm.planBuilderV2.dto.GeneratedPlan;
 import com.Travelrithm.planBuilderV2.dto.PlanGenerateRequest;
+import com.Travelrithm.planBuilderV2.dto.SortedDayPlan;
 import com.Travelrithm.security.jwt.CustomUserDetails;
 import com.Travelrithm.service.PlanServiceV2;
 import lombok.RequiredArgsConstructor;
@@ -22,10 +23,10 @@ import java.util.List;
 public class PlanV2Controller {
     private final PlanServiceV2 planServiceV2;
 
-    @GetMapping
-    public ResponseEntity<List<PlanResponseDto>> getMyPlans(@AuthenticationPrincipal CustomUserDetails userDetails) {
-        return ResponseEntity.ok(planServiceV2.findMyPlans(userDetails.getMemberId()));
-    }
+//    @GetMapping
+//    public ResponseEntity<List<PlanResponseDto>> getMyPlans(@AuthenticationPrincipal CustomUserDetails userDetails) {
+//        return ResponseEntity.ok(planServiceV2.findMyPlans(userDetails.getMemberId()));
+//    }
 
     @PostMapping("/drafts")
     public ResponseEntity<List<GeneratedPlan>> createPlanDraft(@RequestBody PlanGenerateRequest planGenerateRequest) {
@@ -38,9 +39,10 @@ public class PlanV2Controller {
         }
 
 
-//    @PostMapping("/reroute")
-//    public ResponseEntity<List<GeneratedPlan>> reRoutePlan(@RequestBody PlanGenerateRequest planGenerateRequest){
-//
-//    }
+    @PostMapping("/reroute")
+    public ResponseEntity<List<GeneratedPlan>> reRoutePlan(@RequestBody PlanGenerateRequest planGenerateRequest){
+        List<GeneratedPlan> generatedPlans = planServiceV2.reRoutePlan(planGenerateRequest);
+        return ResponseEntity.ok(generatedPlans);
+    }
 
 }

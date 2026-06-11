@@ -39,7 +39,6 @@ public class PlanService {
     public PlanResponseDto createPlan(Long userId, PlanRequestDto planRequestDto){
         Member member = memberRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("해당유저가 존재하지 않음"));
-
         Region region = regionRepository.findById(planRequestDto.regionId())
                 .orElseThrow(() -> new IllegalArgumentException("해당지역 존재하지 않음"));
 
@@ -77,7 +76,7 @@ public class PlanService {
 
     @Transactional(readOnly = true)
     public List<PlanResponseDto> findPlans(Long userId) {
-        List<Plan> plans = planRepository.findAllByMember_MemberId(userId);
+        List<Plan> plans = planRepository.findAllByMember_Id(userId);
         return plans.stream().map(plan -> {
             List<CommunityPost> postOpt = postRepository.findByPlan(plan);
             String postContent = postOpt.isEmpty() ? null : postOpt.get(0).getPostContent();

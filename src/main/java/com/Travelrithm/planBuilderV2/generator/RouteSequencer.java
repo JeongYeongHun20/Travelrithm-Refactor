@@ -5,7 +5,7 @@ import com.Travelrithm.planBuilderV2.dto.SortedDayPlan;
 
 import java.util.List;
 
-public interface Generator {
-    List<SortedDayPlan> generatePlan(PlanGenerateRequest planGenerateRequest);
+public interface RouteSequencer {
+    List<SortedDayPlan> sequence(PlanGenerateRequest planGenerateRequest);
 
 }

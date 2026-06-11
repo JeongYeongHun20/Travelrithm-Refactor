@@ -20,7 +20,7 @@ public record PlaceDto(
 ) {
     public PlaceDto(Place entity) {
         this(
-                entity.getPlaceId(),
+                entity.getId(),
                 entity.getPlaceName(),
                 entity.getPlaceAddress(),
                 entity.getLat(),

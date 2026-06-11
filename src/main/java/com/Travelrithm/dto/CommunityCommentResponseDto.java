@@ -20,9 +20,9 @@ public class CommunityCommentResponseDto {
     private LocalDateTime updatedAt;
 
     public CommunityCommentResponseDto(CommunityComment entity) {
-        this.commentId = entity.getCommentId();
-        this.postId = entity.getCommunityPost().getCommunityPostId();
-        this.userId = entity.getMember().getMemberId();
+        this.commentId = entity.getId();
+        this.postId = entity.getCommunityPost().getId();
+        this.userId = entity.getMember().getId();
         this.nickname = entity.getMember() != null ? entity.getMember().getNickname() : null;
         this.commentContent = entity.getCommentContent();
         this.createdAt = entity.getCreatedAt();

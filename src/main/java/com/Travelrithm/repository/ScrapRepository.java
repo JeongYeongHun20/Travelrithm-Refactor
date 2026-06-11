@@ -11,7 +11,7 @@ import java.util.List;
 
 @Repository
 public interface ScrapRepository extends JpaRepository<Scrap, Integer> {
-    Scrap findByMemberAndPostEntity(Member member, CommunityPost communityPost);
+    Scrap findByMemberAndPost(Member member, CommunityPost post);
 
     List<Scrap> findByMember(Member member);
 }

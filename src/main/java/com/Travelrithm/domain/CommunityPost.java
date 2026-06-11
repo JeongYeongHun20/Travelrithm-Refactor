@@ -20,15 +20,15 @@ public class CommunityPost {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer communityPostId;
+    private Integer id;
 
-    @OneToMany(mappedBy = "postEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
-    private List<Scrap> scrapEntities = new ArrayList<>();
+    private List<Scrap> scraps = new ArrayList<>();
 
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id",
+    @JoinColumn(name = "member_id",
             foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private Member member;
 
@@ -38,7 +38,7 @@ public class CommunityPost {
 
     @OneToMany(mappedBy = "communityPost", cascade = CascadeType.ALL)
     @Builder.Default
-    private List<CommunityComment> commentEntities = new ArrayList<>();
+    private List<CommunityComment> comments = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "plan_id",

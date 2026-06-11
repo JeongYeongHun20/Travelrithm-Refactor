@@ -38,7 +38,7 @@ public class CommunityCommentService {
 
 
     public List<CommunityCommentResponseDto> getCommentsByPostId(Integer postId) {
-        return commentRepository.findByCommunityPost_CommunityPostId(postId)
+        return commentRepository.findByCommunityPost_Id(postId)
                 .stream()
                 .map(CommunityCommentResponseDto::new)
                 .collect(Collectors.toList());

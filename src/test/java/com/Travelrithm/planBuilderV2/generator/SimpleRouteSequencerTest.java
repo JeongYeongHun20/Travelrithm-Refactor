@@ -13,7 +13,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class SimpleGeneratorTest {
+class SimpleRouteSequencerTest {
 
     @Test
     void sortByDistanceFromOrigin() {
@@ -26,9 +26,9 @@ class SimpleGeneratorTest {
                 {new RouteEdge(30, 300), new RouteEdge(0, 0), new RouteEdge(20, 200)},
                 {new RouteEdge(10, 100), new RouteEdge(20, 200), new RouteEdge(0, 0)}
         };
-        Generator generator = new SimpleGenerator(routeMatrixProvider);
+        RouteSequencer routeSequencer = new SimpleRouteSequencer(routeMatrixProvider);
 
-        List<SortedDayPlan> result = generator.generatePlan(request(List.of(dayMap)));
+        List<SortedDayPlan> result = routeSequencer.sequence(request(List.of(dayMap)));
 
         assertThat(result).hasSize(1);
         assertThat(result.getFirst().day()).isEqualTo(1);
@@ -40,9 +40,9 @@ class SimpleGeneratorTest {
         DayMapV2.Content origin = content("출발지", 126.1, 37.1);
         DayMapV2 dayMap = new DayMapV2(List.of(origin), 1);
         CountingRouteMatrixProvider routeMatrixProvider = new CountingRouteMatrixProvider();
-        Generator generator = new SimpleGenerator(routeMatrixProvider);
+        RouteSequencer routeSequencer = new SimpleRouteSequencer(routeMatrixProvider);
 
-        List<SortedDayPlan> result = generator.generatePlan(request(List.of(dayMap)));
+        List<SortedDayPlan> result = routeSequencer.sequence(request(List.of(dayMap)));
 
         assertThat(result).hasSize(1);
         assertThat(result.getFirst().contents()).containsExactly(origin);

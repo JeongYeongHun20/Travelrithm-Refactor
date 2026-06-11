@@ -29,9 +29,9 @@ public class ScrapService {
     public ScrapDto createScrap(Long memberId, Integer postId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("유저 존재하지 않음"));
-        CommunityPost postEntity = communityPostRepository.findById(postId)
+        CommunityPost post = communityPostRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("게시물 존재하지 않음"));
-        Scrap existing = scrapRepository.findByMemberAndPostEntity(member, postEntity);
+        Scrap existing = scrapRepository.findByMemberAndPost(member, post);
 
         if (existing != null) {
             scrapRepository.delete(existing);
@@ -39,7 +39,7 @@ public class ScrapService {
         } else {
             Scrap newScrap = Scrap.builder()
                     .member(member)
-                    .postEntity(postEntity)
+                    .post(post)
                     .createdAt(LocalDateTime.now())
                     .build();
             return new ScrapDto(scrapRepository.save(newScrap)); // 없으면 생성
@@ -51,7 +51,7 @@ public class ScrapService {
                 .orElseThrow(() -> new IllegalArgumentException("유저 존재하지 않음"));
         CommunityPost postEntity = communityPostRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("게시물 존재하지 않음"));
-        Scrap scrap = scrapRepository.findByMemberAndPostEntity(member,postEntity);
+        Scrap scrap = scrapRepository.findByMemberAndPost(member,postEntity);
         scrapRepository.delete(scrap);
     }
 

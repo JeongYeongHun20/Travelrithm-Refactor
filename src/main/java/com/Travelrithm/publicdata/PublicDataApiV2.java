@@ -92,7 +92,7 @@ public class PublicDataApiV2 {
     private List<RegionLocation> requestCategory(AvgCoordinate avgCoordinate, String category) {
         String cat1 = category.substring(0, 3);
         String cat2 = category;
-        log.info("location x,y: "+avgCoordinate.location().x()+" "+avgCoordinate.location().y());
+        log.info("location x,y: {} {}", avgCoordinate.location().x(), avgCoordinate.location().y());
         URI uri = UriComponentsBuilder.fromHttpUrl(DATA_URL)
                 .path(LOCATION_PATH)
                 .queryParam("MobileOS", "WEB")
@@ -109,6 +109,7 @@ public class PublicDataApiV2 {
 
         log.info("Request category URL: {}", uri);
         LocationBasedListResponseDto responseBody = restTemplate.getForObject(uri, LocationBasedListResponseDto.class);
+        assert responseBody != null : "응답 객체가 없습니다";
         return responseBody.response()
                 .body()
                 .items()

@@ -8,7 +8,7 @@ import com.Travelrithm.planBuilderV2.dto.GeneratedPlan;
 import com.Travelrithm.planBuilderV2.dto.LocationV2;
 import com.Travelrithm.planBuilderV2.dto.PlanGenerateRequest;
 import com.Travelrithm.planBuilderV2.dto.SortedDayPlan;
-import com.Travelrithm.planBuilderV2.generator.Generator;
+import com.Travelrithm.planBuilderV2.generator.RouteSequencer;
 import com.Travelrithm.planbuilder.dto.Location;
 import com.Travelrithm.publicdata.PublicDataApiV2;
 import com.Travelrithm.publicdata.dto.RegionLocation;
@@ -35,7 +35,7 @@ import static org.mockito.Mockito.when;
 class PlanServiceV2Test {
 
     @Mock
-    Generator generator;
+    RouteSequencer routeSequencer;
     @Mock
     KakaoMobilityApi kakaoMobilityApi;
     @Mock
@@ -97,7 +97,7 @@ class PlanServiceV2Test {
                 ))
         );
 
-        when(generator.generatePlan(request)).thenReturn(List.of(sortedDayPlan));
+        when(routeSequencer.sequence(request)).thenReturn(List.of(sortedDayPlan));
         when(calculator.calLocation(any())).thenReturn(avgCoordinate);
         when(publicDataApiV2.getCategory(anyList(), eq("culture"))).thenReturn(categoryResponse);
 
@@ -113,7 +113,7 @@ class PlanServiceV2Test {
         assertThat(result.getFirst().categories().getFirst().locations()).containsExactly(category);
         assertThat(result.getFirst().routes()).isEmpty();
 
-        verify(generator).generatePlan(request);
+        verify(routeSequencer).sequence(request);
         verify(calculator).calLocation(any());
         verify(publicDataApiV2).getCategory(anyList(), eq("culture"));
     }

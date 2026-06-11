@@ -25,7 +25,7 @@ public class CustomUserDetails implements UserDetails {
     }
 
     public Long getMemberId() {
-        return member.getMemberId();
+        return member.getId();
     }
     public String geNickname(){
         return member.getNickname();

@@ -11,9 +11,9 @@ public record ScrapDto(
 ) {
     public ScrapDto(Scrap scrap){
         this(
-             scrap.getScrapId(),
-             scrap.getMember().getMemberId(),
-             scrap.getPostEntity().getCommunityPostId()
+             scrap.getId(),
+             scrap.getMember().getId(),
+             scrap.getPost().getId()
         );
     }
 }

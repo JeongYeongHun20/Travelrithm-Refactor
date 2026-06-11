@@ -15,11 +15,11 @@ import java.util.stream.IntStream;
 
 @Service
 @RequiredArgsConstructor
-public class SimpleGenerator implements Generator {
+public class SimpleRouteSequencer implements RouteSequencer {
     private final RouteMatrixProvider routeMatrixProvider;
 
     @Override
-    public List<SortedDayPlan> generatePlan(PlanGenerateRequest planGenerateRequest) {
+    public List<SortedDayPlan> sequence(PlanGenerateRequest planGenerateRequest) {
         return planGenerateRequest.dayMapList().stream()
                 .map(this::generateDay)
                 .toList();

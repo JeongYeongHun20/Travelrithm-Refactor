@@ -19,7 +19,7 @@ public record MemberResponseDto(
 {
     public MemberResponseDto(Member member) {
         this(
-                member.getMemberId(),
+                member.getId(),
                 member.getName(),
                 member.getEmail(),
                 member.getNickname(),

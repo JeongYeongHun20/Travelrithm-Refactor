@@ -54,7 +54,7 @@ public class JWTFilter extends OncePerRequestFilter {
         String nickname= jwtUtil.getNickname(token);
         //userEntity를 생성하여 값 set
         Member member = Member.builder()
-                .memberId(memberId)
+                .id(memberId)
                 .email(email)
                 .nickname(nickname)
                 .password("temppassword") //요청시마다 db룰 조회하기에 임시값을 설정한다

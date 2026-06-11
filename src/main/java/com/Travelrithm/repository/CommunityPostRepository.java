@@ -14,12 +14,12 @@ import java.util.List;
 @Repository
 public interface CommunityPostRepository extends JpaRepository<CommunityPost, Integer> {
 
-    List<CommunityPost> findAllByMember_MemberId(Long memberId);
+    List<CommunityPost> findAllByMember_Id(Long memberId);
 
     Page<CommunityPost> findAllByIsTravelPlanTrue(Pageable pageable);   // 플랜게시판
     Page<CommunityPost> findAllByIsTravelPlanFalse(Pageable pageable);  // 자유게시판
 
-    List<CommunityPost> findAllByMember_MemberIdAndIsTravelPlanTrue(Long memberId);
+    List<CommunityPost> findAllByMember_IdAndIsTravelPlanTrue(Long memberId);
     List<CommunityPost> findByPlan(Plan plan);
 
 
