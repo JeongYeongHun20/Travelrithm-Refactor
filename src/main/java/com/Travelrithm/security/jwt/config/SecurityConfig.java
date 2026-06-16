@@ -44,7 +44,6 @@ public class SecurityConfig {
                         .configurationSource(request -> {
                             CorsConfiguration config = new CorsConfiguration();
                             config.addAllowedOrigin("http://localhost:3000");
-                            config.addAllowedOrigin("https://travelrithm.kro.kr");
                             config.addAllowedMethod("*");
                             config.addAllowedHeader("*");
                             config.setAllowCredentials(true);
@@ -60,7 +59,10 @@ public class SecurityConfig {
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers(
                                 "/auth/**",
-                                "/users/local"
+                                "/users/local",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/v3/api-docs/**"
                         ).permitAll()
                 .requestMatchers("/auth/me").authenticated()
                 .anyRequest().authenticated()

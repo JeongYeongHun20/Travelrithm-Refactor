@@ -3,14 +3,7 @@ package com.Travelrithm.service;
 import com.Travelrithm.kakaomobility.dto.WayPointResponseDto;
 import com.Travelrithm.kakaomobility.dto.WaypointRequestV2;
 import com.Travelrithm.planBuilderV2.CenterLocationCalculator;
-import com.Travelrithm.planBuilderV2.dto.AvgCoordinate;
-import com.Travelrithm.planBuilderV2.dto.CalculateRequestDto;
-import com.Travelrithm.planBuilderV2.dto.DayMapV2;
-import com.Travelrithm.planBuilderV2.dto.GeneratedPlan;
-import com.Travelrithm.planBuilderV2.dto.GeneratedRoute;
-import com.Travelrithm.planBuilderV2.dto.LocationV2;
-import com.Travelrithm.planBuilderV2.dto.PlanGenerateRequest;
-import com.Travelrithm.planBuilderV2.dto.SortedDayPlan;
+import com.Travelrithm.planBuilderV2.dto.*;
 import com.Travelrithm.planBuilderV2.generator.RouteSequencer;
 import com.Travelrithm.kakaomobility.KakaoMobilityApi;
 import com.Travelrithm.publicdata.PublicDataApiV2;
@@ -40,12 +33,11 @@ public class PlanServiceV2 {
     }
 
     public List<GeneratedPlan> generatePlan(PlanGenerateRequest planGenerateRequest){
-
         CompletableFuture<List<SortedDayPlan>> sortedDayPlansFuture = CompletableFuture.supplyAsync(
-                () -> routeSequencer.sequence(planGenerateRequest)
+                () -> routeSequencer.sequence(planGenerateRequest.dayMapV2s())
         );
         CompletableFuture<RegionLocationResponse> targetAreasFuture = CompletableFuture.supplyAsync(
-                () -> retrieveTargetAreas(planGenerateRequest.dayMapList(), planGenerateRequest.preference())
+                () -> retrieveTargetAreas(planGenerateRequest.dayMapV2s(), planGenerateRequest.preference())
         );
 
         List<SortedDayPlan> sortedDayPlans = sortedDayPlansFuture.join();
@@ -54,36 +46,36 @@ public class PlanServiceV2 {
         return sortedDayPlans.stream()
                 .map(sortedDayPlan -> new GeneratedPlan(
                         sortedDayPlan.day(),
-                        sortedDayPlan.contents(),
+                        sortedDayPlan.selectedPlaces(),
                         findCategoriesByDay(targetAreas, sortedDayPlan.day()),
                         retrieveRoutes(sortedDayPlan)
                 ))
                 .toList();
     }
     public List<GeneratedPlan> reRoutePlan(PlanGenerateRequest planGenerateRequest){
-        List<SortedDayPlan> sortedDayPlans = routeSequencer.sequence(planGenerateRequest);
+        List<SortedDayPlan> sortedDayPlans = routeSequencer.sequence(planGenerateRequest.dayMapV2s());
         return sortedDayPlans.stream()
                 .map(sortedDayPlan -> new GeneratedPlan(
                         sortedDayPlan.day(),
-                        sortedDayPlan.contents(),
+                        sortedDayPlan.selectedPlaces(),
                         null,
                         retrieveRoutes(sortedDayPlan)
                 ))
                 .toList();
     }
-    public RegionLocationResponse retrieveTargetAreas(List<DayMapV2> dayMaps, String preference){
-        List<AvgCoordinate> avgCoordinates = calculateLocation(dayMaps);
+    public RegionLocationResponse retrieveTargetAreas(List<DayMapV2> dayMapV2s, String preference){
+        List<AvgCoordinate> avgCoordinates = calculateLocation(dayMapV2s);
         return publicDataApiV2.getCategory(avgCoordinates, preference);
     }
 
     private List<GeneratedRoute> retrieveRoutes(SortedDayPlan sortedDayPlan) {
-        List<DayMapV2.Content> contents = sortedDayPlan.contents();
-        if (contents == null || contents.size() < 2) {
+        List<SelectedPlace> selectedPlaces = sortedDayPlan.selectedPlaces();
+        if (selectedPlaces == null || selectedPlaces.size() < 2) {
             return List.of();
         }
 
-        List<LocationV2> locations = contents.stream()
-                .map(DayMapV2.Content::locations)
+        List<LocationV2> locations = selectedPlaces.stream()
+                .map(SelectedPlace::locations)
                 .toList();
         WayPointResponseDto response = kakaoMobilityApi.getPathsV2(
                 new WaypointRequestV2(
@@ -113,14 +105,14 @@ public class PlanServiceV2 {
                 .orElse(List.of());
     }
 
-    private List<AvgCoordinate>  calculateLocation(List<DayMapV2> dayMaps){
+    private List<AvgCoordinate>  calculateLocation(List<DayMapV2> dayMapV2s){
         List<AvgCoordinate> avgCoordinates=new ArrayList<>();
-        for(DayMapV2 dayMap: dayMaps){
+        for(DayMapV2 dayMapV2: dayMapV2s){
             List<LocationV2> locations=new ArrayList<>();
-            for(DayMapV2.Content content: dayMap.content()){
-                locations.add(content.locations());
+            for(SelectedPlace selectedPlace: dayMapV2.selectedPlaces()){
+                locations.add(selectedPlace.locations());
             }
-            AvgCoordinate coordinate = calculator.calLocation(new CalculateRequestDto(dayMap.day(), locations));
+            AvgCoordinate coordinate = calculator.calLocation(new CalculateRequestDto(dayMapV2.day(), locations));
             avgCoordinates.add(coordinate);
         }
         return avgCoordinates;

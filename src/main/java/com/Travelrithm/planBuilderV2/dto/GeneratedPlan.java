@@ -6,7 +6,7 @@ import java.util.List;
 
 public record GeneratedPlan(
         int day,
-        List<DayMapV2.Content> contents,
+        List<SelectedPlace> selectedPlaces,
         List<RegionLocationCategory> categories,
         List<GeneratedRoute> routes
 ) {

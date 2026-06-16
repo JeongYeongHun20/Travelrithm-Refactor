@@ -2,12 +2,7 @@ package com.Travelrithm.service;
 
 import com.Travelrithm.kakaomobility.KakaoMobilityApi;
 import com.Travelrithm.planBuilderV2.CenterLocationCalculator;
-import com.Travelrithm.planBuilderV2.dto.AvgCoordinate;
-import com.Travelrithm.planBuilderV2.dto.DayMapV2;
-import com.Travelrithm.planBuilderV2.dto.GeneratedPlan;
-import com.Travelrithm.planBuilderV2.dto.LocationV2;
-import com.Travelrithm.planBuilderV2.dto.PlanGenerateRequest;
-import com.Travelrithm.planBuilderV2.dto.SortedDayPlan;
+import com.Travelrithm.planBuilderV2.dto.*;
 import com.Travelrithm.planBuilderV2.generator.RouteSequencer;
 import com.Travelrithm.planbuilder.dto.Location;
 import com.Travelrithm.publicdata.PublicDataApiV2;
@@ -55,23 +50,24 @@ class PlanServiceV2Test {
     @Test
     void generatePlan() {
         // given
-        DayMapV2.Content firstContent = new DayMapV2.Content(
+        SelectedPlace firstSelectedPlace = new SelectedPlace(
                 "경복궁",
                 new LocationV2(126.9769, 37.5796, "경복궁"),
                 "culture",
                 "고궁",
                 null
         );
-        DayMapV2.Content secondContent = new DayMapV2.Content(
+        SelectedPlace secondSelectedPlace = new SelectedPlace(
                 "북촌한옥마을",
                 new LocationV2(126.9849, 37.5826, "북촌한옥마을"),
                 "culture",
                 "한옥마을",
                 null
         );
-        DayMapV2 dayMap = new DayMapV2(List.of(firstContent, secondContent), 1);
+        DayMapV2 dayMapV2 = new DayMapV2(List.of(firstSelectedPlace, secondSelectedPlace), 1);
+        List<DayMapV2> dayMapV2s=List.of(dayMapV2);
         PlanGenerateRequest request = new PlanGenerateRequest(
-                List.of(dayMap),
+                List.of(dayMapV2),
                 "서울",
                 "culture",
                 "normal",
@@ -79,7 +75,7 @@ class PlanServiceV2Test {
         );
         SortedDayPlan sortedDayPlan = new SortedDayPlan(
                 1,
-                List.of(firstContent, secondContent)
+                List.of(firstSelectedPlace, secondSelectedPlace)
         );
         AvgCoordinate avgCoordinate = new AvgCoordinate(1, new Location(126.9809, 37.5811), 1000);
         RegionLocation category = new RegionLocation(
@@ -97,7 +93,7 @@ class PlanServiceV2Test {
                 ))
         );
 
-        when(routeSequencer.sequence(request)).thenReturn(List.of(sortedDayPlan));
+        when(routeSequencer.sequence(dayMapV2s)).thenReturn(List.of(sortedDayPlan));
         when(calculator.calLocation(any())).thenReturn(avgCoordinate);
         when(publicDataApiV2.getCategory(anyList(), eq("culture"))).thenReturn(categoryResponse);
 
@@ -107,13 +103,13 @@ class PlanServiceV2Test {
         // then
         assertThat(result).hasSize(1);
         assertThat(result.getFirst().day()).isEqualTo(1);
-        assertThat(result.getFirst().contents()).containsExactly(firstContent, secondContent);
+        assertThat(result.getFirst().selectedPlaces()).containsExactly(firstSelectedPlace, secondSelectedPlace);
         assertThat(result.getFirst().categories()).hasSize(1);
         assertThat(result.getFirst().categories().getFirst().categoryName()).isEqualTo("문화 관광지");
         assertThat(result.getFirst().categories().getFirst().locations()).containsExactly(category);
         assertThat(result.getFirst().routes()).isEmpty();
 
-        verify(routeSequencer).sequence(request);
+        verify(routeSequencer).sequence(dayMapV2s);
         verify(calculator).calLocation(any());
         verify(publicDataApiV2).getCategory(anyList(), eq("culture"));
     }
