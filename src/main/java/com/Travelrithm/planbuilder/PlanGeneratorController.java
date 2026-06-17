@@ -4,10 +4,13 @@ package com.Travelrithm.planbuilder;
 import com.Travelrithm.planbuilder.dto.CompletePlanner;
 import com.Travelrithm.planbuilder.dto.CompleteResponseDto;
 import com.Travelrithm.planbuilder.dto.EditPlanner;
-import com.Travelrithm.publicdata.dto.TotalResponseDto;
+import com.Travelrithm.publicdata.v1.dto.TotalResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor

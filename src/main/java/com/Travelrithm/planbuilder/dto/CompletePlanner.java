@@ -1,7 +1,7 @@
 package com.Travelrithm.planbuilder.dto;
 
 import com.Travelrithm.domain.TransportMode;
-import com.Travelrithm.publicdata.dto.Item;
+import com.Travelrithm.publicdata.v1.dto.Item;
 
 import java.util.List;
 import java.util.Map;

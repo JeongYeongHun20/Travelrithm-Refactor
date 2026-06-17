@@ -1,6 +1,6 @@
 package com.Travelrithm.planBuilderV2.dto;
 
-import com.Travelrithm.publicdata.dto.RegionLocationCategory;
+import com.Travelrithm.publicdata.v2.dto.RegionLocationCategory;
 
 import java.util.List;
 

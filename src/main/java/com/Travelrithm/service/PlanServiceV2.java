@@ -1,22 +1,22 @@
 package com.Travelrithm.service;
 
+import com.Travelrithm.kakaomobility.KakaoMobilityApi;
 import com.Travelrithm.kakaomobility.dto.WayPointResponseDto;
 import com.Travelrithm.kakaomobility.dto.WaypointRequestV2;
 import com.Travelrithm.planBuilderV2.CenterLocationCalculator;
 import com.Travelrithm.planBuilderV2.dto.*;
 import com.Travelrithm.planBuilderV2.generator.RouteSequencer;
-import com.Travelrithm.kakaomobility.KakaoMobilityApi;
-import com.Travelrithm.publicdata.PublicDataApiV2;
-import com.Travelrithm.publicdata.dto.RegionLocationCategory;
-import com.Travelrithm.publicdata.dto.RegionLocationDay;
-import com.Travelrithm.publicdata.dto.RegionLocationResponse;
+import com.Travelrithm.publicdata.v2.dto.RegionLocationCategory;
+import com.Travelrithm.publicdata.v2.dto.RegionLocationDay;
+import com.Travelrithm.publicdata.v2.dto.RegionLocationResponse;
+import com.Travelrithm.publicdata.v3.PublicDataServiceV3;
 import com.Travelrithm.repository.PlanV2Repository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.concurrent.CompletableFuture;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -24,7 +24,7 @@ public class PlanServiceV2 {
     private final RouteSequencer routeSequencer;
     private final PlanV2Repository planRepository;
     private final KakaoMobilityApi kakaoMobilityApi;
-    private final PublicDataApiV2 publicDataApiV2;
+    private final PublicDataServiceV3 publicDataApiV2;
     private final CenterLocationCalculator calculator;
 
 

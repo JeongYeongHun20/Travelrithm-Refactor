@@ -1,10 +1,10 @@
-package com.Travelrithm.publicdata;
+package com.Travelrithm.publicdata.v1;
 
 
-import com.Travelrithm.publicdata.dto.CommonResponseDto;
-import com.Travelrithm.publicdata.dto.DataRequestDto;
-import com.Travelrithm.publicdata.dto.DataResponseDto;
-import com.Travelrithm.publicdata.dto.Item;
+import com.Travelrithm.publicdata.v1.dto.CommonResponseDto;
+import com.Travelrithm.publicdata.v1.dto.DataRequestDto;
+import com.Travelrithm.publicdata.v1.dto.DataResponseDto;
+import com.Travelrithm.publicdata.v1.dto.Item;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,7 +22,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class PublicDataApi {
 
-    @Value("${data.service_key}")
+    @Value("${data.service_keyV2}")
     private String serviceKey;
     private final RestTemplate restTemplate = new RestTemplate();
     private final String DATA_URL = "https://apis.data.go.kr/B551011/KorService2";

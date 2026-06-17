@@ -1,17 +1,16 @@
 package com.Travelrithm.planbuilder;
 
 import com.Travelrithm.domain.TransportMode;
+import com.Travelrithm.kakaomobility.KakaoMobilityApi;
 import com.Travelrithm.kakaomobility.dto.*;
 import com.Travelrithm.planbuilder.dto.*;
-import com.Travelrithm.publicdata.dto.DataRequestDto;
-import com.Travelrithm.publicdata.dto.Item;
-import com.Travelrithm.publicdata.dto.TotalResponseDto;
+import com.Travelrithm.publicdata.v1.PublicDataApi;
+import com.Travelrithm.publicdata.v1.dto.DataRequestDto;
+import com.Travelrithm.publicdata.v1.dto.Item;
+import com.Travelrithm.publicdata.v1.dto.TotalResponseDto;
+import com.Travelrithm.tmap.TmapPathApi;
 import com.Travelrithm.tmap.dto.TmapPathRequestDto;
 import com.Travelrithm.tmap.dto.TmapPathResponseDto;
-import com.Travelrithm.kakaomobility.KakaoMobilityApi;
-
-import com.Travelrithm.publicdata.PublicDataApi;
-import com.Travelrithm.tmap.TmapPathApi;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

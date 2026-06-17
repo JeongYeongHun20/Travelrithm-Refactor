@@ -1,4 +1,4 @@
-package com.Travelrithm.publicdata.dto;
+package com.Travelrithm.publicdata.v2.dto;
 
 import com.Travelrithm.planbuilder.dto.Location;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;

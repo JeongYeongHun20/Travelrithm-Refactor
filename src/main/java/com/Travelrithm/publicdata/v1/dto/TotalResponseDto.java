@@ -1,7 +1,7 @@
-package com.Travelrithm.publicdata.dto;
+package com.Travelrithm.publicdata.v1.dto;
 
-import com.Travelrithm.planbuilder.dto.DayMap;
 import com.Travelrithm.kakaomobility.dto.WayPointResponseDto;
+import com.Travelrithm.planbuilder.dto.DayMap;
 import com.Travelrithm.tmap.dto.TmapPathResponseDto;
 
 import java.util.List;

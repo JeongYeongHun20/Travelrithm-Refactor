@@ -5,11 +5,11 @@ import com.Travelrithm.planBuilderV2.CenterLocationCalculator;
 import com.Travelrithm.planBuilderV2.dto.*;
 import com.Travelrithm.planBuilderV2.generator.RouteSequencer;
 import com.Travelrithm.planbuilder.dto.Location;
-import com.Travelrithm.publicdata.PublicDataApiV2;
-import com.Travelrithm.publicdata.dto.RegionLocation;
-import com.Travelrithm.publicdata.dto.RegionLocationCategory;
-import com.Travelrithm.publicdata.dto.RegionLocationDay;
-import com.Travelrithm.publicdata.dto.RegionLocationResponse;
+import com.Travelrithm.publicdata.v2.PublicDataServiceV2;
+import com.Travelrithm.publicdata.v2.dto.RegionLocation;
+import com.Travelrithm.publicdata.v2.dto.RegionLocationCategory;
+import com.Travelrithm.publicdata.v2.dto.RegionLocationDay;
+import com.Travelrithm.publicdata.v2.dto.RegionLocationResponse;
 import com.Travelrithm.repository.PlanRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,9 +20,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -36,7 +34,7 @@ class PlanServiceV2Test {
     @Mock
     PlanRepository planRepository;
     @Mock
-    PublicDataApiV2 publicDataApiV2;
+    PublicDataServiceV2 publicDataApiV2;
     @Mock
     CenterLocationCalculator calculator;
 

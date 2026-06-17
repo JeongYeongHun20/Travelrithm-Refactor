@@ -1,8 +1,9 @@
-package com.Travelrithm.publicdata;
+package com.Travelrithm.publicdata.v2;
 
 
 import com.Travelrithm.planBuilderV2.dto.AvgCoordinate;
-import com.Travelrithm.publicdata.dto.*;
+import com.Travelrithm.publicdata.PublicDataServiceProvider;
+import com.Travelrithm.publicdata.v2.dto.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,7 +19,7 @@ import java.util.Map;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class PublicDataApiV2 {
+public class PublicDataServiceV2 implements PublicDataServiceProvider {
 
     @Value("${data.service_keyV2}")
     private String serviceKey;

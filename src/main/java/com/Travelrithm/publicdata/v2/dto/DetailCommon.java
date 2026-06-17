@@ -1,4 +1,4 @@
-package com.Travelrithm.publicdata.dto;
+package com.Travelrithm.publicdata.v2.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
