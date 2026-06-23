@@ -1,8 +1,9 @@
 package com.Travelrithm.publicdata.v3;
 
 import com.Travelrithm.planBuilderV2.dto.AvgCoordinate;
+import com.Travelrithm.publicdata.v2.dto.AreaBasedResponse;
 import com.Travelrithm.publicdata.v2.dto.DetailCommon;
-import com.Travelrithm.publicdata.v2.dto.LocationBasedListResponseDto;
+import com.Travelrithm.publicdata.v2.dto.LocationBasedListResponse;
 import com.Travelrithm.publicdata.v3.annotation.PublicDataRestClient;
 import com.Travelrithm.publicdata.v3.properties.PublicDataProperties;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +26,7 @@ public class PublicDataClient {
         this.properties=properties;
     }
 
-    public LocationBasedListResponseDto fetchLocationBasedList(AvgCoordinate avgCoordinate, String cat1, String cat2){
+    public LocationBasedListResponse fetchLocationBasedList(AvgCoordinate avgCoordinate, String cat1, String cat2){
         return restClient
                 .get()
                 .uri(uriBuilder -> {
@@ -42,7 +43,7 @@ public class PublicDataClient {
                     return uri;
                 })
                 .retrieve()
-                .body(LocationBasedListResponseDto.class);
+                .body(LocationBasedListResponse.class);
 
     }
     public DetailCommon fetchDetailCommon(String contentId){
@@ -57,6 +58,20 @@ public class PublicDataClient {
                 .body(DetailCommon.class);
 
     }
+    public AreaBasedResponse fetchAreaBasedSyncList(int pageNo, int numOfRows){
+        return restClient
+                .get()
+                .uri(uriBuilder -> initParameter(
+                        uriBuilder
+                                .path(properties.areaBasedList2())
+                                .queryParam("pageNo", pageNo)
+                                .queryParam("numOfRows", numOfRows)
+
+                ).build())
+                .retrieve()
+                .body(AreaBasedResponse.class);
+    }
+
     private UriBuilder initParameter(UriBuilder uriBuilder){
         return uriBuilder
                 .queryParam("MobileOS",properties.mobileOs())
@@ -65,6 +80,7 @@ public class PublicDataClient {
                 .queryParam("_type", "json");
 
     }
+
 
     private String maskServiceKey(String uri) {
         if (uri == null || properties.serviceKey() == null || properties.serviceKey().isBlank()) {

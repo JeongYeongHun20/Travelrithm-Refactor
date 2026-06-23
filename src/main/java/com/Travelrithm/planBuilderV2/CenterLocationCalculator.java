@@ -29,16 +29,16 @@ public class CenterLocationCalculator {
 
         double sumLat = 0, sumLon = 0;
         for (LocationV2 loc : locations) {
-            sumLat += loc.y();  // 위도
-            sumLon += loc.x();  // 경도
+            sumLat += loc.y().doubleValue();  // 위도
+            sumLon += loc.x().doubleValue();  // 경도
         }
         double avgLat = sumLat / locations.size();
         double avgLon = sumLon / locations.size();
 
         double totalDistance = 0;
         for (LocationV2 loc : locations) {
-            double lat2=loc.y();
-            double lon2=loc.x();
+            double lat2=loc.y().doubleValue();
+            double lon2=loc.x().doubleValue();
             double dLat = Math.toRadians(lat2 - avgLat);
             double dLon = Math.toRadians(lon2 - avgLon);
             double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)

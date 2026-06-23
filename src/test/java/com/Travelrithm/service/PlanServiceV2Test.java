@@ -5,7 +5,7 @@ import com.Travelrithm.planBuilderV2.CenterLocationCalculator;
 import com.Travelrithm.planBuilderV2.dto.*;
 import com.Travelrithm.planBuilderV2.generator.RouteSequencer;
 import com.Travelrithm.planbuilder.dto.Location;
-import com.Travelrithm.publicdata.v2.PublicDataServiceV2;
+import com.Travelrithm.publicdata.v2.PublicDataApiV2;
 import com.Travelrithm.publicdata.v2.dto.RegionLocation;
 import com.Travelrithm.publicdata.v2.dto.RegionLocationCategory;
 import com.Travelrithm.publicdata.v2.dto.RegionLocationDay;
@@ -17,6 +17,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,7 +35,7 @@ class PlanServiceV2Test {
     @Mock
     PlanRepository planRepository;
     @Mock
-    PublicDataServiceV2 publicDataApiV2;
+    PublicDataApiV2 publicDataApiV2;
     @Mock
     CenterLocationCalculator calculator;
 
@@ -50,14 +51,14 @@ class PlanServiceV2Test {
         // given
         SelectedPlace firstSelectedPlace = new SelectedPlace(
                 "경복궁",
-                new LocationV2(126.9769, 37.5796, "경복궁"),
+                new LocationV2(BigDecimal.valueOf(126.9769), BigDecimal.valueOf(37.5796), "경복궁"),
                 "culture",
                 "고궁",
                 null
         );
         SelectedPlace secondSelectedPlace = new SelectedPlace(
                 "북촌한옥마을",
-                new LocationV2(126.9849, 37.5826, "북촌한옥마을"),
+                new LocationV2(BigDecimal.valueOf(126.9849), BigDecimal.valueOf(37.5826), "북촌한옥마을"),
                 "culture",
                 "한옥마을",
                 null

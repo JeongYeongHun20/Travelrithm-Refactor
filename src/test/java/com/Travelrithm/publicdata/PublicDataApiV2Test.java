@@ -1,6 +1,6 @@
 package com.Travelrithm.publicdata;
 
-import com.Travelrithm.publicdata.v2.PublicDataServiceV2;
+import com.Travelrithm.publicdata.v2.PublicDataApiV2;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -15,12 +15,12 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 
 class PublicDataApiV2Test {
 
-    private PublicDataServiceV2 publicDataApiV2;
+    private PublicDataApiV2 publicDataApiV2;
     private MockRestServiceServer server;
 
     @BeforeEach
     void setUp() {
-        publicDataApiV2 = new PublicDataServiceV2();
+        publicDataApiV2 = new PublicDataApiV2();
         ReflectionTestUtils.setField(publicDataApiV2, "serviceKey", "test-service-key");
 
         RestTemplate restTemplate = (RestTemplate) ReflectionTestUtils.getField(publicDataApiV2, "restTemplate");

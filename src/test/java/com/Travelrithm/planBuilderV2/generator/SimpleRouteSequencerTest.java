@@ -1,10 +1,14 @@
 package com.Travelrithm.planBuilderV2.generator;
 
-import com.Travelrithm.planBuilderV2.dto.*;
+import com.Travelrithm.planBuilderV2.dto.DayMapV2;
+import com.Travelrithm.planBuilderV2.dto.LocationV2;
+import com.Travelrithm.planBuilderV2.dto.SelectedPlace;
+import com.Travelrithm.planBuilderV2.dto.SortedDayPlan;
 import com.Travelrithm.planBuilderV2.route.RouteEdge;
 import com.Travelrithm.planBuilderV2.route.RouteMatrixProvider;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -49,7 +53,7 @@ class SimpleRouteSequencerTest {
     private SelectedPlace selectedPlace(String keyword, double x, double y) {
         return new SelectedPlace(
                 keyword,
-                new LocationV2(x, y, keyword),
+                new LocationV2(BigDecimal.valueOf(x), BigDecimal.valueOf(y), keyword),
                 "culture",
                 keyword + " 설명",
                 null

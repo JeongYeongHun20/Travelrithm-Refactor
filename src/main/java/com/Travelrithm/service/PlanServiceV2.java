@@ -9,7 +9,7 @@ import com.Travelrithm.planBuilderV2.generator.RouteSequencer;
 import com.Travelrithm.publicdata.v2.dto.RegionLocationCategory;
 import com.Travelrithm.publicdata.v2.dto.RegionLocationDay;
 import com.Travelrithm.publicdata.v2.dto.RegionLocationResponse;
-import com.Travelrithm.publicdata.v3.PublicDataServiceV3;
+import com.Travelrithm.publicdata.v3.PublicDataApiV3;
 import com.Travelrithm.repository.PlanV2Repository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,7 +24,7 @@ public class PlanServiceV2 {
     private final RouteSequencer routeSequencer;
     private final PlanV2Repository planRepository;
     private final KakaoMobilityApi kakaoMobilityApi;
-    private final PublicDataServiceV3 publicDataApiV2;
+    private final PublicDataApiV3 publicDataApiV2;
     private final CenterLocationCalculator calculator;
 
 

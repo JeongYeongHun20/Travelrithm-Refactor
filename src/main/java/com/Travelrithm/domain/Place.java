@@ -34,6 +34,7 @@ public class Place {
     private Integer day;
     private Integer sequence;
     private String category;
+    private String zipcode;
 
 
 }

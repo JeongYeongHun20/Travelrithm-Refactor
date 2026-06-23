@@ -3,7 +3,7 @@ package com.Travelrithm.publicdata.v1;
 
 import com.Travelrithm.publicdata.v1.dto.DataRequestDto;
 import com.Travelrithm.publicdata.v1.dto.DataResponseDto;
-import com.Travelrithm.publicdata.v2.PublicDataServiceV2;
+import com.Travelrithm.publicdata.v2.PublicDataApiV2;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/data")
 public class PublicDataController {
-    private final PublicDataServiceV2 publicDataApi;
+    private final PublicDataApiV2 publicDataApi;
     @GetMapping("/places")
     public ResponseEntity<DataResponseDto> getCategory(@RequestBody DataRequestDto dataRequestDto) {
         return ResponseEntity.ok(null);
